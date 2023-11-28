@@ -214,7 +214,6 @@ namespace TweakScale
                         TechRequired = Tools.ConfigValue(scaleConfig, "techRequired", TechRequired).Select(a => a.Trim()).ToArray();
                         Family = Tools.ConfigValue(scaleConfig, "family", "default");
                         //AttachNodes   = GetNodeFactors(scaleConfig.GetNode("ATTACHNODES"), AttachNodes);  // currently not used!
-                        IncrementSlide = Tools.ConfigValue(scaleConfig, "incrementSlide", IncrementSlide); // deprecated!
 
                         Exponents = ScaleExponents.CreateExponentsForModule(scaleConfig, Exponents);
                         //Debug.Log("[TweakScale] scaleConfig:" + scaleConfig.ToString());
@@ -235,7 +234,6 @@ namespace TweakScale
                 TechRequired  = Tools.ConfigValue(partConfig, "techRequired", TechRequired).Select(a=>a.Trim()).ToArray();
                 Family        = Tools.ConfigValue(partConfig, "family",       "default");
                 //AttachNodes   = GetNodeFactors(partConfig.GetNode("ATTACHNODES"), AttachNodes);
-                IncrementSlide= Tools.ConfigValue(partConfig, "incrementSlide", IncrementSlide);
 
                 Exponents = ScaleExponents.CreateExponentsForModule(partConfig, Exponents);
                 ScaleExponents.treatMassAndCost(Exponents);
