@@ -1,33 +1,32 @@
 {
      "NAME":"TweakScale",
-     "URL":"https://github.com/pellinor0/TweakScale/blob/master/GameData/TweakScale/TweakScale.version",
-     "DOWNLOAD":"http://spacedock.info/mod/127/TweakScale/",
+     "URL":"https://raw.githubusercontent.com/JonnyOThan/TweakScale/master/GameData/TweakScale/TweakScale.version",
+     "DOWNLOAD":"https://spacedock.info/mod/3514/TweakScale%20Rescaled",
      "GITHUB":{
-         "USERNAME":"Pellinor",
+         "USERNAME":"JonnyOThan",
          "REPOSITORY":"TweakScale",
          "ALLOW_PRE_RELEASE":false,
      },
      "VERSION":{
-         "MAJOR":2,
-         "MINOR":3,
-         "PATCH":12,
-         "BUILD":0
+         "MAJOR":3,
+         "MINOR":0,
+         "PATCH":0,
      },
      "KSP_VERSION":{
          "MAJOR":1,
-         "MINOR":4,
-         "PATCH":2
+         "MINOR":12,
+         "PATCH":5
      },
      "KSP_VERSION_MIN":
      {
         "MAJOR":1,
-        "MINOR":4,
-        "PATCH":0
+        "MINOR":12,
+        "PATCH":3
      },
      "KSP_VERSION_MAX":
      {
         "MAJOR":1,
-        "MINOR":4,
+        "MINOR":12,
         "PATCH":99
      }
 }
