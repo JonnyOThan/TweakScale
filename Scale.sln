@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale", "Scale.csproj", "{70D38878-43DB-4F6E-8002-45ADA5391AF7}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale", "Source\Scale.csproj", "{70D38878-43DB-4F6E-8002-45ADA5391AF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale_Redist", "Scale_Redist\Scale_Redist.csproj", "{2BE63D8B-350E-4EDD-959C-4B7397984364}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale_Redist", "Source\Scale_Redist\Scale_Redist.csproj", "{2BE63D8B-350E-4EDD-959C-4B7397984364}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +13,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Release|Any CPU.Build.0 = Release|Any CPU
 		{70D38878-43DB-4F6E-8002-45ADA5391AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{70D38878-43DB-4F6E-8002-45ADA5391AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70D38878-43DB-4F6E-8002-45ADA5391AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70D38878-43DB-4F6E-8002-45ADA5391AF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BE63D8B-350E-4EDD-959C-4B7397984364}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -33,8 +38,5 @@ Global
 		$2.inheritsSet = Mono
 		$2.inheritsScope = text/x-csharp
 		$2.scope = text/x-csharp
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
