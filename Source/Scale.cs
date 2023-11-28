@@ -475,7 +475,6 @@ namespace TweakScale
         private void updateTestFlight()
         {
             if (null == tfInterface) return;
-            BindingFlags tBindingFlags = BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static;
             string name = "scale";
             string value = ScalingFactor.absolute.linear.ToString();
             string owner = "TweakScale";
@@ -588,7 +587,7 @@ namespace TweakScale
         {
             part.rescaleFactor = _prefabPart.rescaleFactor * ScalingFactor.absolute.linear;
 
-            var trafo = part.partTransform.FindChild("model");
+            var trafo = part.partTransform.Find("model");
             if (trafo != null)
             {
                 if (defaultTransformScale.x == 0.0f)

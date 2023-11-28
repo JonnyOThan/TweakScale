@@ -12,5 +12,10 @@ namespace TweakScale
         {
             Instance = (T)this;
         }
+
+        void OnDestroy()
+        {
+            Instance = null;
+        }
     }
 }

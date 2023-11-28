@@ -12,7 +12,7 @@ namespace TweakScale
         private readonly Dictionary<string, Hotkeyable> _hotkeys = new Dictionary<string, Hotkeyable>();
         private /*readonly*/ PluginConfiguration _config;
 
-		private void Awake()
+		new private void Awake()
 		{
             base.Awake();
 
