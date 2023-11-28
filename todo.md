@@ -1,0 +1,7 @@
+- [ ] audit and implement all stock parts
+- [ ] audit and fix mod support
+- [ ] implement waterfall support
+- [ ] implement whole-vessel (or subtree) scaling
+- [ ] investigate part cost scaling on HECS2
+- [ ] add 1.875m scaling option for fuel tanks etc
+- [ ] make decouplers use meters instead of percent
