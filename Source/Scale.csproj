@@ -58,7 +58,6 @@
     <PostBuildEvent>xcopy /Y $(TargetDir) $(SolutionDir)GameData\TweakScale\plugins</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Checker.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Hotkey.cs" />
