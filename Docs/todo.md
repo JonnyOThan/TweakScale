@@ -27,6 +27,6 @@
     UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
 
 - [ ] Make it possible to change between free scale to stack scale (there's a lot of stuff set to free that should be stack)
-- [ ] handle part inventories
+- [x] handle part inventories
 - [ ] handle stock exhaust particles
-- [ ] check stock air intakes
+- [ ] check stock twin boar
