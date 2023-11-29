@@ -115,18 +115,9 @@ namespace TweakScale
 
             if (IsRescaled)
             {
-                // note we use the current scale factor as the relative one here, because the part was created at 1.0 scale
-                // however we don't move the child parts because their locations were stored in the protovessel
-                ScalePart(false, currentScaleFactor);
-                try
-                {
-                    // TODO: do we need to worry about any partmodules that might have persisted a scaled value, and then is going to get re-scaled?
-                    CallUpdaters(currentScaleFactor);
-                }
-                catch (Exception exception)
-                {
-                    Tools.LogWf("Exception on Rescale: {0}", exception);
-                }
+                ScalePartTransform();
+                CallUpdaters(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
+                // TODO: do we need to worry about drag cubes or anything else?
             }
             else
             {

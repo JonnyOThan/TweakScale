@@ -30,8 +30,12 @@
 - [ ] fix part variant node handling (structural tubes from MH)
 - [ ] check node altering from B9PS
 - [ ] node positions on scaled parts get reverted after loading
+- [ ] fuel tank cost is going negative when scaled up
 - [x] check part variants (structural tubes from MH)
 		Really this was tweakscale not respecting any part or mass modifiers
+- [x] scaling up a fuel tank, saving it, then loading will increase its resources
+		the resources etc are saved in the protovessel, so when we try to apply the scale again it's not based on an unscaled part
+
 
 # Backwards Compatibilty
 
@@ -44,6 +48,7 @@
 - [ ] Figure out what scale_redist is and how it's used by other mods (KSPIE, etc).  Do we need to name it 999_scale_redist?
 		seems like other mods can register for callbacks when scale changes, and this DLL just contains the API for that
 - [ ] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
+		blanket patches might need to be in LAST[TweakScale] ?
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
 - [ ] move crew, mft, testflight and antenna modifications into modular system
