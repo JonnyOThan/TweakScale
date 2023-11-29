@@ -6,7 +6,6 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [x] add 1.875m scaling option for fuel tanks etc
-- [ ] make decouplers use meters instead of percent
 - [ ] make sure save/load works
 - [ ] make sure we can load crafts saved with TS/L
 - [ ] make sure subassemblies/merging works
@@ -27,4 +26,7 @@
     <CompileParts>d__63:MoveNext() (at C:/Users/Jon/source/repos/ksp-assembly-csharp/PartLoader.cs:577)
     UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
 
-- [ ] Make it possible to change between free scale to stack scale
+- [ ] Make it possible to change between free scale to stack scale (there's a lot of stuff set to free that should be stack)
+- [ ] handle part inventories
+- [ ] handle stock exhaust particles
+- [ ] check stock air intakes
