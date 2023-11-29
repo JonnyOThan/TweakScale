@@ -190,12 +190,12 @@ namespace TweakScale
         }
 
         // config is a part config
-        public ScaleType(ConfigNode partConfig)
+        public ScaleType(ConfigNode moduleConfig)
         {
             ConfigNode scaleConfig = null;
-            if ((object)partConfig != null )
+            if ((object)moduleConfig != null )
             {
-                Name = Tools.ConfigValue(partConfig, "type", Name);
+                Name = Tools.ConfigValue(moduleConfig, "type", Name);
                 ScaleExponents.LoadGlobalExponents();
 
                 if (Name != null)
@@ -225,17 +225,17 @@ namespace TweakScale
                     Name = "";
 
                 // search part config for overrides
-                IsFreeScale   = Tools.ConfigValue(partConfig, "freeScale",    IsFreeScale);
-                DefaultScale  = Tools.ConfigValue(partConfig, "defaultScale", DefaultScale);
-                Suffix        = Tools.ConfigValue(partConfig, "suffix",       Suffix);
-                _scaleFactors = Tools.ConfigValue(partConfig, "scaleFactors", _scaleFactors);
-                ScaleNodes    = Tools.ConfigValue(partConfig, "scaleNodes",   ScaleNodes);
-                _scaleNames   = Tools.ConfigValue(partConfig, "scaleNames",   _scaleNames).Select(a => a.Trim()).ToArray();
-                TechRequired  = Tools.ConfigValue(partConfig, "techRequired", TechRequired).Select(a=>a.Trim()).ToArray();
-                Family        = Tools.ConfigValue(partConfig, "family",       "default");
+                IsFreeScale   = Tools.ConfigValue(moduleConfig, "freeScale",    IsFreeScale);
+                DefaultScale  = Tools.ConfigValue(moduleConfig, "defaultScale", DefaultScale);
+                Suffix        = Tools.ConfigValue(moduleConfig, "suffix",       Suffix);
+                _scaleFactors = Tools.ConfigValue(moduleConfig, "scaleFactors", _scaleFactors);
+                ScaleNodes    = Tools.ConfigValue(moduleConfig, "scaleNodes",   ScaleNodes);
+                _scaleNames   = Tools.ConfigValue(moduleConfig, "scaleNames",   _scaleNames).Select(a => a.Trim()).ToArray();
+                TechRequired  = Tools.ConfigValue(moduleConfig, "techRequired", TechRequired).Select(a=>a.Trim()).ToArray();
+                Family        = Tools.ConfigValue(moduleConfig, "family",       "default");
                 //AttachNodes   = GetNodeFactors(partConfig.GetNode("ATTACHNODES"), AttachNodes);
 
-                Exponents = ScaleExponents.CreateExponentsForModule(partConfig, Exponents);
+                Exponents = ScaleExponents.CreateExponentsForModule(moduleConfig, Exponents);
                 ScaleExponents.treatMassAndCost(Exponents);
 
 //                string log = "finished ScaleExponents: ";
@@ -263,7 +263,7 @@ namespace TweakScale
 
             // fill in missing values
             if ((DefaultScale <= 0) || (_scaleFactors.Length == 0))
-                RepairScaletype(scaleConfig, partConfig);
+                RepairScaletype(scaleConfig, moduleConfig);
 
             if (!IsFreeScale && (_scaleFactors.Length != _scaleNames.Length))
             {
