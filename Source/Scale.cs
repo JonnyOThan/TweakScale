@@ -93,7 +93,7 @@ namespace TweakScale
         /// <summary>
         /// the amount of extra mass added by scaling (could be negative)
         /// </summary>
-        [KSPField(isPersistant = false)]
+        [KSPField(isPersistant = true)]
         public float extraMass;
 
         private Hotkeyable _chainingEnabled;
