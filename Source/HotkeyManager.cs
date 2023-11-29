@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using KSP.IO;
-using TweakScale.Annotations;
 using UnityEngine;
 
 namespace TweakScale
@@ -23,13 +22,11 @@ namespace TweakScale
             get { return _config; }
         }
 
-        [UsedImplicitly]
         private void OnGUI()
         {
             _osd.Update();
         }
 
-        [UsedImplicitly]
         private void Update()
         {
             foreach (var key in _hotkeys.Values)

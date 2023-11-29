@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace TweakScale
 {
-    // ReSharper disable once InconsistentNaming
     public class OSD
     {
         private class Message

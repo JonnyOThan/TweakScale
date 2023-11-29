@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using TweakScale.Annotations;
 using UnityEngine;
 //using ModuleWheels;
 
@@ -14,7 +13,6 @@ namespace TweakScale
         /// </summary>
         [KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", guiFormat = "0.000", guiUnits = "m")]
         [UI_ScaleEdit(scene = UI_Scene.Editor)]
-// ReSharper disable once InconsistentNaming
         public float tweakScale = -1;
 
         /// <summary>
@@ -22,28 +20,24 @@ namespace TweakScale
         /// </summary>
         [KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale")]
         [UI_ChooseOption(scene = UI_Scene.Editor)]
-// ReSharper disable once InconsistentNaming
         public int tweakName = 0;
 
         /// <summary>
         /// The scale to which the part currently is scaled.
         /// </summary>
         [KSPField(isPersistant = true)]
-// ReSharper disable once InconsistentNaming
         public float currentScale = -1;
 
         /// <summary>
         /// The default scale, i.e. the number by which to divide tweakScale and currentScale to get the relative size difference from when the part is used without TweakScale.
         /// </summary>
         [KSPField(isPersistant = true)]
-// ReSharper disable once InconsistentNaming
         public float defaultScale = -1;
 
         /// <summary>
         /// Whether the part should be freely scalable or limited to destination list of allowed values.
         /// </summary>
         [KSPField(isPersistant = false)]
-// ReSharper disable once InconsistentNaming
         public bool isFreeScale = false;
 
         /// <summary>
@@ -70,7 +64,6 @@ namespace TweakScale
         /// The exponentValue by which the part is scaled by default. When destination part uses MODEL { scale = ... }, this will be different from (1,1,1).
         /// </summary>
         [KSPField(isPersistant = true)]
-// ReSharper disable once InconsistentNaming
         public Vector3 defaultTransformScale = new Vector3(0f, 0f, 0f);
 
         private bool _firstUpdateWithParent = true;
@@ -330,7 +323,6 @@ namespace TweakScale
             UpdateCrewManifest();
         }
 
-        [UsedImplicitly]
         void Update()
         {
             if (_firstUpdate)

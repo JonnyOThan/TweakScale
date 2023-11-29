@@ -68,7 +68,6 @@
     <Compile Include="Legacy.cs" />
     <Compile Include="MemberUpdater.cs" />
     <Compile Include="OSD.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ScaleExponents.cs" />
     <Compile Include="SingletonBehavior.cs" />
     <Compile Include="Support\TestFlightCore.cs" />

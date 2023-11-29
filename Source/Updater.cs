@@ -99,7 +99,6 @@ namespace TweakScale
 
         private static IRescalable CreateUpdater(PartModule module)
         {
-// ReSharper disable once SuspiciousTypeConversion.Global
             var updater = module as IRescalable;
             if (updater != null)
             {

@@ -130,7 +130,6 @@ namespace TweakScale
             {
                 yield return a;
             }
-// ReSharper disable once FunctionNeverReturns
         }
 
         /// <summary>
