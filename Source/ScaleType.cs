@@ -216,15 +216,12 @@ namespace TweakScale
                         //AttachNodes   = GetNodeFactors(scaleConfig.GetNode("ATTACHNODES"), AttachNodes);  // currently not used!
 
                         Exponents = ScaleExponents.CreateExponentsForModule(scaleConfig, Exponents);
-                        //Debug.Log("[TweakScale] scaleConfig:" + scaleConfig.ToString());
-                        //Debug.Log("[TweakScale] scaleConfig:" + this.ToString());
-                        //Debug.Log("[TweakScale]" + Exponents.ToString());
                     }
                 }
                 else
                     Name = "";
 
-                // search part config for overrides
+                // search module config for overrides
                 IsFreeScale   = Tools.ConfigValue(moduleConfig, "freeScale",    IsFreeScale);
                 DefaultScale  = Tools.ConfigValue(moduleConfig, "defaultScale", DefaultScale);
                 Suffix        = Tools.ConfigValue(moduleConfig, "suffix",       Suffix);
@@ -233,18 +230,10 @@ namespace TweakScale
                 _scaleNames   = Tools.ConfigValue(moduleConfig, "scaleNames",   _scaleNames).Select(a => a.Trim()).ToArray();
                 TechRequired  = Tools.ConfigValue(moduleConfig, "techRequired", TechRequired).Select(a=>a.Trim()).ToArray();
                 Family        = Tools.ConfigValue(moduleConfig, "family",       "default");
-                //AttachNodes   = GetNodeFactors(partConfig.GetNode("ATTACHNODES"), AttachNodes);
+                //AttachNodes   = GetNodeFactors(moduleConfig.GetNode("ATTACHNODES"), AttachNodes);
 
                 Exponents = ScaleExponents.CreateExponentsForModule(moduleConfig, Exponents);
                 ScaleExponents.treatMassAndCost(Exponents);
-
-//                string log = "finished ScaleExponents: ";
-//                foreach(var e in Exponents) { log += e.ToString() + ", \n"; }
-//                Debug.Log(log);
-
-                //Debug.Log("[TweakScale] partConfig:" + partConfig.ToString());
-                //Debug.Log("[TweakScale] partConfig:" + this.ToString());
-                //Debug.Log("[TweakScale]" + Exponents.ToString());
             }
 
             if (IsFreeScale && (_scaleFactors.Length > 1))

@@ -21,7 +21,7 @@ namespace TweakScale
 		{
 			if (null == tfInterface) return;
 			string name = "scale";
-			string value = tweakScaleModule.ScalingFactor.absolute.linear.ToString();
+			string value = tweakScaleModule.currentScaleFactor.ToString();
 			string owner = "TweakScale";
 
 			// TODO: create a bound delegate so there's not so much reflection overhead here

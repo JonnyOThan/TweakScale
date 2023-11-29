@@ -181,7 +181,7 @@ namespace TweakScale
             {
                 return;
             }
-            var factor = _ts.ScalingFactor;
+            var factor = _ts.currentScaleFactor;
 
             if (!_scales.ContainsKey(pe))
             {
@@ -189,15 +189,15 @@ namespace TweakScale
             }
             var ed = _scales[pe];
 
-            pe.minSize = ed.MinSize * factor.absolute.linear;
-            pe.maxSize = ed.MaxSize * factor.absolute.linear;
-            pe.shape1D = ed.Shape1D * factor.absolute.linear;
-            pe.shape2D = ed.Shape2D * factor.absolute.linear;
-            pe.shape3D = ed.Shape3D * factor.absolute.linear;
+            pe.minSize = ed.MinSize * factor;
+            pe.maxSize = ed.MaxSize * factor;
+            pe.shape1D = ed.Shape1D * factor;
+            pe.shape2D = ed.Shape2D * factor;
+            pe.shape3D = ed.Shape3D * factor;
 
-            pe.force = ed.Force * factor.absolute.linear;
+            pe.force = ed.Force * factor;
 
-            pe.localVelocity = ed.LocalVelocity * factor.absolute.linear;
+            pe.localVelocity = ed.LocalVelocity * factor;
         }
 
         private static void GetFieldInfos()

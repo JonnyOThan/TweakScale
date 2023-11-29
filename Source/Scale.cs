@@ -13,26 +13,23 @@ namespace TweakScale
         /// </summary>
         [KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", guiFormat = "0.000", guiUnits = "m")]
         [UI_ScaleEdit(scene = UI_Scene.Editor)]
-        public float tweakScale = -1;
+        public float guiScaleValue = -1;
 
         /// <summary>
         /// Index into scale values array.
         /// </summary>
         [KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale")]
         [UI_ChooseOption(scene = UI_Scene.Editor)]
-        public int tweakName = 0;
+        public int guiScaleNameIndex = -1;
 
-        /// <summary>
-        /// The scale to which the part currently is scaled.
-        /// </summary>
-        [KSPField(isPersistant = true)]
-        public float currentScale = -1;
+        // the gui shows currentScaleFactor * guiDefaultScale as the actual scale value.
+        // e.g. a 1.25m part at 1x scale will have guiDefaultScale of 1.25, and a free-scale part will have guiDefaultScale at 100 so that it shows a percent
+        // this used to be called "defaultScale" as a persistent KSPField but it's been renamed to make it clear that it's only for getting data to/from the gui
+        public float guiDefaultScale = -1;
 
-        /// <summary>
-        /// The default scale, i.e. the number by which to divide tweakScale and currentScale to get the relative size difference from when the part is used without TweakScale.
-        /// </summary>
+        // the actual scale factor in use.  1.0 means no scaling, 2.0 is twice as big, etc
         [KSPField(isPersistant = true)]
-        public float defaultScale = -1;
+        public float currentScaleFactor = 1;
 
         /// <summary>
         /// Whether the part should be freely scalable or limited to destination list of allowed values.
@@ -41,14 +38,14 @@ namespace TweakScale
         public bool isFreeScale = false;
 
         /// <summary>
-        /// The scale exponentValue array. If isFreeScale is false, the part may only be one of these scales.
+        /// The scale factor array. If isFreeScale is false, the part may only be one of these scales.
         /// </summary>
-        protected float[] ScaleFactors = { 0.625f, 1.25f, 2.5f, 3.75f, 5f };
-        
+        protected float[] ScaleFactors;
+
         /// <summary>
         /// The node scale array. If node scales are defined the nodes will be resized to these values.
         ///</summary>
-        protected int[] ScaleNodes = { };
+        protected int[] ScaleNodes;
 
         /// <summary>
         /// The unmodified prefab part. From this, default values are found.
@@ -66,16 +63,13 @@ namespace TweakScale
         [KSPField(isPersistant = true)]
         public Vector3 defaultTransformScale = new Vector3(0f, 0f, 0f);
 
-        private bool _firstUpdateWithParent = true;
-        private bool _setupRun;
-        private bool _firstUpdate = true;
         public bool ignoreResourcesForCost = false;
         public bool scaleMass = true;
 
         /// <summary>
         /// Updaters for different PartModules.
         /// </summary>
-        private IRescalable[] _updaters = new IRescalable[0];
+        private IRescalable[] _updaters;
 
         /// <summary>
         /// the amount of extra funds caused by scaling (could be negative)
@@ -100,41 +94,13 @@ namespace TweakScale
         {
             get
             {
-                return (Math.Abs(currentScale / defaultScale - 1f) > 1e-5f);
+                return (Math.Abs(currentScaleFactor - 1f) > 1e-5f);
             }
         }
 
-        /// <summary>
-        /// The current scaling factor.
-        /// </summary>
-        public ScalingFactor ScalingFactor
+        // Sets up the part when it is created in flight or the editor
+        protected void Setup()
         {
-            get
-            {
-                return new ScalingFactor(tweakScale / defaultScale, tweakScale / currentScale, isFreeScale ? -1 : tweakName);
-            }
-        }
-
-
-        protected virtual void SetupPrefab()
-        {
-            var PartNode = GameDatabase.Instance.GetConfigs("PART").FirstOrDefault(c => c.name.Replace('_', '.') == part.name).config;
-            var ModuleNode = PartNode.GetNodes("MODULE").FirstOrDefault(n => n.GetValue("name") == moduleName);
-
-            ScaleType = new ScaleType(ModuleNode);
-            SetupFromConfig(ScaleType);
-            tweakScale = currentScale = defaultScale;
-        }
-
-        /// <summary>
-        /// Sets up values from ScaleType, creates updaters, and sets up initial values.
-        /// </summary>
-        protected virtual void Setup()
-        {
-            if (_setupRun)
-            {
-                return;
-            }
             _prefabPart = part.partInfo.partPrefab;
             _updaters = TweakScaleUpdater.CreateUpdaters(part).ToArray();
 
@@ -143,16 +109,19 @@ namespace TweakScale
 
             if (!isFreeScale && ScaleFactors.Length != 0)
             {
-                tweakName = Tools.ClosestIndex(tweakScale, ScaleFactors);
-                tweakScale = ScaleFactors[tweakName];
+                guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
+                guiScaleValue = ScaleFactors[guiScaleNameIndex];
             }
 
             if (IsRescaled)
             {
-                ScalePart(false, true);
+                // note we use the current scale factor as the relative one here, because the part was created at 1.0 scale
+                // however we don't move the child parts because their locations were stored in the protovessel
+                ScalePart(false, currentScaleFactor);
                 try
                 {
-                    CallUpdaters();
+                    // TODO: do we need to worry about any partmodules that might have persisted a scaled value, and then is going to get re-scaled?
+                    CallUpdaters(currentScaleFactor);
                 }
                 catch (Exception exception)
                 {
@@ -164,7 +133,6 @@ namespace TweakScale
                 if (part.Modules.Contains("FSfuelSwitch"))
                     ignoreResourcesForCost = true;
             }
-            _setupRun = true;
         }
 
         internal void CalculateCostAndMass()
@@ -177,7 +145,7 @@ namespace TweakScale
             }
 
             float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
-            float costScale = Mathf.Pow(ScalingFactor.absolute.linear, costExponent);
+            float costScale = Mathf.Pow(currentScaleFactor, costExponent);
             float newCost = costScale * dryCost;
 
             extraCost = newCost - dryCost;
@@ -186,7 +154,7 @@ namespace TweakScale
             part.UpdateMass();
             float dryMass = part.mass - part.inventoryMass;
             float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
-            float massScale = Mathf.Pow(ScalingFactor.absolute.linear, massExponent);
+            float massScale = Mathf.Pow(currentScaleFactor, massExponent);
             float newMass = massScale * dryMass;
             extraMass = newMass - dryMass;
             part.UpdateMass();
@@ -201,40 +169,31 @@ namespace TweakScale
             if (ScaleType == null) Debug.LogError("TweakScale: Scaletype==null! part=" + part.name);
 
             isFreeScale = scaleType.IsFreeScale;
-            if (defaultScale == -1)
-                defaultScale = scaleType.DefaultScale;
+            if (guiDefaultScale == -1)
+                guiDefaultScale = scaleType.DefaultScale;
 
-            if (currentScale == -1)
-                currentScale = defaultScale;
-            else if (defaultScale != scaleType.DefaultScale)
-            {
-                Tools.Logf("defaultScale has changed for part {0}: keeping relative scale.", part.name);
-                currentScale *= scaleType.DefaultScale / defaultScale;
-                defaultScale = scaleType.DefaultScale;
-            }
-
-            if (tweakScale == -1)
-                tweakScale = currentScale;
-            Fields["tweakScale"].guiActiveEditor = false;
-            Fields["tweakName"].guiActiveEditor = false;
+            if (guiScaleValue == -1)
+                guiScaleValue = currentScaleFactor * guiDefaultScale;
+            Fields["guiScaleValue"].guiActiveEditor = false;
+            Fields["guiScaleNameIndex"].guiActiveEditor = false;
             ScaleFactors = scaleType.ScaleFactors;
             if (ScaleFactors.Length <= 0)
                 return;
 
             if (isFreeScale)
             {
-                Fields["tweakScale"].guiActiveEditor = true;
-                var range = (UI_ScaleEdit)Fields["tweakScale"].uiControlEditor;
+                Fields["guiScaleValue"].guiActiveEditor = true;
+                var range = (UI_ScaleEdit)Fields["guiScaleValue"].uiControlEditor;
                 range.intervals = scaleType.ScaleFactors;
                 range.incrementSlide = scaleType.IncrementSlide;
                 range.unit = scaleType.Suffix;
                 range.sigFigs = 3;
-                Fields["tweakScale"].guiUnits = scaleType.Suffix;
+                Fields["guiScaleValue"].guiUnits = scaleType.Suffix;
             }
             else
             {
-                Fields["tweakName"].guiActiveEditor = scaleType.ScaleFactors.Length > 1;
-                var options = (UI_ChooseOption)Fields["tweakName"].uiControlEditor;
+                Fields["guiScaleNameIndex"].guiActiveEditor = scaleType.ScaleFactors.Length > 1;
+                var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
                 ScaleNodes = scaleType.ScaleNodes;
                 options.options = scaleType.ScaleNames;
             }
@@ -244,36 +203,43 @@ namespace TweakScale
         {
             base.OnLoad(node);
 
+            // try to load old persisted data
+            {
+                float currentScaleFromCfgNode = -1;
+                node.TryGetValue("defaultScale", ref guiDefaultScale);
+                if (node.TryGetValue("currentScale", ref currentScaleFromCfgNode) && currentScaleFromCfgNode > 0 && guiDefaultScale > 0)
+                {
+                    currentScaleFactor = currentScaleFromCfgNode / guiDefaultScale;
+                }
+            }
+
             if (part.partInfo == null)
             {
                 // Loading of the prefab from the part config
                 _prefabPart = part;
-                SetupPrefab();
 
+                ScaleType = new ScaleType(node);
+                SetupFromConfig(ScaleType);
             }
-            else
-            {
-                // Loading of the part from a saved craft
-                tweakScale = currentScale;
-                if (HighLogic.LoadedSceneIsEditor || IsRescaled)
-                    Setup();
-                else
-                    enabled = false;
-            }
+
+            guiScaleValue = currentScaleFactor * guiDefaultScale;
+            isEnabled = true;
         }
 
         public override void OnStart(StartState state)
         {
             base.OnStart(state);
 
+            Setup();
+
+            if (!CheckIntegrity())
+            {
+                enabled = false;
+                return;
+            }
+
             if (HighLogic.LoadedSceneIsEditor)
             {
-                if (part.parent != null)
-                {
-                    _firstUpdateWithParent = false;
-                }
-                Setup();
-
                 if (_prefabPart.CrewCapacity > 0)
                 {
                     GameEvents.onEditorShipModified.Add(OnEditorShipModified);
@@ -282,11 +248,15 @@ namespace TweakScale
                 _chainingEnabled = HotkeyManager.Instance.AddHotkey("Scale chaining", new[] {KeyCode.LeftShift},
                     new[] {KeyCode.LeftControl, KeyCode.K}, false);
             }
+            else if (!IsRescaled)
+            {
+                enabled = false;
+            }
 
             // scale IVA overlay
             if (HighLogic.LoadedSceneIsFlight && enabled && (part.internalModel != null))
             {
-                _savedIvaScale = part.internalModel.transform.localScale * ScalingFactor.absolute.linear;
+                _savedIvaScale = part.internalModel.transform.localScale * currentScaleFactor;
                 part.internalModel.transform.localScale = _savedIvaScale;
                 part.internalModel.transform.hasChanged = true;
             }
@@ -300,24 +270,22 @@ namespace TweakScale
         /// <summary>
         /// Scale has changed!
         /// </summary>
-        private void OnTweakScaleChanged()
+        private void OnTweakScaleChanged(float newScaleFactor)
         {
-            if (!isFreeScale)
-            {
-                tweakScale = ScaleFactors[tweakName];
-            }
+            // TODO: I really hate the concept of the relative scale factor.  It will introduce floating point errors when used repeatedly
+            // everything should be computed from the absolute scale and the prefab
+            float relativeScaleFactor = newScaleFactor / currentScaleFactor;
+            currentScaleFactor = newScaleFactor;
 
             if ((_chainingEnabled != null) && _chainingEnabled.State)
             {
-                ChainScale();
+                ChainScale(relativeScaleFactor);
             }
 
-            ScalePart(true, false);
-            ScaleDragCubes(false);
+            ScalePart(true, relativeScaleFactor);
             MarkWindowDirty();
-            CallUpdaters();
+            CallUpdaters(relativeScaleFactor);
 
-            currentScale = tweakScale;
             GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
         }
 
@@ -328,80 +296,95 @@ namespace TweakScale
             UpdateCrewManifest();
         }
 
+        float GetScaleFactorFromGUI()
+        {
+            float guiScale = isFreeScale ? guiScaleValue : ScaleFactors[guiScaleNameIndex];
+            return guiScale / guiDefaultScale;
+        }
+
         void Update()
         {
-            if (_firstUpdate)
-            {
-                _firstUpdate = false;
-                if (CheckIntegrity())
-                    return;
-
-                if (IsRescaled)
-                {
-                    ScaleDragCubes(true);
-                    if (HighLogic.LoadedSceneIsEditor)
-                        ScalePart(false, true);  // cloned parts and loaded crafts seem to need this (otherwise the node positions revert)
-                }
-            }
-
+            // TODO: perhaps this could be done with a callback?
             if (HighLogic.LoadedSceneIsEditor)
             {
-                if (currentScale >= 0f)
+                float newScaleFactor = GetScaleFactorFromGUI();
+
+                if (newScaleFactor != currentScaleFactor)
                 {
-                    var changed = currentScale != (isFreeScale ? tweakScale : ScaleFactors[tweakName]);
-                    if (changed) // user has changed the scale tweakable
-                    {
-                        // If the user has changed the scale of the part before attaching it, we want to keep that scale.
-                        _firstUpdateWithParent = false;
-                        OnTweakScaleChanged();
-                    }
+                    OnTweakScaleChanged(newScaleFactor);
                 }
+
+                UpdateIUpdaters();
             }
             else
             {
-                // flight scene frequently nukes our OnStart resize some time later
-                if ((part.internalModel != null) && (part.internalModel.transform.localScale != _savedIvaScale))
-                {
-                    part.internalModel.transform.localScale = _savedIvaScale;
-                    part.internalModel.transform.hasChanged = true;
-                }
-            }
-
-            if (_firstUpdateWithParent && part.HasParent())
-            {
-                _firstUpdateWithParent = false;
-            }
-
-            int len = _updaters.Length;
-            for (int i = 0; i < len; i++)
-            {
-                if (_updaters[i] is IUpdateable)
-                    (_updaters[i] as IUpdateable).OnUpdate();
+                enabled = false; // stop calling this in flight
             }
         }
 
-        void CallUpdaters()
+        public override void OnUpdate()
         {
-            // two passes, to depend less on the order of this list
-            int len = _updaters.Length;
-            for (int i = 0; i < len; i++)
+            // note: OnUpdate is only called in flight, not the editor
+            // isEnabled controls whether the Part calls this function, so only keep it awake if we need it
+            isEnabled = false;
+
+            // flight scene frequently nukes our OnStart resize some time later (probably portraits or crew transfers)
+            if ((part.internalModel != null) && (part.internalModel.transform.localScale != _savedIvaScale))
             {
-                // first apply the exponents
-                var updater = _updaters[i];
-                if (updater is TSGenericUpdater)
+                part.internalModel.transform.localScale = _savedIvaScale;
+                part.internalModel.transform.hasChanged = true;
+                isEnabled = true;
+            }
+
+            isEnabled = UpdateIUpdaters() || isEnabled;
+        }
+
+        bool UpdateIUpdaters()
+        {
+            bool any = false;
+            if (_updaters != null)
+            {
+                int len = _updaters.Length;
+                for (int i = 0; i < len; i++)
                 {
-                    try
+                    if (_updaters[i] is IUpdateable)
                     {
-                        float oldMass = part.mass;
-                        updater.OnRescale(ScalingFactor);
-                        part.mass = oldMass; // make sure we leave this in a clean state
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogWarning("Exception on rescale: " + e.ToString());
+                        // TODO: we may want to differentiate between editor-only and flight-only updaters, because stuff that's editor-only could slow down flight mode
+                        (_updaters[i] as IUpdateable).OnUpdate();
+                        any = true;
                     }
                 }
             }
+
+            return any;
+        }
+
+        void CallUpdaters(float relativeScaleFactor)
+        {
+            ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
+         
+            // two passes, to depend less on the order of this list
+            if (_updaters != null)
+            {
+                foreach (var updater in _updaters)
+                {
+                    // first apply the exponents
+                    if (updater is TSGenericUpdater)
+                    {
+                        try
+                        {
+                            float oldMass = part.mass;
+                            updater.OnRescale(notificationPayload);
+                            part.mass = oldMass; // make sure we leave this in a clean state
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning("Exception on rescale: " + e.ToString());
+                        }
+                    }
+                }
+            }
+
             if (_prefabPart.CrewCapacity > 0)
                 UpdateCrewManifest();
 
@@ -416,19 +399,20 @@ namespace TweakScale
 
             // send scaling part message
             var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
-            data.Set<float>("factorAbsolute", ScalingFactor.absolute.linear);
-            data.Set<float>("factorRelative", ScalingFactor.relative.linear);
+            data.Set<float>("factorAbsolute", notificationPayload.absolute.linear);
+            data.Set<float>("factorRelative", notificationPayload.relative.linear);
             part.SendEvent("OnPartScaleChanged", data, 0);
 
-            len = _updaters.Length;
-            for (int i = 0; i < len; i++)
+            if (_updaters != null)
             {
-                var updater = _updaters[i];
-                // then call other updaters (emitters, other mods)
-                if (updater is TSGenericUpdater)
-                    continue;
+                foreach (var updater in _updaters)
+                {
+                    // then call other updaters (emitters, other mods)
+                    if (updater is TSGenericUpdater)
+                        continue;
 
-                updater.OnRescale(ScalingFactor);
+                    updater.OnRescale(notificationPayload);
+                }
             }
         }
 
@@ -469,10 +453,11 @@ namespace TweakScale
                     FieldInfo fieldInfo = m.GetType().GetField("totalVolume", BindingFlags.Public | BindingFlags.Instance);
                     if (fieldInfo != null)
                     {
+                        float cubicScaleFactor = currentScaleFactor * currentScaleFactor * currentScaleFactor;
                         double oldVol = (double)fieldInfo.GetValue(m) * 0.001d;
                         var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
                         data.Set<string>("volName", "Tankage");
-                        data.Set<double>("newTotalVolume", oldVol * ScalingFactor.absolute.cubic);
+                        data.Set<double>("newTotalVolume", oldVol * cubicScaleFactor);
                         part.SendEvent("OnPartVolumeChanged", data, 0);
                     }
                     else Tools.LogWf("MFT interaction failed (fieldinfo=null)");
@@ -510,7 +495,7 @@ namespace TweakScale
         /// </summary>
         /// <param name="moveParts">Whether or not to move attached parts.</param>
         /// <param name="absolute">Whether to use absolute or relative scaling.</param>
-        private void ScalePart(bool moveParts, bool absolute)
+        private void ScalePart(bool moveParts, float relativeScaleFactor)
         {
             ScalePartTransform();
 
@@ -529,7 +514,7 @@ namespace TweakScale
                 {
                     var baseNode = baseNodesWithSameId[idIdx];
 
-                    MoveNode(node, baseNode, moveParts, absolute);
+                    MoveNode(node, baseNode, moveParts, relativeScaleFactor);
                 }
                 else
                 {
@@ -553,7 +538,7 @@ namespace TweakScale
                         for (int j = 0; j < v.AttachNodes.Count; j++)
                         {
                             // the module contains attachNodes, so we need to scale those
-                            MoveNode(v.AttachNodes[j], pv.AttachNodes[j], false, true);
+                            MoveNode(v.AttachNodes[j], pv.AttachNodes[j], false, relativeScaleFactor);
                         }
                     }
                 }
@@ -566,7 +551,7 @@ namespace TweakScale
 
             if (part.srfAttachNode != null)
             {
-                MoveNode(part.srfAttachNode, _prefabPart.srfAttachNode, moveParts, absolute);
+                MoveNode(part.srfAttachNode, _prefabPart.srfAttachNode, moveParts, relativeScaleFactor);
             }
             if (moveParts)
             {
@@ -578,17 +563,18 @@ namespace TweakScale
                         continue;
 
                     var attachedPosition = child.transform.localPosition + child.transform.localRotation * child.srfAttachNode.position;
-                    var targetPosition = attachedPosition * ScalingFactor.relative.linear;
+                    var targetPosition = attachedPosition * relativeScaleFactor;
                     child.transform.Translate(targetPosition - attachedPosition, part.transform);
                 }
             }
 
             CalculateCostAndMass();
+            ScaleDragCubes(relativeScaleFactor);
         }
 
         private void ScalePartTransform()
         {
-            part.rescaleFactor = _prefabPart.rescaleFactor * ScalingFactor.absolute.linear;
+            part.rescaleFactor = _prefabPart.rescaleFactor * currentScaleFactor;
 
             var trafo = part.partTransform.Find("model");
             if (trafo != null)
@@ -612,7 +598,7 @@ namespace TweakScale
                     defaultTransformScale.z *= -1;
                 }
 
-                trafo.localScale = ScalingFactor.absolute.linear * defaultTransformScale;
+                trafo.localScale = currentScaleFactor * defaultTransformScale;
                 trafo.hasChanged = true;
                 part.partTransform.hasChanged = true;
             }
@@ -632,11 +618,11 @@ namespace TweakScale
                 {
                     tmpBaseNodeSize = 0.5f;
                 }
-                node.size = (int)(tmpBaseNodeSize * tweakScale / defaultScale + 0.49);
+                node.size = (int)(tmpBaseNodeSize * guiScaleValue / guiDefaultScale + 0.49);
             }
             else
             {
-                node.size = baseNode.size + (1 * ScaleNodes[tweakName]);
+                node.size = baseNode.size + (1 * ScaleNodes[guiScaleNameIndex]);
             }
             if (node.size < 0)
             {
@@ -644,52 +630,30 @@ namespace TweakScale
             }
         }
 
-        private void ScaleDragCubes(bool absolute)
+        // TODO: this is probably wrong; and will accumulate error if you continually scale something up and down
+        // need to figure out how to compute this from the prefab and the current state of the part
+        private void ScaleDragCubes(float relativeScaleFactor)
         {
-            ScalingFactor.FactorSet factor;
-            if (absolute)
-                factor = ScalingFactor.absolute;
-            else
-                factor = ScalingFactor.relative;
-
-            if (factor.linear == 1)
-                return;
-
+            float quadratic = relativeScaleFactor * relativeScaleFactor;
             int len = part.DragCubes.Cubes.Count;
             for (int ic = 0; ic < len; ic++)
             {
                 DragCube dragCube = part.DragCubes.Cubes[ic];
-                dragCube.Size *= factor.linear;
+                dragCube.Size *= relativeScaleFactor;
                 for (int i = 0; i < dragCube.Area.Length; i++)
-                    dragCube.Area[i] *= factor.quadratic;
+                    dragCube.Area[i] *= quadratic;
 
                 for (int i = 0; i < dragCube.Depth.Length; i++)
-                    dragCube.Depth[i] *= factor.linear;
+                    dragCube.Depth[i] *= relativeScaleFactor;
             }
             part.DragCubes.ForceUpdate(true, true);
         }
 
-        /// <summary>
-        /// Moves <paramref name="node"/> to reflect the new scale. If <paramref name="movePart"/> is true, also moves attached parts.
-        /// </summary>
-        /// <param name="node">The node to move.</param>
-        /// <param name="baseNode">The same node, as found on the prefab part.</param>
-        /// <param name="movePart">Whether or not to move attached parts.</param>
-        /// <param name="absolute">Whether to use absolute or relative scaling.</param>
-        private void MoveNode(AttachNode node, AttachNode baseNode, bool movePart, bool absolute)
+        private void MoveNode(AttachNode node, AttachNode baseNode, bool movePart, float relativeScaleFactor)
         {
-            if (baseNode == null)
-            {
-                baseNode = node;
-                absolute = false;
-            }
-
             var oldPosition = node.position;
 
-            if (absolute)
-                node.position = baseNode.position * ScalingFactor.absolute.linear;
-            else
-                node.position = node.position * ScalingFactor.relative.linear;
+            node.position = baseNode.position * currentScaleFactor;
 
             var deltaPos = node.position - oldPosition;
 
@@ -701,9 +665,9 @@ namespace TweakScale
                 }
                 else
                 {
-                    var offset = node.attachedPart.attPos * (ScalingFactor.relative.linear - 1);
+                    var offset = node.attachedPart.attPos * (relativeScaleFactor - 1);
                     node.attachedPart.transform.Translate(deltaPos + offset, part.transform);
-                    node.attachedPart.attPos *= ScalingFactor.relative.linear;
+                    node.attachedPart.attPos *= relativeScaleFactor;
                 }
             }
             ScaleAttachNode(node, baseNode);
@@ -712,7 +676,7 @@ namespace TweakScale
         /// <summary>
         /// Propagate relative scaling factor to children.
         /// </summary>
-        private void ChainScale()
+        private void ChainScale(float relativeScaleFactor)
         {
             int len = part.children.Count;
             for (int i=0; i< len; i++)
@@ -722,16 +686,15 @@ namespace TweakScale
                 if (b == null)
                     continue;
 
-                float factor = ScalingFactor.relative.linear;
-                if (Math.Abs(factor - 1) <= 1e-4f)
+                if (Math.Abs(relativeScaleFactor - 1) <= 1e-4f)
                     continue;
 
-                b.tweakScale *= factor;
+                b.guiScaleValue *= relativeScaleFactor;
                 if (!b.isFreeScale && (b.ScaleFactors.Length > 0))
                 {
-                    b.tweakName = Tools.ClosestIndex(b.tweakScale, b.ScaleFactors);
+                    b.guiScaleNameIndex = Tools.ClosestIndex(b.guiScaleValue, b.ScaleFactors);
                 }
-                b.OnTweakScaleChanged();
+                b.OnTweakScaleChanged(b.GetScaleFactorFromGUI());
             }
         }
 
@@ -741,23 +704,23 @@ namespace TweakScale
         /// <returns>True if something is wrong, false otherwise.</returns>
         private bool CheckIntegrity()
         {
-            if (ScaleFactors.Length == 0)
+            if (ScaleFactors == null || ScaleFactors.Length == 0)
             {
-                enabled = false; // disable TweakScale module
+                isEnabled = false; // disable TweakScale module
                 Tools.LogWf("{0}({1}) has no valid scale factors. This is probably caused by an invalid TweakScale configuration for the part.", part.name, part.partInfo.title);
                 Debug.Log("[TweakScale]" + this.ToString());
                 Debug.Log("[TweakScale]" + ScaleType.ToString());
-                return true;
+                return false;
             }
             if (this != part.GetComponent<TweakScale>())
             {
-                enabled = false; // disable TweakScale module
+                isEnabled = false; // disable TweakScale module
                 Tools.LogWf("Duplicate TweakScale module on part [{0}] {1}", part.partInfo.name, part.partInfo.title);
-                Fields["tweakScale"].guiActiveEditor = false;
-                Fields["tweakName"].guiActiveEditor = false;
-                return true;
+                Fields["guiScaleValue"].guiActiveEditor = false;
+                Fields["guiScaleNameIndex"].guiActiveEditor = false;
+                return false;
             }
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -772,76 +735,24 @@ namespace TweakScale
             }
         }
 
-        public float GetModuleCost(float defaultCost, ModifierStagingSituation situation)
+        float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)
         {
             return extraCost;
         }
 
-        public ModifierChangeWhen GetModuleCostChangeWhen()
+        ModifierChangeWhen IPartCostModifier.GetModuleCostChangeWhen()
         {
             return ModifierChangeWhen.FIXED;
         }
 
-        public float GetModuleMass(float defaultMass, ModifierStagingSituation situation)
+        float IPartMassModifier.GetModuleMass(float defaultMass, ModifierStagingSituation situation)
         {
             return extraMass;
         }
 
-        public ModifierChangeWhen GetModuleMassChangeWhen()
+        ModifierChangeWhen IPartMassModifier.GetModuleMassChangeWhen()
         {
             return ModifierChangeWhen.FIXED;
         }
-
-        public override string ToString()
-        {
-            var result = "TweakScale{\n";
-            result += "\n _setupRun = " + _setupRun;
-            result += "\n isFreeScale = " + isFreeScale;
-            result += "\n " + ScaleFactors.Length  + " scaleFactors = ";
-            foreach (var s in ScaleFactors)
-                result += s + "  ";
-            result += "\n tweakScale = "   + tweakScale;
-            result += "\n currentScale = " + currentScale;
-            result += "\n defaultScale = " + defaultScale;
-            //result += " scaleNodes = " + ScaleNodes + "\n";
-            //result += "   minValue = " + MinValue + "\n";
-            //result += "   maxValue = " + MaxValue + "\n";
-            return result + "\n}";
-        }
-
-        /*[KSPEvent(guiActive = false, active = true)]
-        void OnPartScaleChanged(BaseEventData data)
-        {
-            float factorAbsolute = data.Get<float>("factorAbsolute");
-            float factorRelative = data.Get<float>("factorRelative");
-            Debug.Log("PartMessage: OnPartScaleChanged:"
-                + "\npart=" + part.name
-                + "\nfactorRelative=" + factorRelative.ToString()
-                + "\nfactorAbsolute=" + factorAbsolute.ToString());
-
-        }*/
-
-        /*[KSPEvent(guiActive = true, guiActiveEditor = true, guiName = "Debug")]
-        public void debugOutput()
-        {
-            //var ap = part.partInfo;
-            //Debug.Log("prefabCost=" + ap.cost + ", dryCost=" + DryCost +", prefabDryCost=" +(_prefabPart.Modules["TweakScale"] as TweakScale).DryCost);
-            //Debug.Log("kisVolOvr=" +part.Modules["ModuleKISItem"].Fields["volumeOverride"].GetValue(part.Modules["ModuleKISItem"]));
-            //Debug.Log("ResourceCost=" + (part.Resources.Cast<PartResource>().Aggregate(0.0, (a, b) => a + b.maxAmount * b.info.unitCost) ));
-
-            //Debug.Log("massFactor=" + (part.partInfo.partPrefab.Modules["TweakScale"] as TweakScale).getMassFactor( (double)(currentScale / defaultScale)));
-            //Debug.Log("costFactor=" + (part.partInfo.partPrefab.Modules["TweakScale"] as TweakScale).getDryCostFactor( (double)(currentScale / defaultScale)));
-            //Debug.Log("volFactor =" + (part.partInfo.partPrefab.Modules["TweakScale"] as TweakScale).getVolumeFactor( (double)(currentScale / defaultScale)));
-
-            //var x = part.collider;
-            //Debug.Log("C: " +x.name +", enabled="+x.enabled);
-            if (part.Modules.Contains("ModuleRCSFX")) {
-                Debug.Log("RCS power=" +(part.Modules["ModuleRCSFX"] as ModuleRCSFX).thrusterPower);
-            }
-            if (part.Modules.Contains("ModuleEnginesFX"))
-            {
-                Debug.Log("Engine thrust=" +(part.Modules["ModuleEnginesFX"] as ModuleEnginesFX).maxThrust);
-            }
-        }*/
     }
 }
