@@ -292,6 +292,11 @@ namespace TweakScale
             }
         }
 
+        void OnDestroy()
+        {
+            GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
+        }
+
         /// <summary>
         /// Scale has changed!
         /// </summary>
