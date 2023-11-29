@@ -34,6 +34,7 @@
 		does not occur if you then reattach the part and save/load
 - [ ] scaled node sizes are not preserved after save/load
 - [ ] fuel tank cost is going negative when scaled up
+- [ ] changing variant and then altering scale will screw up nodes
 - [x] check part variants (structural tubes from MH)
 		Really this was tweakscale not respecting any part or mass modifiers
 - [x] scaling up a fuel tank, saving it, then loading will increase its resources

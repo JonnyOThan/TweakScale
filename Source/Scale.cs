@@ -513,33 +513,6 @@ namespace TweakScale
                 }
             }
 
-            try
-            {
-                // support for ModulePartVariants (the stock texture switch module)
-                if (_prefabPart.Modules.Contains("ModulePartVariants"))
-                {
-                    var pm = _prefabPart.Modules["ModulePartVariants"] as ModulePartVariants;
-                    var m = part.Modules["ModulePartVariants"] as ModulePartVariants;
-
-                    var n = pm.variantList.Count;
-                    for (int i = 0; i < n; i++)
-                    {
-                        var v = m.variantList[i];
-                        var pv = pm.variantList[i];
-                        for (int j = 0; j < v.AttachNodes.Count; j++)
-                        {
-                            // the module contains attachNodes, so we need to scale those
-                            MoveNode(v.AttachNodes[j], pv.AttachNodes[j], false, relativeScaleFactor);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Tools.LogWf("Exception during stockTextureSwitch interaction" + e.ToString());
-            }
-
-
             if (part.srfAttachNode != null)
             {
                 MoveNode(part.srfAttachNode, _prefabPart.srfAttachNode, moveParts, relativeScaleFactor);
@@ -644,7 +617,7 @@ namespace TweakScale
         {
             var oldPosition = node.position;
 
-            node.position = baseNode.position * currentScaleFactor;
+            node.originalPosition = node.position = baseNode.position * currentScaleFactor;
 
             var deltaPos = node.position - oldPosition;
 
