@@ -426,11 +426,15 @@ namespace TweakScale
         {
             var type = Type.GetType(typeName);
             if (type != null) return type;
-            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var a in AssemblyLoader.loadedAssemblies)
             {
-                type = a.GetType(typeName);
-                if (type != null)
-                    return type;
+                try
+                {
+                    type = a.assembly.GetType(typeName);
+                    if (type != null)
+                        return type;
+                }
+                catch { }
             }
             return null;
         }
