@@ -10,10 +10,11 @@
 - [ ] make sure we can load crafts saved with TS/L
 - [ ] make sure subassemblies/merging works
   [x] fix TestFlightCore error:
-
 - [ ] Make it possible to change between free scale to stack scale (there's a lot of stuff set to free that should be stack)
 - [x] handle part inventories
 - [ ] handle stock exhaust particles
 - [ ] check stock twin boar
 - [ ] check parachutes
-- [ ] check part variants (structural tubes from MH)
+- [x] check part variants (structural tubes from MH)
+- [ ] fix part variant node handling (structural tubes from MH)
+- [ ] check node altering from B9PS

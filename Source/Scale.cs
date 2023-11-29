@@ -85,16 +85,16 @@ namespace TweakScale
         private IRescalable[] _updaters = new IRescalable[0];
 
         /// <summary>
-        /// Cost of unscaled, empty part.
+        /// the amount of extra funds caused by scaling (could be negative)
         /// </summary>
         [KSPField(isPersistant = true)]
-        public float DryCost;
+        public float extraCost;
 
         /// <summary>
-        /// scaled mass
+        /// the amount of extra mass added by scaling (could be negative)
         /// </summary>
         [KSPField(isPersistant = false)]
-        public float MassScale = 1;
+        public float extraMass;
 
         private Hotkeyable _chainingEnabled;
 
@@ -168,17 +168,35 @@ namespace TweakScale
             }
             else
             {
-                DryCost = (float)(part.partInfo.cost - _prefabPart.Resources.Cast<PartResource>().Aggregate(0.0, (a, b) => a + b.maxAmount * b.info.unitCost));
                 if (part.Modules.Contains("FSfuelSwitch"))
-                  ignoreResourcesForCost = true;
-                
-                if (DryCost < 0)
-                {
-                    Debug.LogError("TweakScale: part=" + part.name + ", DryCost=" + DryCost.ToString());
-                    DryCost = 0;
-                }
+                    ignoreResourcesForCost = true;
             }
             _setupRun = true;
+        }
+
+        internal void CalculateCostAndMass()
+        {
+            extraCost = 0;
+            float dryCost = part.partInfo.cost + part.GetModuleCosts(part.partInfo.cost);
+            foreach (var partResource in part.Resources)
+            {
+                dryCost -= (float)partResource.maxAmount * partResource.info.unitCost;
+            }
+
+            float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
+            float costScale = Mathf.Pow(ScalingFactor.absolute.linear, costExponent);
+            float newCost = costScale * dryCost;
+
+            extraCost = newCost - dryCost;
+
+            extraMass = 0;
+            part.UpdateMass();
+            float dryMass = part.mass - part.inventoryMass;
+            float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
+            float massScale = Mathf.Pow(ScalingFactor.absolute.linear, massExponent);
+            float newMass = massScale * dryMass;
+            extraMass = newMass - dryMass;
+            part.UpdateMass();
         }
 
         /// <summary>
@@ -567,6 +585,8 @@ namespace TweakScale
                     child.transform.Translate(targetPosition - attachedPosition, part.transform);
                 }
             }
+
+            CalculateCostAndMass();
         }
 
         private void ScalePartTransform()
@@ -757,13 +777,7 @@ namespace TweakScale
 
         public float GetModuleCost(float defaultCost, ModifierStagingSituation situation)
         {
-            if (_setupRun && IsRescaled)
-                if (ignoreResourcesForCost)
-                  return (DryCost - part.partInfo.cost);
-                else
-                  return (float)(DryCost - part.partInfo.cost + part.Resources.Cast<PartResource>().Aggregate(0.0, (a, b) => a + b.maxAmount * b.info.unitCost));
-            else
-              return 0;
+            return extraCost;
         }
 
         public ModifierChangeWhen GetModuleCostChangeWhen()
@@ -773,38 +787,13 @@ namespace TweakScale
 
         public float GetModuleMass(float defaultMass, ModifierStagingSituation situation)
         {
-            if (_setupRun && IsRescaled && scaleMass)
-              return _prefabPart.mass * (MassScale - 1f);
-            else
-              return 0;
+            return extraMass;
         }
 
         public ModifierChangeWhen GetModuleMassChangeWhen()
         {
             return ModifierChangeWhen.FIXED;
         }
-
-
-        /// <summary>
-        /// These are meant for use with an unloaded part (so you only have the persistent data
-        /// but the part is not alive). In this case get currentScale/defaultScale and call
-        /// this method on the prefab part.
-        /// </summary>
-        public double getMassFactor(double rescaleFactor)
-        {
-            var exponent = ScaleExponents.getMassExponent(ScaleType.Exponents);
-            return Math.Pow(rescaleFactor, exponent);
-        }
-        public double getDryCostFactor(double rescaleFactor)
-        {
-            var exponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
-            return Math.Pow(rescaleFactor, exponent);
-        }
-        public double getVolumeFactor(double rescaleFactor)
-        {
-            return Math.Pow(rescaleFactor, 3);
-        }
-
 
         public override string ToString()
         {
