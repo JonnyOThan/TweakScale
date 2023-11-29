@@ -29,12 +29,16 @@
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] fix part variant node handling (structural tubes from MH)
 - [ ] check node altering from B9PS
-- [ ] node positions on scaled parts get reverted after loading
+- [ ] attached parts will move after saving them once
+		start a new craft, place a fuel tank, scale it up, attach something to it, save, load
+		does not occur if you then reattach the part and save/load
+- [ ] scaled node sizes are not preserved after save/load
 - [ ] fuel tank cost is going negative when scaled up
 - [x] check part variants (structural tubes from MH)
 		Really this was tweakscale not respecting any part or mass modifiers
 - [x] scaling up a fuel tank, saving it, then loading will increase its resources
 		the resources etc are saved in the protovessel, so when we try to apply the scale again it's not based on an unscaled part
+- [x] node positions on scaled parts get reverted after loading
 
 
 # Backwards Compatibilty
@@ -55,6 +59,7 @@
 - [ ] figure out why it's doing 2 passes over updaters
 - [ ] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
 - [ ] Refactor Updaters into separate files
+- [ ] maybe rename scale.dll to tweakscale.dll (or tweakscale-rescaled.dll - should match ckan identifier) and add a FOR[Scale] patch for backwards compatibility
 - [x] Make all scaling absolute, and store only the raw scale factor.  Scale presets should just be a visual editor-only concept
 
 

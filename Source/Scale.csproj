@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="HarmonyPatching.cs" />
     <Compile Include="Hotkey.cs" />
     <Compile Include="HotkeyManager.cs" />
     <Compile Include="MemberUpdater.cs" />
@@ -97,6 +98,9 @@
     </Reference>
     <Reference Include="$(ManagedPath)\UnityEngine.InputLegacyModule.dll">
       <Private>false</Private>
+    </Reference>
+    <Reference Include="$(ReferencePath)GameData\000_Harmony\0Harmony.dll">
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
