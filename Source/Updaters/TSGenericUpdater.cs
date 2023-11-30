@@ -8,7 +8,7 @@ namespace TweakScale
 {
 	// this class is the workhorse of TweakScale.
 	// When the part is rescaled, it applies the scaling exponents from the tweakscale module's ScaleType to all applicable members in the part and its modules, using reflection
-	class TSGenericUpdater : IRescalable
+	class TSGenericUpdater : IRescalablePart
 	{
 		private readonly Part _part;
 		private readonly Part _basePart;

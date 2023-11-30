@@ -8,7 +8,8 @@ using UnityEngine;
 
 namespace TweakScale
 {
-	class EmitterUpdater : IRescalable, IUpdateable
+	[RescalableSceneFilter(RescalableSceneFilter.FlightOnly)]
+	class EmitterUpdater : IRescalablePart, IUpdateable
 	{
 		private struct EmitterData
 		{

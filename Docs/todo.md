@@ -22,6 +22,7 @@
 - [ ] make sure save/load works
 - [ ] make sure subassemblies/merging works
 - [ ] make sure scaling command parts w/ kerbals works properly re: mass
+- [ ] find all TODOs and make sure there are issues tracked if necessary
 
 # Bugs
 
@@ -62,14 +63,17 @@
 		blanket patches might need to be in LAST[TweakScale] ?
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
-- [ ] move crew, mft, testflight and antenna modifications into modular system
-- [ ] figure out why it's doing 2 passes over updaters
-- [ ] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
+- [ ] add priority value to IRescalable (this should help with the double pass)
 - [ ] maybe rename scale.dll to tweakscale.dll (or tweakscale-rescaled.dll - should match ckan identifier) and add a FOR[Scale] patch for backwards compatibility
 - [ ] addon binder reports a missing Scale_Redist dll because of load order - not a big deal, but in the interest of reducing noise should probably be addressed
-- [ ] remove IUpdater?
+- [ ] remove IUpdater? seems like it's only the particle emitter and that's broken
+- [ ] move scale chaining hotkey handling out of the partmodule and into something global
+- [x] figure out why it's doing 2 passes over updaters
+- [x] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
+	this interface is internal, and it doesnt' look like there's any references to it on github
 - [x] Refactor Updaters into separate files
 - [x] Make all scaling absolute, and store only the raw scale factor.  Scale presets should just be a visual editor-only concept
+- [x] move crew, mft, testflight and antenna modifications into modular system
 
 
 # New Candy

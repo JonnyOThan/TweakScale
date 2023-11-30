@@ -34,7 +34,7 @@ namespace TweakScale
         /// <summary>
         /// Whether the part should be freely scalable or limited to destination list of allowed values.
         /// </summary>
-        [KSPField(isPersistant = false)]
+        [KSPField]
         public bool isFreeScale = false;
 
         /// <summary>
@@ -63,6 +63,7 @@ namespace TweakScale
         [KSPField(isPersistant = true)]
         public Vector3 defaultTransformScale = new Vector3(0f, 0f, 0f);
 
+        // TODO: these are not being used anymore, need to check the mods that they are related to and see if they're still necessary
         public bool ignoreResourcesForCost = false;
         public bool scaleMass = true;
 
@@ -128,7 +129,10 @@ namespace TweakScale
         internal void CalculateCostAndMass()
         {
             extraCost = 0;
-            float dryCost = part.partInfo.cost + part.GetModuleCosts(part.partInfo.cost);
+            // TODO: if some modules change their cost or mass based on scale, we could have a problem (feedback loop)
+            // getting the module costs from the prefab isn't great either, because it would ignore any modifications that were done to the part (simple example: changing the length of the structural tube)
+            // and how do we know which modified module costs should be scaled and which shouldn't?
+            float dryCost = part.partInfo.cost + part.GetModuleCosts(part.partInfo.cost); 
             foreach (var partResource in _prefabPart.Resources)
             {
                 dryCost -= (float)partResource.maxAmount * partResource.info.unitCost;
@@ -141,6 +145,7 @@ namespace TweakScale
             extraCost = newCost - dryCost;
 
             // TODO: do we need to consider the mass of kerbals here?
+            // TODO: we no longer consider the scaleMass flag - need to figure out if we need to.  it's related to ModuleFuelTanks
             extraMass = 0;
             part.UpdateMass();
             float dryMass = part.mass - part.inventoryMass;
@@ -241,6 +246,7 @@ namespace TweakScale
             else if (!IsRescaled)
             {
                 enabled = false;
+                isEnabled = false;
             }
 
             // scale IVA overlay
@@ -255,6 +261,7 @@ namespace TweakScale
         void OnDestroy()
         {
             GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
+            _updaters = null; // probably not necessary, but we can help the garbage collector along maybe
         }
 
         /// <summary>
@@ -282,9 +289,10 @@ namespace TweakScale
 
         void OnEditorShipModified(ShipConstruct ship)
         {
-            if (part.CrewCapacity >= _prefabPart.CrewCapacity) { return; }
-
-            UpdateCrewManifest();
+            if (part.CrewCapacity < _prefabPart.CrewCapacity)
+            {
+                CrewManifestUpdater.UpdateCrewManifest(part);
+            }
         }
 
         float GetScaleFactorFromGUI()
@@ -366,6 +374,22 @@ namespace TweakScale
         {
             ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
          
+            // future note on ordering:
+            // TSGenericUpdater is first (applies exponents to everything)
+            // then UpdateCrewManifest
+            // then UpdateAntennaPowerDisplay
+            // then UpdateMftModule
+            // then TestFlightCore
+            // then part events
+            // then all other updaters except TSGenericUpdater
+            // it's not exactly clear which of these care about ordering other than the TSGenericUpdater goes first
+            // also note that the part's mass is restored after the TSGenericUpdater runs - do we expect that it would ever change?
+
+            // I wonder, does it even make sense to HAVE a TSGenericUpdater?  Every part needs one, and in many cases that would be the only updater.
+            // what would it look like if we removed it and just ran the exponent update manually, then ran the modular updaters?
+            // this loop is set up in a way where you could have multiple TSGenericUpdaters, but I don't think that's ever the case in practice.
+            // and the class is internal anyway, so it's not like other mods could be inheriting from it.
+
             // two passes, to depend less on the order of this list
             if (_updaters != null)
             {
@@ -376,24 +400,12 @@ namespace TweakScale
                     {
                         float oldMass = part.mass;
                         CallUpdater(updater, notificationPayload);
-                        part.mass = oldMass; // make sure we leave this in a clean state
+                        part.mass = oldMass; // make sure we leave this in a clean state (seems like a bug in the cfgs if these are ever different?  configs should be scaling the TweakScale's DryMassScale pseudo-field rather than the Part's mass directly)
                     }
                 }
             }
 
-            if (_prefabPart.CrewCapacity > 0)
-                UpdateCrewManifest();
-
-            if (part.Modules.Contains("ModuleDataTransmitter"))
-                UpdateAntennaPowerDisplay();
-
-            // MFT support
-            UpdateMftModule();
-
-            // TF support
-            TestFlightCore.UpdateTestFlight(this);
-
-            // send scaling part message
+            // send scaling part message (should this be its own partUpdater type?)
             var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
             data.Set<float>("factorAbsolute", notificationPayload.absolute.linear);
             data.Set<float>("factorRelative", notificationPayload.relative.linear);
@@ -410,84 +422,6 @@ namespace TweakScale
                     CallUpdater(updater, notificationPayload);
                 }
             }
-        }
-
-        private void UpdateCrewManifest()
-        {
-            if (!HighLogic.LoadedSceneIsEditor) { return; } //only run the following block in the editor; it updates the crew-assignment GUI
-
-            VesselCrewManifest vcm = ShipConstruction.ShipManifest;
-            if (vcm == null) { return; }
-            PartCrewManifest pcm = vcm.GetPartCrewManifest(part.craftID);
-            if (pcm == null) { return; }
-
-            int len = pcm.partCrew.Length;
-            int newLen = Math.Min(part.CrewCapacity, _prefabPart.CrewCapacity);
-            if (len == newLen) { return; }
-
-            if (EditorLogic.fetch.editorScreen == EditorScreen.Crew)
-                EditorLogic.fetch.SelectPanelParts();
-
-            for (int i = 0; i < len; i++)
-                pcm.RemoveCrewFromSeat(i);
-
-            pcm.partCrew = new string[newLen];
-            for (int i = 0; i < newLen; i++)
-                pcm.partCrew[i] = string.Empty;
-
-            ShipConstruction.ShipManifest.SetPartManifest(part.craftID, pcm);
-        }
-
-        void UpdateMftModule()
-        {
-            try
-            {
-                // TODO: move this to a specialized updater
-                var m = _prefabPart.Modules["ModuleFuelTanks"];
-                if (m != null)
-                {
-                    scaleMass = false;
-                    FieldInfo fieldInfo = m.GetType().GetField("totalVolume", BindingFlags.Public | BindingFlags.Instance);
-                    if (fieldInfo != null)
-                    {
-                        float cubicScaleFactor = currentScaleFactor * currentScaleFactor * currentScaleFactor;
-                        double oldVol = (double)fieldInfo.GetValue(m) * 0.001d;
-                        var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
-                        data.Set<string>("volName", "Tankage");
-                        data.Set<double>("newTotalVolume", oldVol * cubicScaleFactor);
-                        part.SendEvent("OnPartVolumeChanged", data, 0);
-                    }
-                    else
-                    {
-                        Tools.LogWarning("MFT interaction failed (fieldinfo=null)");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Tools.LogException(e, "Exception during MFT interaction");
-            }
-        }
-
-        private void UpdateAntennaPowerDisplay()
-        {
-            var m = part.FindModuleImplementing<ModuleDataTransmitter>();
-            double p = m.antennaPower / 1000;
-            Char suffix = 'k';
-            if (p >= 1000)
-            {
-                p /= 1000f;
-                suffix = 'M';
-                if (p >= 1000)
-                {
-                    p /= 1000;
-                    suffix = 'G';
-                }
-            }
-            p = Math.Round(p, 2);
-            string str = p.ToString() + suffix;
-            if (m.antennaCombinable) { str += " (Combinable)"; } // TODO: localization?  there's probably a string for this somewhere in stock...
-            m.powerText = str;
         }
 
         /// <summary>
