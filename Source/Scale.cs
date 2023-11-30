@@ -104,8 +104,7 @@ namespace TweakScale
             _prefabPart = part.partInfo.partPrefab;
             _updaters = TweakScaleUpdater.CreateUpdaters(part).ToArray();
 
-            ScaleType = (_prefabPart.Modules["TweakScale"] as TweakScale).ScaleType;
-            SetupFromConfig(ScaleType);
+            SetupFromConfig((_prefabPart.Modules["TweakScale"] as TweakScale).ScaleType);
 
             if (!isFreeScale && ScaleFactors.Length != 0)
             {
@@ -158,7 +157,7 @@ namespace TweakScale
         /// <param name="scaleType">The settings to use.</param>
         private void SetupFromConfig(ScaleType scaleType)
         {
-            if (ScaleType == null) Debug.LogError("TweakScale: Scaletype==null! part=" + part.name);
+            ScaleType = scaleType;
 
             isFreeScale = scaleType.IsFreeScale;
             if (guiDefaultScale == -1)
@@ -176,7 +175,7 @@ namespace TweakScale
             {
                 Fields["guiScaleValue"].guiActiveEditor = true;
                 var range = (UI_ScaleEdit)Fields["guiScaleValue"].uiControlEditor;
-                range.intervals = scaleType.ScaleFactors;
+                range.intervals = ScaleFactors;
                 range.incrementSlide = scaleType.IncrementSlide;
                 range.unit = scaleType.Suffix;
                 range.sigFigs = 3;
@@ -184,7 +183,7 @@ namespace TweakScale
             }
             else
             {
-                Fields["guiScaleNameIndex"].guiActiveEditor = scaleType.ScaleFactors.Length > 1;
+                Fields["guiScaleNameIndex"].guiActiveEditor = ScaleFactors.Length > 1;
                 var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
                 ScaleNodes = scaleType.ScaleNodes;
                 options.options = scaleType.ScaleNames;
@@ -210,8 +209,7 @@ namespace TweakScale
                 // Loading of the prefab from the part config
                 _prefabPart = part;
 
-                ScaleType = new ScaleType(node);
-                SetupFromConfig(ScaleType);
+                SetupFromConfig(new ScaleType(node));
             }
 
             guiScaleValue = currentScaleFactor * guiDefaultScale;
