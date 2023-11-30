@@ -141,6 +141,7 @@ namespace TweakScale
 
             extraCost = newCost - dryCost;
 
+            // TODO: do we need to consider the mass of kerbals here?
             extraMass = 0;
             part.UpdateMass();
             float dryMass = part.mass - part.inventoryMass;
@@ -295,16 +296,16 @@ namespace TweakScale
 
         void Update()
         {
-            // TODO: perhaps this could be done with a callback?
             if (HighLogic.LoadedSceneIsEditor)
             {
+                // TODO: perhaps this could be done with a callback?
                 float newScaleFactor = GetScaleFactorFromGUI();
-
                 if (newScaleFactor != currentScaleFactor)
                 {
                     OnTweakScaleChanged(newScaleFactor);
                 }
 
+                // TODO: figure out what is using this and whether it really needs to be called in the editor
                 UpdateIUpdaters();
             }
             else
@@ -340,7 +341,7 @@ namespace TweakScale
                 {
                     if (_updaters[i] is IUpdateable)
                     {
-                        // TODO: we may want to differentiate between editor-only and flight-only updaters, because stuff that's editor-only could slow down flight mode
+                        // TODO: we may want to differentiate between editor-only and flight-only updaters, because stuff that's editor-only could slow down flight mode or vice versa
                         (_updaters[i] as IUpdateable).OnUpdate();
                         any = true;
                     }
@@ -490,14 +491,15 @@ namespace TweakScale
         {
             ScalePartTransform();
 
-            int len = part.attachNodes.Count;
-            for (int i=0; i< len; i++)
+            foreach (var node in part.attachNodes)
             {
-                var node = part.attachNodes[i];
                 var nodesWithSameId = part.attachNodes
                     .Where(a => a.id == node.id)
                     .ToArray();
                 var idIdx = Array.FindIndex(nodesWithSameId, a => a == node);
+                
+                // TODO: this is incorrect when PartModuleVariants is involved, or anything that changes the nodes at runtime.
+                // but we're only using this for the node size, so it's not a *huge* deal right now.
                 var baseNodesWithSameId = _prefabPart.attachNodes
                     .Where(a => a.id == node.id)
                     .ToArray();
@@ -505,7 +507,7 @@ namespace TweakScale
                 {
                     var baseNode = baseNodesWithSameId[idIdx];
 
-                    MoveNode(node, baseNode, moveParts, relativeScaleFactor);
+                    MoveNode(node, baseNode.size, moveParts, relativeScaleFactor);
                 }
                 else
                 {
@@ -515,7 +517,7 @@ namespace TweakScale
 
             if (part.srfAttachNode != null)
             {
-                MoveNode(part.srfAttachNode, _prefabPart.srfAttachNode, moveParts, relativeScaleFactor);
+                MoveNode(part.srfAttachNode, _prefabPart.srfAttachNode.size, moveParts, relativeScaleFactor);
             }
             if (moveParts)
             {
@@ -573,25 +575,19 @@ namespace TweakScale
         /// </summary>
         /// <param name="node">The node to resize.</param>
         /// <param name="baseNode">The same node, as found on the prefab part.</param>
-        private void ScaleAttachNode(AttachNode node, AttachNode baseNode)
+        private void ScaleAttachNode(AttachNode node, int originalNodeSize)
         {
             if (isFreeScale || ScaleNodes == null || ScaleNodes.Length == 0)
             {
-                float tmpBaseNodeSize = baseNode.size;
-                if (tmpBaseNodeSize == 0)
-                {
-                    tmpBaseNodeSize = 0.5f;
-                }
-                node.size = (int)(tmpBaseNodeSize * guiScaleValue / guiDefaultScale + 0.49);
+                float tmpNodeSize = Mathf.Max(originalNodeSize, 0.5f);
+                node.size = (int)(tmpNodeSize * guiScaleValue / guiDefaultScale + 0.49);
             }
             else
             {
-                node.size = baseNode.size + (1 * ScaleNodes[guiScaleNameIndex]);
+                node.size = originalNodeSize + (1 * ScaleNodes[guiScaleNameIndex]);
             }
-            if (node.size < 0)
-            {
-                node.size = 0;
-            }
+
+            node.size = Math.Max(0, node.size);
         }
 
         // TODO: this is probably wrong; and will accumulate error if you continually scale something up and down
@@ -613,11 +609,14 @@ namespace TweakScale
             part.DragCubes.ForceUpdate(true, true);
         }
 
-        private void MoveNode(AttachNode node, AttachNode baseNode, bool movePart, float relativeScaleFactor)
+        private void MoveNode(AttachNode node, int originalNodeSize, bool movePart, float relativeScaleFactor)
         {
             var oldPosition = node.position;
 
-            node.originalPosition = node.position = baseNode.position * currentScaleFactor;
+            // I hate that this is the simplest fix for scaling parts that dynamically change their nodes
+            // TODO: what if we stored off the last known position of each node, and then if it's different here, we assume the new value is unscaled?
+            // at least that way you can fix any problems by changing the part scale
+            node.originalPosition = node.position = node.position * relativeScaleFactor;
 
             var deltaPos = node.position - oldPosition;
 
@@ -634,7 +633,7 @@ namespace TweakScale
                     node.attachedPart.attPos *= relativeScaleFactor;
                 }
             }
-            ScaleAttachNode(node, baseNode);
+            ScaleAttachNode(node, originalNodeSize);
         }
 
         /// <summary>
