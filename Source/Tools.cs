@@ -1,6 +1,8 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+//using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,18 +15,6 @@ namespace TweakScale
     /// </summary>
     public static class Tools
     {
-        /// <summary>
-        /// Clamps the exponentValue <paramref name="x"/> between <paramref name="min"/> and <paramref name="max"/>.
-        /// </summary>
-        /// <param name="x">The exponentValue to start out with.</param>
-        /// <param name="min">The minimum exponentValue to clamp to.</param>
-        /// <param name="max">The maximum exponentValue to clamp to.</param>
-        /// <returns>The exponentValue closest to <paramref name="x"/> that's no less than <paramref name="min"/> and no more than <paramref name="max"/>.</returns>
-        public static float Clamp(float x, float min, float max)
-        {
-            return x < min ? min : x > max ? max : x;
-        }
-
         /// <summary>
         /// Gets the exponentValue in <paramref name="values"/> that's closest to <paramref name="x"/>.
         /// </summary>
@@ -71,24 +61,41 @@ namespace TweakScale
             return result;
         }
 
-        /// <summary>
-        /// Writes destination log message to output_log.txt.
-        /// </summary>
-        /// <param name="format">The format string.</param>
-        /// <param name="args">The arguments to the format.</param>
-        public static void Logf(string format, params object[] args)
+        private static string BuildLogString(string format, object[] args)
         {
-            Debug.Log("[TweakScale] " + string.Format(format, args.Select(a => a.PreFormat()).ToArray()) + Environment.NewLine + StackTraceUtility.ExtractStackTrace());
+            return "[TweakScale] " + string.Format(format, args.Select(a => a.PreFormat()).ToArray());
         }
 
-        /// <summary>
-        /// Writes destination log message to output_log.txt.
-        /// </summary>
-        /// <param name="format">The format string.</param>
-        /// <param name="args">The arguments to the format.</param>
-        public static void LogWf(string format, params object[] args)
+        private static string BuildLogStringWithStack(string format, object[] args)
         {
-            Debug.LogWarning("[TweakScale Warning] " + string.Format(format, args.Select(a => a.PreFormat()).ToArray()) + Environment.NewLine + StackTraceUtility.ExtractStackTrace());
+            return BuildLogString(format, args) + Environment.NewLine + StackTraceUtility.ExtractStackTrace();
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        internal static void LogDebug(string format, params object[] args)
+        {
+            Debug.Log(BuildLogStringWithStack(format, args));
+        }
+
+		internal static void Log(string format, params object[] args)
+        {
+            Debug.Log(BuildLogString(format, args));
+        }
+
+		internal static void LogWarning(string format, params object[] args)
+        {
+            Debug.LogWarning(BuildLogStringWithStack(format, args));
+        }
+
+		internal static void LogError(string format, params object[] args)
+        {
+            Debug.LogError(BuildLogStringWithStack(format, args));
+        }
+
+		internal static void LogException(Exception ex, string format = "", params object[] args)
+        {
+            Debug.LogError(BuildLogString(format, args));
+            Debug.LogException(ex);
         }
 
         /// <summary>
@@ -137,7 +144,7 @@ namespace TweakScale
             {
                 if (ex is InvalidCastException || ex is FormatException || ex is OverflowException || ex is ArgumentNullException)
                 {
-                    LogWf("Failed to convert string value \"{0}\" to type {1}", cfgValue, typeof(T).Name);
+                    LogWarning("Failed to convert string value \"{0}\" to type {1}", cfgValue, typeof(T).Name);
                     return defaultValue;
                 }
                 throw;
@@ -179,7 +186,7 @@ namespace TweakScale
                 if (!(ex is InvalidCastException) && !(ex is FormatException) && !(ex is OverflowException) &&
                     !(ex is ArgumentNullException))
                     throw;
-                LogWf("Failed to convert string value \"{0}\" to type {1}", value, typeof(T).Name);
+                LogWarning("Failed to convert string value \"{0}\" to type {1}", value, typeof(T).Name);
                 return defaultValue;
             }
         }

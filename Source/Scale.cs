@@ -452,12 +452,12 @@ namespace TweakScale
                         data.Set<double>("newTotalVolume", oldVol * cubicScaleFactor);
                         part.SendEvent("OnPartVolumeChanged", data, 0);
                     }
-                    else Tools.LogWf("MFT interaction failed (fieldinfo=null)");
+                    else Tools.LogWarning("MFT interaction failed (fieldinfo=null)");
                 }
             }
             catch (Exception e)
             {
-                Tools.LogWf("Exception during MFT interaction" + e.ToString());
+                Tools.LogException(e, "Exception during MFT interaction");
             }
         }
 
@@ -511,7 +511,7 @@ namespace TweakScale
                 }
                 else
                 {
-                    Tools.LogWf("Error scaling part. Node {0} does not have counterpart in base part.", node.id);
+                    Tools.LogWarning("Error scaling part. Node {0} does not have counterpart in base part.", node.id);
                 }
             }
 
@@ -670,15 +670,13 @@ namespace TweakScale
             if (ScaleFactors == null || ScaleFactors.Length == 0)
             {
                 isEnabled = false; // disable TweakScale module
-                Tools.LogWf("{0}({1}) has no valid scale factors. This is probably caused by an invalid TweakScale configuration for the part.", part.name, part.partInfo.title);
-                Debug.Log("[TweakScale]" + this.ToString());
-                Debug.Log("[TweakScale]" + ScaleType.ToString());
+                Tools.LogError("PART [{0}] '{1}' has no valid scale factors. ScaleType: {1}.  This is probably caused by an invalid TweakScale configuration for the part.", part.partInfo.name, part.partInfo.title, ScaleType);
                 return false;
             }
             if (this != part.GetComponent<TweakScale>())
             {
                 isEnabled = false; // disable TweakScale module
-                Tools.LogWf("Duplicate TweakScale module on part [{0}] {1}", part.partInfo.name, part.partInfo.title);
+                Tools.LogError("Duplicate TweakScale module on PART [{0}] {1}", part.partInfo.name, part.partInfo.title);
                 Fields["guiScaleValue"].guiActiveEditor = false;
                 Fields["guiScaleNameIndex"].guiActiveEditor = false;
                 return false;

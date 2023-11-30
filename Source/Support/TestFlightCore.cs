@@ -26,7 +26,7 @@ namespace TweakScale
 
 			// TODO: create a bound delegate so there's not so much reflection overhead here
 			bool valueAdded = (bool)tfInterface.InvokeMember("AddInteropValue", BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static, null, null, new System.Object[] { tweakScaleModule.part, name, value, owner });
-			Debug.Log("[TweakScale] TF: valueAdded=" + valueAdded + ", value=" + value.ToString());
+			Tools.Log("TF: valueAdded=" + valueAdded + ", value=" + value.ToString());
 		}
 	}
 }

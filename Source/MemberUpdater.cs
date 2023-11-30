@@ -70,13 +70,13 @@ namespace TweakScale
                             }
                             return acc;
                         }, ref debuglog);
-                    Tools.LogWf(debuglog);
+                    Tools.LogWarning(debuglog);
                 }
             }
 
             if (property != null && property.GetIndexParameters().Length > 0)
             {
-                Tools.LogWf("Property {0} on {1} requires indices, which TweakScale currently does not support.", name, objectType.Name);
+                Tools.LogWarning("Property {0} on {1} requires indices, which TweakScale currently does not support.", name, objectType.Name);
                 return null;
             }
             if (field == null && property == null)
@@ -85,7 +85,7 @@ namespace TweakScale
                 if ((obj is PartModule) && (name == "inputResources" || name == "outputResources"))
                     return Create((obj as PartModule).resHandler, name);
 
-                Tools.LogWf("No valid member found for {0} in {1}", name, objectType.Name);
+                Tools.LogWarning("No valid member found for {0} in {1}", name, objectType.Name);
 
                 return null;
             }

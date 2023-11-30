@@ -18,7 +18,7 @@ namespace TweakScale
             _name = name;
             if (defaultKey.Count == 0)
             {
-                Tools.LogWf("No keys for hotkey {0}. Need at least 1 key in defaultKey parameter, got none.", _name);
+                Tools.LogWarning("No keys for hotkey {0}. Need at least 1 key in defaultKey parameter, got none.", _name);
             }
             else
             {
