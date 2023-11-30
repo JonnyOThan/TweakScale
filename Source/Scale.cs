@@ -104,7 +104,7 @@ namespace TweakScale
             _prefabPart = part.partInfo.partPrefab;
             _updaters = TweakScaleUpdater.CreateUpdaters(part);
 
-            SetupFromConfig((_prefabPart.Modules["TweakScale"] as TweakScale).ScaleType);
+            SetupFromConfig(_prefabPart.FindModuleImplementing<TweakScale>().ScaleType);
 
             if (!isFreeScale && ScaleFactors.Length != 0)
             {
@@ -276,6 +276,7 @@ namespace TweakScale
             MarkWindowDirty();
             CallUpdaters(relativeScaleFactor);
 
+            // TODO: this is going to get called multiple times when chain scaling, should move this...
             GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
         }
 
@@ -441,10 +442,11 @@ namespace TweakScale
         {
             try
             {
-                if (_prefabPart.Modules.Contains("ModuleFuelTanks"))
+                // TODO: move this to a specialized updater
+                var m = _prefabPart.Modules["ModuleFuelTanks"];
+                if (m != null)
                 {
                     scaleMass = false;
-                    var m = _prefabPart.Modules["ModuleFuelTanks"];
                     FieldInfo fieldInfo = m.GetType().GetField("totalVolume", BindingFlags.Public | BindingFlags.Instance);
                     if (fieldInfo != null)
                     {
@@ -455,7 +457,10 @@ namespace TweakScale
                         data.Set<double>("newTotalVolume", oldVol * cubicScaleFactor);
                         part.SendEvent("OnPartVolumeChanged", data, 0);
                     }
-                    else Tools.LogWarning("MFT interaction failed (fieldinfo=null)");
+                    else
+                    {
+                        Tools.LogWarning("MFT interaction failed (fieldinfo=null)");
+                    }
                 }
             }
             catch (Exception e)
@@ -466,7 +471,7 @@ namespace TweakScale
 
         private void UpdateAntennaPowerDisplay()
         {
-            var m = part.Modules["ModuleDataTransmitter"] as ModuleDataTransmitter;
+            var m = part.FindModuleImplementing<ModuleDataTransmitter>();
             double p = m.antennaPower / 1000;
             Char suffix = 'k';
             if (p >= 1000)
@@ -481,7 +486,7 @@ namespace TweakScale
             }
             p = Math.Round(p, 2);
             string str = p.ToString() + suffix;
-            if (m.antennaCombinable) { str += " (Combinable)"; }
+            if (m.antennaCombinable) { str += " (Combinable)"; } // TODO: localization?  there's probably a string for this somewhere in stock...
             m.powerText = str;
         }
 
@@ -648,9 +653,9 @@ namespace TweakScale
             for (int i=0; i< len; i++)
             {
                 var child = part.children[i];
-                var b = child.GetComponent<TweakScale>();
+                var b = child.FindModuleImplementing<TweakScale>();
                 if (b == null)
-                    continue;
+                    continue; // TODO: should we continue down the chain?  could be weird.
 
                 if (Math.Abs(relativeScaleFactor - 1) <= 1e-4f)
                     continue;
@@ -676,7 +681,7 @@ namespace TweakScale
                 Tools.LogError("PART [{0}] '{1}' has no valid scale factors. ScaleType: {1}.  This is probably caused by an invalid TweakScale configuration for the part.", part.partInfo.name, part.partInfo.title, ScaleType);
                 return false;
             }
-            if (this != part.GetComponent<TweakScale>())
+            if (this != part.FindModuleImplementing<TweakScale>())
             {
                 isEnabled = false; // disable TweakScale module
                 Tools.LogError("Duplicate TweakScale module on PART [{0}] {1}", part.partInfo.name, part.partInfo.title);

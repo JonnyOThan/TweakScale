@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace TweakScale
 {
-	/// <summary>
-	/// This class updates mmpfxField and properties that are mentioned in TWEAKSCALEEXPONENTS blocks in .cfgs.
-	/// It does this by looking up the mmpfxField or property by name through reflection, and scales the exponentValue stored in the base part (i.e. prefab).
-	/// </summary>
+	// this class is the workhorse of TweakScale.
+	// When the part is rescaled, it applies the scaling exponents from the tweakscale module's ScaleType to all applicable members in the part and its modules, using reflection
 	class TSGenericUpdater : IRescalable
 	{
 		private readonly Part _part;
@@ -20,7 +18,7 @@ namespace TweakScale
 		{
 			_part = part;
 			_basePart = PartLoader.getPartInfoByName(part.partInfo.name).partPrefab;
-			_ts = part.Modules.OfType<TweakScale>().First();
+			_ts = part.FindModuleImplementing<TweakScale>();
 		}
 
 		public void OnRescale(ScalingFactor factor)

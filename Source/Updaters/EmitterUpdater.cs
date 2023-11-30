@@ -29,14 +29,15 @@ namespace TweakScale
 		}
 
 		readonly Part _part;
-		readonly TweakScale _ts;
+		readonly TweakScale _tweakScaleModule;
+
 		bool _rescale = true;
 		readonly Dictionary<KSPParticleEmitter, EmitterData> _scales = new Dictionary<KSPParticleEmitter, EmitterData>();
 
 		public EmitterUpdater(Part part)
 		{
 			_part = part;
-			_ts = part.Modules.OfType<TweakScale>().First();
+			_tweakScaleModule = part.FindModuleImplementing<TweakScale>();
 		}
 
 		public void OnRescale(ScalingFactor factor)
@@ -50,7 +51,7 @@ namespace TweakScale
 			{
 				return;
 			}
-			var factor = _ts.currentScaleFactor;
+			var factor = _tweakScaleModule.currentScaleFactor;
 
 			if (!_scales.ContainsKey(pe))
 			{
@@ -74,8 +75,8 @@ namespace TweakScale
 			if (!_rescale)
 				return;
 
-			var fxn = _part.GetComponents<EffectBehaviour>();
-			_rescale = fxn.Length != 0;
+			var fxn = _part.FindModulesImplementing<EffectBehaviour>();
+			_rescale = fxn.Count != 0;
 			foreach (var fx in fxn)
 			{
 				if (fx is ModelMultiParticleFX mmpfx)
