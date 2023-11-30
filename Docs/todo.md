@@ -65,9 +65,10 @@
 - [ ] move crew, mft, testflight and antenna modifications into modular system
 - [ ] figure out why it's doing 2 passes over updaters
 - [ ] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
-- [ ] Refactor Updaters into separate files
 - [ ] maybe rename scale.dll to tweakscale.dll (or tweakscale-rescaled.dll - should match ckan identifier) and add a FOR[Scale] patch for backwards compatibility
 - [ ] addon binder reports a missing Scale_Redist dll because of load order - not a big deal, but in the interest of reducing noise should probably be addressed
+- [ ] remove IUpdater?
+- [x] Refactor Updaters into separate files
 - [x] Make all scaling absolute, and store only the raw scale factor.  Scale presets should just be a visual editor-only concept
 
 
