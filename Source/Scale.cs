@@ -102,7 +102,7 @@ namespace TweakScale
         protected void Setup()
         {
             _prefabPart = part.partInfo.partPrefab;
-            _updaters = TweakScaleUpdater.CreateUpdaters(part).ToArray();
+            _updaters = TweakScaleUpdater.CreateUpdaters(part);
 
             SetupFromConfig((_prefabPart.Modules["TweakScale"] as TweakScale).ScaleType);
 
@@ -349,6 +349,18 @@ namespace TweakScale
             return any;
         }
 
+        void CallUpdater(IRescalable updater, ScalingFactor notificationPayload)
+        {
+            try
+            {
+                updater.OnRescale(notificationPayload);
+            }
+            catch (Exception ex)
+            {
+                Tools.LogException(ex, "Updater {0} {1} on part [{2}] threw an exception:", updater.GetType(), updater, part.partInfo.name);
+            }
+        }
+
         void CallUpdaters(float relativeScaleFactor)
         {
             ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
@@ -361,16 +373,9 @@ namespace TweakScale
                     // first apply the exponents
                     if (updater is TSGenericUpdater)
                     {
-                        try
-                        {
-                            float oldMass = part.mass;
-                            updater.OnRescale(notificationPayload);
-                            part.mass = oldMass; // make sure we leave this in a clean state
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogWarning("Exception on rescale: " + e.ToString());
-                        }
+                        float oldMass = part.mass;
+                        CallUpdater(updater, notificationPayload);
+                        part.mass = oldMass; // make sure we leave this in a clean state
                     }
                 }
             }
@@ -401,7 +406,7 @@ namespace TweakScale
                     if (updater is TSGenericUpdater)
                         continue;
 
-                    updater.OnRescale(notificationPayload);
+                    CallUpdater(updater, notificationPayload);
                 }
             }
         }

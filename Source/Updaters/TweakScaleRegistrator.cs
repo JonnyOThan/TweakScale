@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,35 +12,34 @@ namespace TweakScale
 	{
 		override public void OnStart()
 		{
-			var genericRescalable = Tools.GetAllTypes()
-				.Where(IsGenericRescalable)
-				.ToArray();
-
-			foreach (var gen in genericRescalable)
+			AssemblyLoader.loadedAssemblies.TypeOperation(type =>
 			{
-				var t = gen.GetInterfaces()
-					.First(a => a.IsGenericType &&
-					a.GetGenericTypeDefinition() == typeof(IRescalable<>));
+				if (type.IsGenericType) return;
+				
+				var rescalableInterface = type.GetInterfaces()
+					.FirstOrDefault(i => typeof(IRescalable<>).IsAssignableFrom(i));
 
-				RegisterGenericRescalable(gen, t.GetGenericArguments()[0]);
-			}
+				if (rescalableInterface != null)
+				{
+					RegisterGenericRescalable(type, rescalableInterface.GetGenericArguments()[0]);
+				}
+			});
 		}
 
-		private static void RegisterGenericRescalable(Type resc, Type arg)
+		private static void RegisterGenericRescalable(Type updaterType, Type partModuleType)
 		{
-			var c = resc.GetConstructor(new[] { arg });
-			if (c == null)
+			var constructor = updaterType.GetConstructor(new[] { partModuleType });
+			if (constructor == null)
+			{
+				Tools.LogError("Updater {0} for PartModule type {1} doesn't have an appropriate constructor", updaterType, partModuleType);
 				return;
-			Func<PartModule, IRescalable> creator = pm => (IRescalable)c.Invoke(new object[] { pm });
+			}
 
-			TweakScaleUpdater.RegisterUpdater(arg, creator);
-		}
+			// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
+			Func<PartModule, IRescalable> creator = partModule => (IRescalable)constructor.Invoke(new object[] { partModule });
 
-		private static bool IsGenericRescalable(Type t)
-		{
-			return !t.IsGenericType && t.GetInterfaces()
-				.Any(a => a.IsGenericType &&
-				a.GetGenericTypeDefinition() == typeof(IRescalable<>));
+			Tools.Log("Found an updater {0} for PartModule type {1}", updaterType, partModuleType);
+			TweakScaleUpdater.RegisterUpdater(partModuleType, creator);
 		}
 	}
 
@@ -49,38 +49,64 @@ namespace TweakScale
 		static readonly Dictionary<Type, Func<PartModule, IRescalable>> Ctors = new Dictionary<Type, Func<PartModule, IRescalable>>();
 
 		/// <summary>
-		/// Registers an updater for partmodules of type <paramref name="pm"/>.
+		/// Registers an updater for partmodules of type <paramref name="partModuleType"/>.
 		/// </summary>
-		/// <param name="pm">Type of the PartModule type to update.</param>
+		/// <param name="partModuleType">Type of the PartModule type to update.</param>
 		/// <param name="creator">A function that creates an updater for this PartModule type.</param>
-		static public void RegisterUpdater(Type pm, Func<PartModule, IRescalable> creator)
+		static public void RegisterUpdater(Type partModuleType, Func<PartModule, IRescalable> creator)
 		{
-			Ctors[pm] = creator;
+			// TODO: should there be a way to register updaters for parts as well?  could use this function and just check if Type == typeof(Part)
+			
+			if (!typeof(PartModule).IsAssignableFrom(partModuleType))
+			{
+				Tools.LogError("Tried to register an updater for type {0} but it doesn't inherit from PartModule", partModuleType);
+				return;
+			}
+			if (Ctors.ContainsKey(partModuleType))
+			{
+				Tools.LogWarning("Updater for {0} is already registered, replacing it!", partModuleType);
+			}
+			Ctors[partModuleType] = creator;
 		}
 
 		// Creates an updater for each modules attached to destination part.
-		public static IEnumerable<IRescalable> CreateUpdaters(Part part)
+		public static IRescalable[] CreateUpdaters(Part part)
 		{
-			var myUpdaters = part
-				.Modules.Cast<PartModule>()
-				.Select(CreateUpdater)
-				.Where(updater => updater != null);
-			foreach (var updater in myUpdaters)
-			{
-				yield return updater;
-			}
-			yield return new TSGenericUpdater(part);
-			yield return new EmitterUpdater(part);
-		}
+			const int numHardcodedUpdaters = 2;
+			List<IRescalable> updaters = new List<IRescalable>(part.modules.Count + numHardcodedUpdaters);
 
-		private static IRescalable CreateUpdater(PartModule module)
-		{
-			var updater = module as IRescalable;
-			if (updater != null)
+			foreach (var module in part.modules.modules)
 			{
-				return updater;
+				if (module is IRescalable updater)
+				{
+					updaters.Add(updater);
+				}
+				else
+				{
+					for (Type moduleType = module.GetType(); moduleType != typeof(PartModule); moduleType = moduleType.BaseType)
+					{
+						if (Ctors.TryGetValue(moduleType, out var creator))
+						{
+							try
+							{
+								updaters.Add(creator(module));
+							}
+							catch (Exception ex)
+							{
+								Tools.LogException(ex, "Failed to create updater for module of type {0} (updater registered for type {1})", module.GetType(), moduleType);
+							}
+
+							break;
+						}
+					}
+				}
 			}
-			return Ctors.ContainsKey(module.GetType()) ? Ctors[module.GetType()](module) : null;
+
+			updaters.Add(new TSGenericUpdater(part));
+			updaters.Add(new EmitterUpdater(part)); // TODO: don't do this if there are no emitters
+			// TODO: lights?
+
+			return updaters.ToArray();
 		}
 	}
 }
