@@ -4,13 +4,17 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace TweakScale
 {
+	/// <summary>
+	/// This addon gathers all IRescalable types and stores them in the updater database
+	/// </summary>
 	[KSPAddon(KSPAddon.Startup.Instantly, true)]
-	class TweakScaleRegistrator : RescalableRegistratorAddon
+	class TweakScaleRegistrator : MonoBehaviour
 	{
-		override public void OnStart()
+		void Start()
 		{
 			AssemblyLoader.loadedAssemblies.TypeOperation(type =>
 			{
