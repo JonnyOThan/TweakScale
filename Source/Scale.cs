@@ -103,7 +103,7 @@ namespace TweakScale
         protected void Setup()
         {
             _prefabPart = part.partInfo.partPrefab;
-            _updaters = TweakScaleUpdater.CreateUpdaters(part);
+            _updaters = TweakScaleHandlerDatabase.CreateUpdaters(part);
 
             SetupFromConfig(_prefabPart.FindModuleImplementing<TweakScale>().ScaleType);
 

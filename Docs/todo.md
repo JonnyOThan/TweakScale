@@ -23,6 +23,7 @@
 - [ ] make sure subassemblies/merging works
 - [ ] make sure scaling command parts w/ kerbals works properly re: mass
 - [ ] find all TODOs and make sure there are issues tracked if necessary
+- [ ] Make sure switching a part's scale type doesn't break it
 
 # Bugs
 
@@ -55,25 +56,34 @@
 # Architecture
 
 - [ ] remove concept of "force relative scale" - not really sure what this was even for
-- [ ] Make it possible to change between free scale to stack scale (there's a lot of stuff set to free that should be stack)
-	this may be done, but need to test it
+		Maybe not - this might be the only way to handle things that aren't in the prefab?
 - [ ] Figure out what scale_redist is and how it's used by other mods (KSPIE, etc).  Do we need to name it 999_scale_redist?
 		seems like other mods can register for callbacks when scale changes, and this DLL just contains the API for that
 - [ ] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
 		blanket patches might need to be in LAST[TweakScale] ?
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
-- [ ] add priority value to IRescalable (this should help with the double pass)
-- [ ] maybe rename scale.dll to tweakscale.dll (or tweakscale-rescaled.dll - should match ckan identifier) and add a FOR[Scale] patch for backwards compatibility
+- [ ] add priority value to IRescalable
+- [ ] maybe rename scale.dll to tweakscale.dll (or tweakscale-rescaled.dll - should match the eventual ckan identifier) and add a FOR[Scale] patch for backwards compatibility
 - [ ] addon binder reports a missing Scale_Redist dll because of load order - not a big deal, but in the interest of reducing noise should probably be addressed
+		actually, could this be solved with adding KSPAssembly on ScaleRedist and a KSPAssemblyDependency on TweakScale?
+		KSPAssembly is a good idea anyway because we need to update the version number so that mods can differentiate
 - [ ] remove IUpdater? seems like it's only the particle emitter and that's broken
 - [ ] move scale chaining hotkey handling out of the partmodule and into something global
+- [ ] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
+- [ ] See if there's a way to get rid of the flow-controlling execptions (more attributes?  looking up functions by reflection?)
+- [ ] See if we need to include the TweakableEverything updaters
+- [ ] Errors due to removing fields from TweakScale module:
+		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
+		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
 - [x] figure out why it's doing 2 passes over updaters
 - [x] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
 	this interface is internal, and it doesnt' look like there's any references to it on github
 - [x] Refactor Updaters into separate files
 - [x] Make all scaling absolute, and store only the raw scale factor.  Scale presets should just be a visual editor-only concept
 - [x] move crew, mft, testflight and antenna modifications into modular system
+- [x] Make it possible to change between free scale to stack scale (there's a lot of stuff set to free that should be stack)
+
 
 
 # New Candy

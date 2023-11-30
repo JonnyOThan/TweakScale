@@ -38,7 +38,7 @@ namespace TweakScale
 		{
 			if (x_totalVolume_FieldInfo != null)
 			{
-				TweakScaleUpdater.RegisterPartModuleUpdater(x_moduleFuelTanksType, partModule => new ModularFuelTanksUpdater(partModule), RescalableSceneFilter.Both);
+				TweakScaleHandlerDatabase.RegisterPartModuleUpdater(x_moduleFuelTanksType, partModule => new ModularFuelTanksUpdater(partModule), RescalableSceneFilter.Both);
 			}
 		}
 
