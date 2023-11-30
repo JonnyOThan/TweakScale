@@ -358,23 +358,11 @@ namespace TweakScale
             return any;
         }
 
-        void CallUpdater(IRescalable updater, ScalingFactor notificationPayload)
-        {
-            try
-            {
-                updater.OnRescale(notificationPayload);
-            }
-            catch (Exception ex)
-            {
-                Tools.LogException(ex, "Updater {0} {1} on part [{2}] threw an exception:", updater.GetType(), updater, part.partInfo.name);
-            }
-        }
-
         void CallUpdaters(float relativeScaleFactor)
         {
             ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
          
-            // future note on ordering:
+            // Recording the ordering here for posterity:
             // TSGenericUpdater is first (applies exponents to everything)
             // then UpdateCrewManifest
             // then UpdateAntennaPowerDisplay
@@ -383,29 +371,13 @@ namespace TweakScale
             // then part events
             // then all other updaters except TSGenericUpdater
             // it's not exactly clear which of these care about ordering other than the TSGenericUpdater goes first
-            // also note that the part's mass is restored after the TSGenericUpdater runs - do we expect that it would ever change?
 
-            // I wonder, does it even make sense to HAVE a TSGenericUpdater?  Every part needs one, and in many cases that would be the only updater.
-            // what would it look like if we removed it and just ran the exponent update manually, then ran the modular updaters?
-            // this loop is set up in a way where you could have multiple TSGenericUpdaters, but I don't think that's ever the case in practice.
-            // and the class is internal anyway, so it's not like other mods could be inheriting from it.
+            // First apply the exponents
+            float oldMass = part.mass;
+            ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload);
+            part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
 
-            // two passes, to depend less on the order of this list
-            if (_updaters != null)
-            {
-                foreach (var updater in _updaters)
-                {
-                    // first apply the exponents
-                    if (updater is TSGenericUpdater)
-                    {
-                        float oldMass = part.mass;
-                        CallUpdater(updater, notificationPayload);
-                        part.mass = oldMass; // make sure we leave this in a clean state (seems like a bug in the cfgs if these are ever different?  configs should be scaling the TweakScale's DryMassScale pseudo-field rather than the Part's mass directly)
-                    }
-                }
-            }
-
-            // send scaling part message (should this be its own partUpdater type?)
+            // send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the updater list empty for many parts
             var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
             data.Set<float>("factorAbsolute", notificationPayload.absolute.linear);
             data.Set<float>("factorRelative", notificationPayload.relative.linear);
@@ -415,11 +387,14 @@ namespace TweakScale
             {
                 foreach (var updater in _updaters)
                 {
-                    // then call other updaters (emitters, other mods)
-                    if (updater is TSGenericUpdater)
-                        continue;
-
-                    CallUpdater(updater, notificationPayload);
+                    try
+                    {
+                        updater.OnRescale(notificationPayload);
+                    }
+                    catch (Exception ex)
+                    {
+                        Tools.LogException(ex, "Updater {0} {1} on part [{2}] threw an exception:", updater.GetType(), updater, part.partInfo.name);
+                    }
                 }
             }
         }
