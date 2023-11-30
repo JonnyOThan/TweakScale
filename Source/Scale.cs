@@ -130,7 +130,7 @@ namespace TweakScale
         {
             extraCost = 0;
             float dryCost = part.partInfo.cost + part.GetModuleCosts(part.partInfo.cost);
-            foreach (var partResource in part.Resources)
+            foreach (var partResource in _prefabPart.Resources)
             {
                 dryCost -= (float)partResource.maxAmount * partResource.info.unitCost;
             }

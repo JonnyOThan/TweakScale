@@ -7,8 +7,7 @@
 - [ ] Check ModuleFuelTanks interaction (realfuels)
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
-- [ ] bring back scale interval
-- [x] fix TestFlightCore error
+- [ ] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
 - [x] add 1.875m scaling option for fuel tanks etc
 - [x] handle part inventories
 
@@ -22,6 +21,7 @@
 - [ ] check parts that modify drag cubes
 - [ ] make sure save/load works
 - [ ] make sure subassemblies/merging works
+- [ ] make sure scaling command parts w/ kerbals works properly re: mass
 
 # Bugs
 
@@ -30,7 +30,9 @@
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] check node altering from B9PS
 - [ ] scaled node sizes are not preserved after save/load
-- [ ] fuel tank cost is going negative when scaled up
+- [ ] fix scale slider dragging (due to hasty refresh?)
+- [ ] clicking >> after hitting the max interval screws up the slider
+- [x] fuel tank cost is going negative when scaled up
 - [x] fix part variant node handling (structural tubes from MH)
 - [x] attached parts will move after saving them once
 		start a new craft, place a fuel tank, scale it up, attach something to it, save, load
@@ -41,6 +43,7 @@
 - [x] scaling up a fuel tank, saving it, then loading will increase its resources
 		the resources etc are saved in the protovessel, so when we try to apply the scale again it's not based on an unscaled part
 - [x] node positions on scaled parts get reverted after loading
+- [x] fix TestFlightCore error
 
 
 # Backwards Compatibilty
@@ -50,6 +53,7 @@
 
 # Architecture
 
+- [ ] remove concept of "force relative scale" - not really sure what this was even for
 - [ ] Make it possible to change between free scale to stack scale (there's a lot of stuff set to free that should be stack)
 	this may be done, but need to test it
 - [ ] Figure out what scale_redist is and how it's used by other mods (KSPIE, etc).  Do we need to name it 999_scale_redist?
