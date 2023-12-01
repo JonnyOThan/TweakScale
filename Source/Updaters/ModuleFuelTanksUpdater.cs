@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 namespace TweakScale
 {
 	// this is unfortunate, because it really should be a IRescalable<ModuleFuelTanks>, but we don't want to have a hard dependency on ModularFuelTanks
-	internal class ModularFuelTanksUpdater : IRescalableManualRegistration
+	internal class ModuleFuelTanksUpdater : IRescalablePart
 	{
 		#region static reflection stuff
 
 		static Type x_moduleFuelTanksType;
 		static FieldInfo x_totalVolume_FieldInfo;
 
-		static ModularFuelTanksUpdater()
+		static ModuleFuelTanksUpdater()
 		{
 			x_moduleFuelTanksType = AssemblyLoader.GetClassByName(typeof(PartModule), "ModuleFuelTanks");
 
@@ -34,17 +34,9 @@ namespace TweakScale
 			}
 		}
 
-		internal static void Register()
-		{
-			if (x_totalVolume_FieldInfo != null)
-			{
-				TweakScaleHandlerDatabase.RegisterPartModuleUpdater(x_moduleFuelTanksType, partModule => new ModularFuelTanksUpdater(partModule), RescalableSceneFilter.Both);
-			}
-		}
-
 		#endregion
 
-		public ModularFuelTanksUpdater(PartModule partModule)
+		public ModuleFuelTanksUpdater(PartModule partModule)
 		{
 			// *ideally* this should never happen as long as we check before registering the updater
 			if (x_totalVolume_FieldInfo == null) return;

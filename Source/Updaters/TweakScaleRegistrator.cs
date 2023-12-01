@@ -38,9 +38,6 @@ namespace TweakScale
 					Tools.LogException(ex);
 				}
 			});
-
-			// one-offs:
-			ModularFuelTanksUpdater.Register();
 		}
 
 		private static void RegisterUpdaterType(Type updaterType, Type rescalableInterfaceType)

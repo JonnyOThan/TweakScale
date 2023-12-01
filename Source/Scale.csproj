@@ -71,7 +71,7 @@
     <Compile Include="ScaleExponents.cs" />
     <Compile Include="SingletonBehavior.cs" />
     <Compile Include="Updaters\CrewManifestUpdater.cs" />
-    <Compile Include="Updaters\ModularFuelTanksUpdater.cs" />
+    <Compile Include="Updaters\ModuleFuelTanksUpdater.cs" />
     <Compile Include="Updaters\ModuleDataTransmitterUpdater.cs" />
     <Compile Include="Updaters\TestFlightCore.cs" />
     <Compile Include="Tools.cs" />
