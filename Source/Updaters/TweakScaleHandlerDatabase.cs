@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace TweakScale
 {
@@ -73,19 +74,10 @@ namespace TweakScale
 				{
 					if (partModuleHandlers.TryGetValue(moduleType, out var creator))
 					{
-						// man I really hate using exceptions for flow control here, but since we don't really have a "factory" class or anything I'm not sure about a better way
 						try
 						{
-							updaters.Add(creator(module));
-						}
-						catch (RescalableRemoveRegistrationException ex)
-						{
-							Tools.Log("PartModule updater requests to remove registration for type {0} on part [{1}] (updater registered for type {2}: {3}", module.GetType(), part.partInfo.name, moduleType, ex.Message);
-							partModuleHandlers.Remove(moduleType);
-						}
-						catch (RescalableNotApplicableException ex)
-						{
-							Tools.Log("PartModule updater disabled itself for module of type {0} on part [{1}] (updater registered for type {2}): {3}", module.GetType(), part.partInfo.name, moduleType, ex.Message);
+							var updater = creator(module);
+							if (updater != null) updaters.Add(updater);
 						}
 						catch (Exception ex)
 						{
@@ -99,24 +91,12 @@ namespace TweakScale
 
 			// TODO: does the order here matter much?
 			// should IRescalable have a priority value, and then we sort by that?
-			for (int partHandlerIndex = 0; partHandlerIndex < partHandlers.Count; ++partHandlerIndex)
+			foreach (var partHandlerCreator in partHandlers)
 			{
-				var partHandlerCreator = partHandlers[partHandlerIndex];
-
 				try
 				{
-					updaters.Add(partHandlerCreator(part));
-				}
-				catch (RescalableRemoveRegistrationException ex)
-				{
-					Tools.Log("Part updater requests to remove registration on part [{0}]: {1}", part.partInfo.name, ex.Message);
-					partHandlers.RemoveAt(partHandlerIndex);
-					--partHandlerIndex; // repeat same index on next iteration
-				}
-				catch (RescalableNotApplicableException ex)
-				{
-					// ugh...wish there was a way to indicate which updater it was...do we need to register a name or something with each of these?
-					Tools.Log("Part updater disabled itself for part [{0}]: {1}", part.partInfo.name, ex.Message);
+					var updater = partHandlerCreator(part);
+					if (updater != null) updaters.Add(updater);
 				}
 				catch (Exception ex)
 				{

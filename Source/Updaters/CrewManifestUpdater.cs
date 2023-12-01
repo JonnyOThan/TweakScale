@@ -11,12 +11,7 @@ namespace TweakScale
 	{
 		public CrewManifestUpdater(Part part)
 		{
-			// this test might not be correct if there are other modules that can change crew capacity
-			if (part.partInfo.partPrefab.CrewCapacity == 0)
-			{
-				throw new RescalableNotApplicableException("No crew capacity");
-			}
-
+			// TODO: find a way to not create this for parts that don't have crew capacity (potentially tricky since some parts can dynnamically change it)
 			_part = part;
 		}
 
@@ -24,7 +19,11 @@ namespace TweakScale
 		// this updater is just responsible for handling the crew assignment when the capacity changes
 		public void OnRescale(ScalingFactor factor)
 		{
-			UpdateCrewManifest(_part);
+			// this test might not be correct if there are other modules that can change crew capacity
+			if (_part.partInfo.partPrefab.CrewCapacity > 0)
+			{
+				UpdateCrewManifest(_part);
+			}
 		}
 
 		Part _part;

@@ -29,6 +29,7 @@ namespace TweakScale
     {
     }
 
+    // TODO: should ManualRegistration be an attribute?
     /// <summary>
     /// A rescalable updater that will not be registered automatically - it must be manually registered with the updater database
     /// </summary>
@@ -56,24 +57,4 @@ namespace TweakScale
 
         public readonly RescalableSceneFilter Filter;
     }
-
-    // TODO: maybe these should be replaced with an attribute that binds a delegate?  is that possible?  Or can the attribute have virtual functions?
-    // e.g. the registrator checks the the attribute and calls the delegate before registering it or adding it to the part
-
-    /// <summary>
-    /// A rescalable type may throw this exception from their constructor to indicate that they should not be applied to this part.
-    /// </summary>
-    public class RescalableNotApplicableException : System.Exception
-    {
-        public RescalableNotApplicableException(string message) : base(message) { }
-    }
-
-    /// <summary>
-    /// A rescalable type may throw this exception from their constructor to indicate that this handler should be unregistered (e.g. dependencies not satisfied, etc).
-    /// This is permanent for the rest of the play session.
-    /// </summary>
-    public class RescalableRemoveRegistrationException : System.Exception
-    {
-		public RescalableRemoveRegistrationException(string message) : base(message) { }
-	}
 }

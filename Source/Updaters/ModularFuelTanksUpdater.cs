@@ -47,10 +47,7 @@ namespace TweakScale
 		public ModularFuelTanksUpdater(PartModule partModule)
 		{
 			// *ideally* this should never happen as long as we check before registering the updater
-			if (x_totalVolume_FieldInfo == null)
-			{
-				throw new RescalableRemoveRegistrationException("ModuleFuelTanks not loaded");
-			}
+			if (x_totalVolume_FieldInfo == null) return;
 
 			// TODO: this is what the old code did, but it's certainly possible to have more than one ModuleFuelTanks right?
 			// is there a better way to get the module's prefab?  by index?
@@ -64,7 +61,9 @@ namespace TweakScale
 
 		public void OnRescale(ScalingFactor factor)
 		{
-			double oldVol = (double)x_totalVolume_FieldInfo.GetValue(_mftModule) * 0.001d;
+			// TODO: implement a way to avoid creating this when TestFlightCore isn't installed
+			if (x_totalVolume_FieldInfo == null) return;
+			
 			var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
 			data.Set<string>("volName", "Tankage");
 			data.Set<double>("newTotalVolume", _prefabTotalVolume * factor.absolute.cubic);

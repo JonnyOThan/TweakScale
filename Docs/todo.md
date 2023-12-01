@@ -71,15 +71,13 @@
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
 - [ ] add priority value to IRescalable
-- [ ] addon binder reports a missing Scale_Redist dll because of load order - not a big deal, but in the interest of reducing noise should probably be addressed
-		actually, could this be solved with adding KSPAssembly on ScaleRedist and a KSPAssemblyDependency on TweakScale?
-		KSPAssembly is a good idea anyway because we need to update the version number so that mods can differentiate
 - [ ] remove IUpdater? seems like it's only the particle emitter and that's broken
 - [ ] move scale chaining hotkey handling out of the partmodule and into something global
 		probably remove the entire hotkey system?
 - [ ] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
-- [ ] See if there's a way to get rid of the flow-controlling execptions (more attributes?  looking up functions by reflection?)
+- [ ] change manual registration to an attribute
 - [ ] See if we need to include the TweakableEverything updaters
+		it really seems like these could just be cfg patches?
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
@@ -92,6 +90,10 @@
 - [x] move crew, mft, testflight and antenna modifications into modular system
 - [x] Make it possible to change between free scale to stack scale (there's a lot of stuff set to free that should be stack)
 - [x] rename scale_redist to 999_scale_redist and get deployment set up
+- [x] See if there's a way to get rid of the flow-controlling execptions (more attributes?  looking up functions by reflection?)
+- [x] addon binder reports a missing Scale_Redist dll because of load order - not a big deal, but in the interest of reducing noise should probably be addressed
+		actually, could this be solved with adding KSPAssembly on ScaleRedist and a KSPAssemblyDependency on TweakScale?
+		KSPAssembly is a good idea anyway because we need to update the version number so that mods can differentiate
 
 # New Candy
 

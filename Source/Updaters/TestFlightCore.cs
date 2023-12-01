@@ -38,17 +38,15 @@ namespace TweakScale
 
 		public TestFlightCoreUpdater(Part part)
 		{
-			if (addInteropValue_MethodInfo == null)
-			{
-				throw new RescalableRemoveRegistrationException("TestFlightCore not installed");
-			}
-
 			_part = part;
 		}
 
 		public void OnRescale(ScalingFactor factor)
 		{
-			string name = "scale";
+			// TODO: implement a way to avoid creating this when TestFlightCore isn't installed
+			if (addInteropValue_MethodInfo == null) return;
+
+				string name = "scale";
 			string value = factor.absolute.ToString();
 			string owner = "TweakScale";
 
