@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace TweakScale
@@ -57,6 +58,9 @@ namespace TweakScale
 			}
 		}
 
+		// reusing a list to reduce memory allocations
+		static List<IRescalable> x_scratchHandlers = new List<IRescalable>();
+
 		// Creates an updater for each modules attached to destination part.
 		public static IRescalable[] CreateUpdaters(Part part)
 		{
@@ -65,7 +69,8 @@ namespace TweakScale
 				: (flightPartModuleHandlers, flightPartHandlers);
 
 			// make a guess about how many updaters we might need (this should be an upper bound so we don't need to resize the list)
-			List<IRescalable> updaters = new List<IRescalable>(part.modules.Count + partHandlers.Count);
+			List<IRescalable> updaters = x_scratchHandlers;
+			updaters.Capacity = Math.Max(updaters.Capacity, part.modules.Count + partHandlers.Count);
 
 			foreach (var module in part.modules.modules)
 			{
@@ -89,8 +94,6 @@ namespace TweakScale
 				}
 			}
 
-			// TODO: does the order here matter much?
-			// should IRescalable have a priority value, and then we sort by that?
 			foreach (var partHandlerCreator in partHandlers)
 			{
 				try
@@ -104,7 +107,16 @@ namespace TweakScale
 				}
 			}
 
-			return updaters.Count == 0 ? null : updaters.ToArray();
+			if (updaters.Count == 0) return null;
+
+			var result = updaters.ToArray();
+			x_scratchHandlers.Clear();
+
+			Array.Sort(result, (a, b) => GetRescalablePriority(a).CompareTo(GetRescalablePriority(b)));
+
+			return result;
 		}
+
+		static int GetRescalablePriority(IRescalable rescalable) => rescalable is IRescalablePriority p ? p.Priority : 0;
 	}
 }

@@ -29,6 +29,15 @@ namespace TweakScale
     {
     }
 
+    /// <summary>
+    /// Controls the ordering of updaters for a given part. 0 is default, lower priority numbers will go earlier (i.e. updaters are sorted by priority in ascending order)
+    /// i.e. use negative numbers if you need to run before most other updaters, and positive numbers to run after most updaters
+    /// </summary>
+    public interface IRescalablePriority
+    {
+        int Priority { get; }
+    }
+
 #if false
     // sketching out what this might look like eventually...
 

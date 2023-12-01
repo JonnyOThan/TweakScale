@@ -70,7 +70,6 @@
 		blanket patches might need to be in LAST[TweakScale] ?
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
-- [ ] add priority value to IRescalable
 - [ ] remove IUpdater? seems like it's only the particle emitter and that's broken
 - [ ] move scale chaining hotkey handling out of the partmodule and into something global
 		probably remove the entire hotkey system?
@@ -94,6 +93,7 @@
 - [x] addon binder reports a missing Scale_Redist dll because of load order - not a big deal, but in the interest of reducing noise should probably be addressed
 		actually, could this be solved with adding KSPAssembly on ScaleRedist and a KSPAssemblyDependency on TweakScale?
 		KSPAssembly is a good idea anyway because we need to update the version number so that mods can differentiate
+- [x] add priority value to IRescalable
 
 # New Candy
 
