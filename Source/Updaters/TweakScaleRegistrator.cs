@@ -21,8 +21,11 @@ namespace TweakScale
 				{
 					if (type.IsInterface) return;
 
-					var rescalableInterfaceType = type.GetInterfaces()
-						.FirstOrDefault(i => typeof(IRescalable).IsAssignableFrom(i));
+					// since IRescalable<T> inherits from IRescalable, GetInterfaces() would report both interfaces
+					// but we're only interested in the "most derived" interface type
+					var rescalableInterfaces= type.GetInterfaces().Where(i => typeof(IRescalable).IsAssignableFrom(i));
+					var leafInterfaces = rescalableInterfaces.Except(rescalableInterfaces.SelectMany(i => i.GetInterfaces()));
+					var rescalableInterfaceType = leafInterfaces.FirstOrDefault();
 
 					if (rescalableInterfaceType != null)
 					{
@@ -46,7 +49,7 @@ namespace TweakScale
 			RescalableSceneFilter sceneFilter = sceneFilterAttribute != null ? sceneFilterAttribute.Filter : RescalableSceneFilter.Both;
 
 			// generic partmodule updater (IRescalable<T> where T is the PartModule type)
-			if (typeof(IRescalable<>).IsAssignableFrom(rescalableInterfaceType))
+			if (rescalableInterfaceType.IsGenericType && typeof(IRescalable<>).IsAssignableFrom(rescalableInterfaceType.GetGenericTypeDefinition()))
 			{
 				var partModuleType = rescalableInterfaceType.GetGenericArguments()[0];
 				var constructor = updaterType.GetConstructor(new[] { partModuleType });
