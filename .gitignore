@@ -5,4 +5,6 @@ obj
 /Releases
 .vs
 /GameData/TweakScale/plugins
+/GameData/999_Scale_Redist.dll
+/GameData/999_Scale_Redist.pdb
 /packages
