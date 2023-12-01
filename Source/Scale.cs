@@ -163,11 +163,8 @@ namespace TweakScale
             ScaleType = scaleType;
 
             isFreeScale = scaleType.IsFreeScale;
-            if (guiDefaultScale == -1)
-                guiDefaultScale = scaleType.DefaultScale;
-
-            if (guiScaleValue == -1)
-                guiScaleValue = currentScaleFactor * guiDefaultScale;
+            guiDefaultScale = scaleType.DefaultScale;
+            guiScaleValue = currentScaleFactor * guiDefaultScale;
             Fields["guiScaleValue"].guiActiveEditor = false;
             Fields["guiScaleNameIndex"].guiActiveEditor = false;
             ScaleFactors = scaleType.ScaleFactors;
@@ -190,6 +187,10 @@ namespace TweakScale
                 var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
                 ScaleNodes = scaleType.ScaleNodes;
                 options.options = scaleType.ScaleNames;
+                // TODO: do we need to set guiScaleNameIndex here?
+                // there's a possibility that the current scale is not one of the options,
+                // but we should probably just leave it - if the user changes the setting then they
+                // won't be able to go back to what it was, but at least that's understandable
             }
         }
 

@@ -30,6 +30,8 @@
 - [ ] make sure scaling command parts w/ kerbals works properly re: mass
 - [ ] find all TODOs and make sure there are issues tracked if necessary
 - [ ] Make sure switching a part's scale type doesn't break it
+		tsarbon's plane wing changed from stack to free, and it worked.
+		pretty sure this is mostly going to work, just need to test loading things that aren't IsFreeScale
 - [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
 - [ ] check undo after scaling
 
@@ -42,6 +44,7 @@
 		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
 - [ ] fix scale slider dragging (due to hasty refresh?)  was this intentional?
 - [ ] clicking >> after hitting the max interval screws up the slider
+- [ ] [ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [x] chain scaling doesn't update the scale factor in the gui for child parts
 - [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it
@@ -62,6 +65,7 @@
 # Backwards Compatibilty
 
 - [ ] make sure we can load crafts saved with TS/L
+	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
 
 # Architecture
