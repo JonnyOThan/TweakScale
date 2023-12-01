@@ -29,13 +29,20 @@ namespace TweakScale
     {
     }
 
-    // TODO: should ManualRegistration be an attribute?
+#if false
+    // sketching out what this might look like eventually...
+
     /// <summary>
-    /// A rescalable updater that will not be registered automatically - it must be manually registered with the updater database
+    /// Base type for metadata about IRescalables
     /// </summary>
-    public interface IRescalableManualRegistration : IRescalable
+    [AttributeUsage(AttributeTargets.Class)]
+    public class RescalableFilterAttribute : System.Attribute
     {
+        public virtual bool ShouldAutoRegister() { return true; }
+        public virtual bool ShouldCreateForPart(Part part) { return true; }
+        public virtual bool ShouldCreateForPartModule(PartModule partModule) { return true; }
     }
+#endif
 
     public enum RescalableSceneFilter
     {
@@ -47,7 +54,6 @@ namespace TweakScale
     /// <summary>
     /// This attribute may be placed on a type that implements IRescalable (or any of its derived types), and it will restrict the scenes in which the updater will be created
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
     public class RescalableSceneFilterAttribute : System.Attribute
     {
         public RescalableSceneFilterAttribute(RescalableSceneFilter filter)
@@ -55,6 +61,7 @@ namespace TweakScale
             Filter = filter;
         }
 
+        // I considered making this just a derived RescalableFilterAttribute but it's probably good for the database to keep things separate to speed up creation
         public readonly RescalableSceneFilter Filter;
     }
 }
