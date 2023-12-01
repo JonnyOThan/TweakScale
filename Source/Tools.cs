@@ -84,17 +84,20 @@ namespace TweakScale
 
 		internal static void LogWarning(string format, params object[] args)
         {
+            // TODO: depending on call volume we might want to limit the stack output to debug only? it can be expensive to generate
             Debug.LogWarning(BuildLogStringWithStack(format, args));
         }
 
 		internal static void LogError(string format, params object[] args)
         {
-            Debug.LogError(BuildLogStringWithStack(format, args));
+            // note: Logerror already includes the stack
+            Debug.LogError(BuildLogString(format, args));
         }
 
 		internal static void LogException(Exception ex, string format = "", params object[] args)
         {
-            Debug.LogError(BuildLogString(format, args));
+            // note we don't use logerror so that the callstack doesn't get printed twice
+            Debug.Log(BuildLogString(format, args));
             Debug.LogException(ex);
         }
 
