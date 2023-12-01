@@ -19,6 +19,8 @@ namespace TweakScale
 			{
 				try
 				{
+					if (type.IsInterface) return;
+
 					var rescalableInterfaceType = type.GetInterfaces()
 						.FirstOrDefault(i => typeof(IRescalable).IsAssignableFrom(i));
 
