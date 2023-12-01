@@ -194,35 +194,6 @@ namespace TweakScale
             }
         }
 
-        /// <summary>
-        /// Gets all types defined in all loaded assemblies.
-        /// </summary>
-        public static IEnumerable<Type> GetAllTypes()
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                Type[] types;
-                try
-                {
-                    types = assembly.GetTypes();
-                }
-                catch (Exception)
-                {
-                    types = Type.EmptyTypes;
-                }
-
-                foreach (var type in types)
-                {
-                    yield return type;
-                }
-            }
-        }
-
-        public static bool HasParent(this Part p)
-        {
-            return (object) p.parent != null;
-        }
-
         public static string ToString_rec(this object obj, int depth = 0)
         {
             if (obj == null)

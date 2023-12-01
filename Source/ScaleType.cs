@@ -24,102 +24,17 @@ namespace TweakScale
     /// </summary>
     public class ScaleType
     {
-        /// <summary>
-        /// Fetches the scale ScaleType with the specified name.
-        /// </summary>
-        /// <param name="name">The name of the ScaleType to fetch.</param>
-        /// <returns>The specified ScaleType or the default ScaleType if none exists by that name.</returns>
-        /*private static ScaleType GetScaleConfig(string name)
-        {
-            var config = GameDatabase.Instance.GetConfigs("SCALETYPE").FirstOrDefault(a => a.name == name);
-            if (config == null)
-            {
-                Tools.LogWf("No SCALETYPE with name {0}", name);
-            }
-            return config; // == null ? DefaultScaleType : new ScaleType(config.config);
-        }*/
-
-        public class NodeInfo
-        {
-            public readonly string Family;
-            public readonly float Scale;
-
-            private NodeInfo()
-            {
-            }
-
-            public NodeInfo(string family, float scale) : this()
-            {
-
-                Family = family;
-                Scale = scale;
-                if (Mathf.Abs(Scale) < 0.01)
-                {
-                    Tools.LogWarning("Invalid scale for family {0}: {1}", family, scale);
-                }
-            }
-
-            public NodeInfo(string s) : this()
-            {
-                var parts = s.Split(':');
-                if (parts.Length == 1)
-                {
-                    if (!float.TryParse(parts[0], out Scale))
-                        Tools.LogWarning("Invalid attachment node string \"{0}\"", s);
-                    return;
-                }
-                if (parts.Length == 0)
-                {
-                    return;
-                }
-                if (!float.TryParse(parts[1], out Scale))
-                {
-                    Tools.LogWarning("Invalid attachment node string \"{0}\"", s);
-                    return;
-                }
-                Family = parts[0];
-                if (Mathf.Abs(Scale) < 0.01)
-                {
-                    Tools.LogWarning("Invalid scale for family {0}: {1}", Family, Scale);
-                }
-            }
-
-            public override string ToString()
-            {
-                return string.Format("({0}, {1})", Family, Scale);
-            }
-        }
-
-        private static List<ScaleType> _scaleTypes;
-        public static List<ScaleType> AllScaleTypes
-        {
-            get {
-                return _scaleTypes = _scaleTypes ??
-                        (GameDatabase.Instance.GetConfigs("SCALETYPE")
-                            .Select(a => new ScaleType(a.config))
-                            .ToList<ScaleType>());
-            }
-        }
-
-        //private static readonly ScaleType DefaultScaleType = new ScaleType();
-
         private float[] _scaleFactors = {};
         private readonly string[] _scaleNames = {};
         public readonly Dictionary<string, ScaleExponents> Exponents = new Dictionary<string, ScaleExponents>();
 
         public readonly bool IsFreeScale = true;
         public readonly string[] TechRequired = {};
-        //public readonly Dictionary<string, NodeInfo> AttachNodes = new Dictionary<string, NodeInfo>();
-        //public readonly float MinValue = 0f;
-        //public readonly float MaxValue = 0f;
         public float DefaultScale = -1;
         public float[] IncrementSlide = {};
         public string Suffix = null;
         public readonly string Name = null;
         public readonly string Family;
-        /*public float BaseScale {
-            get { return AttachNodes["base"].Scale; }
-        }*/
 
         public float[] AllScaleFactors
         {
@@ -153,13 +68,6 @@ namespace TweakScale
         }
 
         public int[] ScaleNodes { get; private set; }
-
-        private ScaleType()
-        {
-            ScaleNodes = new int[] {};
-            //AttachNodes = new Dictionary<string, NodeInfo>();
-            //AttachNodes["base"] = new NodeInfo("", 1);
-        }
 
         // config is a part config
         public ScaleType(ConfigNode moduleConfig)
@@ -317,26 +225,6 @@ namespace TweakScale
                     }
                 }
             }
-        }
-
-        private Dictionary<string, NodeInfo> GetNodeFactors(ConfigNode node, Dictionary<string, NodeInfo> source)
-        {
-            var result = source.Clone();
-
-            if (node != null)
-            {
-                foreach (var v in node.values.Cast<ConfigNode.Value>())
-                {
-                    result[v.name] = new NodeInfo(v.value);
-                }
-            }
-
-            if (!result.ContainsKey("base"))
-            {
-                result["base"] = new NodeInfo(Family, 1.0f);
-            }
-
-            return result;
         }
 
         public override string ToString()
