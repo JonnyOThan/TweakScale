@@ -2,7 +2,6 @@
 
 - add attribute for scale handlers to bind to a module by name (ModuleFuelTanks)
 - engine exhaust (can we get rid of IUpdateable?
-- remove hotkey system, add chaining as a KSPField (maybe with global state?)
 
 # Feature Parity
 
@@ -13,6 +12,7 @@
 - [ ] Check ModuleFuelTanks interaction (realfuels)
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
+- [ ] check node altering from B9PS
 - [ ] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
 - [x] add 1.875m scaling option for fuel tanks etc
 - [x] handle part inventories
@@ -31,17 +31,19 @@
 - [ ] find all TODOs and make sure there are issues tracked if necessary
 - [ ] Make sure switching a part's scale type doesn't break it
 - [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
+- [ ] check undo after scaling
 
 # Bugs
 
 - [ ] investigate part cost scaling on HECS2
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
-- [ ] check node altering from B9PS
-- [ ] scaled node sizes are not preserved after save/load
-- [ ] fix scale slider dragging (due to hasty refresh?)
+- [ ] scaled node sizes are not preserved after save/load (because we don't know what "baseline" is when part variants etc are involved)
+		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
+- [ ] fix scale slider dragging (due to hasty refresh?)  was this intentional?
 - [ ] clicking >> after hitting the max interval screws up the slider
-- [ ] the builtin IRescalables don't seem to be handled properly, e.g.
+- [ ] chain scaling doesn't update the scale factor in the gui for child parts
+- [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it
 - [x] fuel tank cost is going negative when scaled up
 - [x] fix part variant node handling (structural tubes from MH)
@@ -64,15 +66,11 @@
 
 # Architecture
 
-- [ ] remove concept of "force relative scale" - not really sure what this was even for
-		Maybe not - this might be the only way to handle things that aren't in the prefab?
 - [ ] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
 		blanket patches might need to be in LAST[TweakScale] ?
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
 - [ ] remove IUpdater? seems like it's only the particle emitter and that's broken
-- [ ] move scale chaining hotkey handling out of the partmodule and into something global
-		probably remove the entire hotkey system?
 - [ ] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
 - [ ] change manual registration to an attribute
 - [ ] See if we need to include the TweakableEverything updaters
@@ -80,7 +78,6 @@
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
-- [ ] remove settings xml stuff (this is only used for chaing scaling setting)
 - [x] figure out why it's doing 2 passes over updaters
 - [x] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
 	this interface is internal, and it doesnt' look like there's any references to it on github
@@ -94,6 +91,9 @@
 		actually, could this be solved with adding KSPAssembly on ScaleRedist and a KSPAssemblyDependency on TweakScale?
 		KSPAssembly is a good idea anyway because we need to update the version number so that mods can differentiate
 - [x] add priority value to IRescalable
+- [x] move scale chaining hotkey handling out of the partmodule and into something global
+		probably remove the entire hotkey system?
+- [x] remove settings xml stuff (this is only used for chaing scaling setting)
 
 # New Candy
 
@@ -102,17 +102,19 @@
 		or the flame particles work, but not smoke
 - [ ] implement waterfall support
 - [ ] realplume support?
-- [ ] docking port support
-- [ ] make chain scaling a toggle in the PAW
+- [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] numeric entry in PAW
 - [ ] increase crew capacity when scaling up?
+- [x] make chain scaling a toggle in the PAW
 
 # won't do
 
 - maybe rename scale.dll to tweakscale.dll (or tweakscale-rescaled.dll - should match the eventual ckan identifier) and add a FOR[Scale] patch for backwards compatibility
 		this might be an issue if any mods declare a direct dependency on scale.dll, but I couldn't find any on github
 		maybe leave scale.dll where it is and add a placeholder tweakscale-rescaled.dll?  Or just accept that it won't be auto-detected by ckan (this may improve globally later anyway)
-
+- remove concept of "force relative scale" - not really sure what this was even for
+		Maybe not - this might be the only way to handle things that aren't in the prefab?
+- 
 ======
 
 How to handle nodes changing positions?

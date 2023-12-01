@@ -64,10 +64,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="HarmonyPatching.cs" />
-    <Compile Include="Hotkey.cs" />
-    <Compile Include="HotkeyManager.cs" />
     <Compile Include="MemberUpdater.cs" />
-    <Compile Include="OSD.cs" />
     <Compile Include="ScaleExponents.cs" />
     <Compile Include="SingletonBehavior.cs" />
     <Compile Include="Updaters\CrewManifestUpdater.cs" />
@@ -83,7 +80,6 @@
     <Compile Include="Updaters\TweakScaleHandlerDatabase.cs" />
     <Compile Include="Updaters\TweakScaleRegistrator.cs" />
     <Compile Include="Updaters\Updater.cs" />
-    <Compile Include="HotkeyAble.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -111,8 +107,13 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Publicize Include="Assembly-CSharp" />
+    <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" /> <!-- note the IncludeCompilerGeneratedMembers is only in krafs 2, so it has no effect here.  but leaving it just in case we upgrade later -->
+    <DoNotPublicize Include="Assembly-CSharp:BaseField`1.OnValueModified" />
   </ItemGroup>
+  <PropertyGroup>
+    <PublicizerClearCacheOnClean>true</PublicizerClearCacheOnClean>
+    <PublicizeAsReferenceAssemblies>false</PublicizeAsReferenceAssemblies>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="Scale_Redist\Scale_Redist.csproj">
       <Project>{2be63d8b-350e-4edd-959c-4b7397984364}</Project>

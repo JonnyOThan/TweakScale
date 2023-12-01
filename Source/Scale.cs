@@ -84,21 +84,19 @@ namespace TweakScale
         [KSPField(isPersistant = true)]
         public float extraMass;
 
-        private Hotkeyable _chainingEnabled;
+        [KSPField(guiActiveEditor = true, guiName = "Scale Children")]
+        [UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
+        public bool scaleChildren = false;
+        // this is shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.
+        public static bool x_scaleChildren = false;
 
         /// <summary>
         /// The ScaleType for this part.
         /// </summary>
         public ScaleType ScaleType { get; private set; }
 
-        public bool IsRescaled
-        {
-            get
-            {
-                return (Math.Abs(currentScaleFactor - 1f) > 1e-5f);
-            }
-        }
-
+        public bool IsRescaled => Math.Abs(currentScaleFactor - 1f) > 1e-5f;
+        
         // Sets up the part when it is created in flight or the editor
         protected void Setup()
         {
@@ -240,8 +238,8 @@ namespace TweakScale
                     GameEvents.onEditorShipModified.Add(OnEditorShipModified);
                 }
 
-                _chainingEnabled = HotkeyManager.Instance.AddHotkey("Scale chaining", new[] {KeyCode.LeftShift},
-                    new[] {KeyCode.LeftControl, KeyCode.K}, false);
+                scaleChildren = x_scaleChildren;
+                Fields["scaleChildren"].OnValueModified += OnScaleChildrenModified;
             }
             else if (!IsRescaled)
             {
@@ -258,8 +256,14 @@ namespace TweakScale
             }
         }
 
+        private void OnScaleChildrenModified(object arg1)
+        {
+            x_scaleChildren = scaleChildren;
+        }
+
         void OnDestroy()
         {
+            Fields["scaleChildren"].OnValueModified -= OnScaleChildrenModified;
             GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
             _updaters = null; // probably not necessary, but we can help the garbage collector along maybe
         }
@@ -274,7 +278,7 @@ namespace TweakScale
             float relativeScaleFactor = newScaleFactor / currentScaleFactor;
             currentScaleFactor = newScaleFactor;
 
-            if ((_chainingEnabled != null) && _chainingEnabled.State)
+            if (scaleChildren)
             {
                 ChainScale(relativeScaleFactor);
             }
@@ -305,6 +309,8 @@ namespace TweakScale
         {
             if (HighLogic.LoadedSceneIsEditor)
             {
+                scaleChildren = x_scaleChildren;
+
                 // TODO: perhaps this could be done with a callback?
                 float newScaleFactor = GetScaleFactorFromGUI();
                 if (newScaleFactor != currentScaleFactor)
