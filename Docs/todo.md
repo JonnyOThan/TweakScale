@@ -42,7 +42,7 @@
 		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
 - [ ] fix scale slider dragging (due to hasty refresh?)  was this intentional?
 - [ ] clicking >> after hitting the max interval screws up the slider
-- [ ] chain scaling doesn't update the scale factor in the gui for child parts
+- [x] chain scaling doesn't update the scale factor in the gui for child parts
 - [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it
 - [x] fuel tank cost is going negative when scaled up

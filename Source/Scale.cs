@@ -580,6 +580,7 @@ namespace TweakScale
                 {
                     b.guiScaleNameIndex = Tools.ClosestIndex(b.guiScaleValue, b.ScaleFactors);
                 }
+                b.MarkWindowDirty();
                 b.OnTweakScaleChanged(b.GetScaleFactorFromGUI());
             }
         }
@@ -612,11 +613,11 @@ namespace TweakScale
         /// </summary>
         private void MarkWindowDirty() // redraw the right-click window with the updated stats
         {
-            foreach (var win in FindObjectsOfType<UIPartActionWindow>().Where(win => win.part == part))
-            {
-                // This causes the slider to be non-responsive - i.e. after you click once, you must click again, not drag the slider.
-                win.displayDirty = true;
-            }
+            if (!part.PartActionWindow) return;
+
+            // This causes the slider to be non-responsive - i.e. after you click once, you must click again, not drag the slider.
+            // I can't tell if the above comment is calling out a weird bug or if that is the intention behind this code.
+            part.PartActionWindow.displayDirty = true;
         }
 
         float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)
