@@ -52,6 +52,11 @@ namespace TweakScale
 				throw new RescalableRemoveRegistrationException("ModuleFuelTanks not loaded");
 			}
 
+			// TODO: this is what the old code did, but it's certainly possible to have more than one ModuleFuelTanks right?
+			// is there a better way to get the module's prefab?  by index?
+			var modulePrefab = partModule.part.partInfo.partPrefab.Modules["ModuleFuelTanks"];
+			_prefabTotalVolume = (double)x_totalVolume_FieldInfo.GetValue(modulePrefab) * 0.001d;
+
 			_mftModule = partModule;
 			var tsModule = _mftModule.part.FindModuleImplementing<TweakScale>();
 			tsModule.scaleMass = false; // TODO: need to investigate why we do this and see if it still makes sense
@@ -62,10 +67,11 @@ namespace TweakScale
 			double oldVol = (double)x_totalVolume_FieldInfo.GetValue(_mftModule) * 0.001d;
 			var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
 			data.Set<string>("volName", "Tankage");
-			data.Set<double>("newTotalVolume", oldVol * factor.absolute.cubic); // TODO: should this use relative instead of absolute scale?  this is the original version, but it seems wrong
+			data.Set<double>("newTotalVolume", _prefabTotalVolume * factor.absolute.cubic);
 			_mftModule.part.SendEvent("OnPartVolumeChanged", data, 0);
 		}
 
 		PartModule _mftModule;
+		double _prefabTotalVolume;
 	}
 }
