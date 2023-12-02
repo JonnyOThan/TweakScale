@@ -45,17 +45,6 @@ namespace TweakScale
         /// <summary>
         /// Enumerates two IEnumerables in lockstep.
         /// </summary>
-        /// <param name="a">The first IEnumerable.</param>
-        /// <param name="b">The second IEnumerable.</param>
-        /// <returns></returns>
-        public static IEnumerable<Tuple<object, object>> Zip(this IEnumerable a, IEnumerable b)
-        {
-            return a.Zip(b, Tuple.Create);
-        }
-
-        /// <summary>
-        /// Enumerates two IEnumerables in lockstep.
-        /// </summary>
         /// <typeparam name="TResult">The result type.</typeparam>
         /// <param name="a">The first IEnumerable.</param>
         /// <param name="b">The second IEnumerable.</param>
@@ -70,38 +59,6 @@ namespace TweakScale
             {
                 yield return fn(v1.Current, v2.Current);
             }
-        }
-
-        /// <summary>
-        /// Because there is no IEnumerable.Count.
-        /// </summary>
-        /// <param name="a"></param>
-        /// <returns></returns>
-        public static int StupidCount(this IEnumerable a)
-        {
-            return a.Cast<object>().Count();
-        }
-
-        /// <summary>
-        /// Looks up a non-public field by its type.
-        /// </summary>
-        /// <typeparam name="T">The type of the field.</typeparam>
-        /// <param name="t">The type on which to perform the lookup.</param>
-        /// <returns>The first field of the given type, or null.</returns>
-        public static FieldInfo GetNonPublicFieldByType<T>(this Type t)
-        {
-            var f = t.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-            return f.FirstOrDefault(e => e.FieldType == typeof (T));
-        }
-        
-        /// <summary>
-        /// Checks if a method is overridden.
-        /// </summary>
-        /// <param name="m">The method to check.</param>
-        /// <returns>True if the method is an override, else false.</returns>
-        public static bool IsOverride(this MethodInfo m)
-        {
-            return m.GetBaseDefinition() == m;
         }
 
         /// <summary>
@@ -133,6 +90,16 @@ namespace TweakScale
         }
 
         /// <summary>
+        /// Checks if a method is overridden.
+        /// </summary>
+        /// <param name="m">The method to check.</param>
+        /// <returns>True if the method is an override, else false.</returns>
+        public static bool IsOverride(this MethodInfo m)
+        {
+            return m.GetBaseDefinition() == m;
+        }
+
+        /// <summary>
         /// Creates destination copy of destination dictionary.
         /// </summary>
         /// <typeparam name="TK">The key type.</typeparam>
@@ -142,76 +109,6 @@ namespace TweakScale
         public static Dictionary<TK, TV> Clone<TK, TV>(this Dictionary<TK, TV> source)
         {
             return source.AsEnumerable().ToDictionary(a => a.Key, a => a.Value);
-        }
-
-        /// <summary>
-        /// Checks if <paramref name="source"/> contains duplicate exponentValue.
-        /// </summary>
-        /// <typeparam name="T">The type of elements in <paramref name="source"/>.</typeparam>
-        /// <param name="source">The list of values to check for duplicates.</param>
-        /// <returns>True if <paramref name="source"/> contains duplicates, otherwise false.</returns>
-        public static bool ContainsDuplicates<T>(this IEnumerable<T> source)
-        {
-            var tmp = new HashSet<T>();
-            return source.Any(item => !tmp.Add(item));
-        }
-
-        /// <summary>
-        /// Returns the duplicate values in <paramref name="source"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of values in <paramref name="source"/>.</typeparam>
-        /// <param name="source">The list to check for duplicates.</param>
-        /// <returns>A list of each duplicate exponentValue in <paramref name="source"/>, but only one of each modExp.</returns>
-        public static IEnumerable<T> Duplicates<T>(this IEnumerable<T> source)
-        {
-            return source
-                .GroupBy(a => a)
-                .Where(a => a.StupidCount() > 1)
-                .Select(a => a.Key);
-        }
-
-        /// <summary>
-        /// Creates a HashSet containing all the items in <paramref name="source"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of items in the HashSet</typeparam>
-        /// <param name="source">The items to add to the HashSet.</param>
-        /// <returns>A HashSet contaiting all the items in <paramref name="source"/>.</returns>
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
-        {
-            var result = new HashSet<T>();
-            foreach (var item in source)
-            {
-                result.Add(item);
-            }
-            return result;
-        }
-
-        public static T Match<T, TNullable>(this TNullable? value, Func<TNullable, T> hasValue, Func<T> noValue) where TNullable : struct
-        {
-            if (value.HasValue)
-                return hasValue(value.Value);
-            return noValue();
-        }
-
-        public static void Match<TNullable>(this TNullable? value, Action<TNullable> hasValue, Action noValue) where TNullable : struct
-        {
-            if (value.HasValue)
-                hasValue(value.Value);
-            else
-                noValue();
-        }
-
-        public static void Match<TNullable>(this TNullable? value, Action<TNullable> hasValue) where TNullable : struct
-        {
-            if (value.HasValue)
-                hasValue(value.Value);
-        }
-
-        public static T? Match<T, TNullable>(this TNullable? value, Func<TNullable, T> hasValue) where TNullable : struct where T : struct
-        {
-            if (value.HasValue)
-                return hasValue(value.Value);
-            return null;
         }
     }
 
