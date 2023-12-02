@@ -44,6 +44,9 @@
 		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
 - [ ] clicking >> after hitting the max interval screws up the slider
 - [ ] [ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
+- [ ] scaled engines have a weird inverse scale to their plumes, even when we're not trying to scale anything
+		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
+		different types of particle systems are being scaled differently.
 - [x] chain scaling doesn't update the scale factor in the gui for child parts
 - [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it
@@ -69,6 +72,7 @@
 	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
 - [ ] restore hotkey for toggling child attachment just in case people get mad
+- [ ] write currentScale and defaultScale keys in OnSave in an attempt to provide interoperability
 
 # Architecture
 

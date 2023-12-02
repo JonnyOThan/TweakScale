@@ -94,33 +94,6 @@ namespace TweakScale
         public ScaleType ScaleType { get; private set; }
 
         public bool IsRescaled => Math.Abs(currentScaleFactor - 1f) > 1e-5f;
-        
-        // Sets up the part when it is created in flight or the editor
-        protected void Setup()
-        {
-            _prefabPart = part.partInfo.partPrefab;
-            _updaters = TweakScaleHandlerDatabase.CreateUpdaters(part);
-
-            SetupFromConfig(_prefabPart.FindModuleImplementing<TweakScale>().ScaleType);
-
-            if (!isFreeScale && ScaleFactors.Length != 0)
-            {
-                guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
-                guiScaleValue = ScaleFactors[guiScaleNameIndex];
-            }
-
-            if (IsRescaled)
-            {
-                ScalePartTransform();
-                CallUpdaters(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
-                // TODO: do we need to worry about drag cubes or anything else?
-            }
-            else
-            {
-                if (part.Modules.Contains("FSfuelSwitch"))
-                    ignoreResourcesForCost = true;
-            }
-        }
 
         internal void CalculateCostAndMass()
         {
@@ -128,6 +101,7 @@ namespace TweakScale
             // TODO: if some modules change their cost or mass based on scale, we could have a problem (feedback loop)
             // getting the module costs from the prefab isn't great either, because it would ignore any modifications that were done to the part (simple example: changing the length of the structural tube)
             // and how do we know which modified module costs should be scaled and which shouldn't?  Probably need to do an audit of all IPartCostModifier and IPartMassModifier
+            // it might work to have a registry of which modifiers should be applied here and which shouldn't ?
             // is this what the PrefabDryCostWriter was trying to solve?
             // we might need to store off some info when the part is created
             float dryCost = part.partInfo.cost + part.GetModuleCosts(part.partInfo.cost); 
@@ -187,10 +161,8 @@ namespace TweakScale
                 var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
                 ScaleNodes = scaleType.ScaleNodes;
                 options.options = scaleType.ScaleNames;
-                // TODO: do we need to set guiScaleNameIndex here?
-                // there's a possibility that the current scale is not one of the options,
-                // but we should probably just leave it - if the user changes the setting then they
-                // won't be able to go back to what it was, but at least that's understandable
+                guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
+                guiScaleValue = ScaleFactors[guiScaleNameIndex];
             }
         }
 
@@ -224,12 +196,30 @@ namespace TweakScale
         {
             base.OnStart(state);
 
-            Setup();
+            _prefabPart = part.partInfo.partPrefab;
+
+            // TODO: this isn't the correct way to get the prefab module.  we should look it up by index.
+            SetupFromConfig(_prefabPart.FindModuleImplementing<TweakScale>().ScaleType);
 
             if (!CheckIntegrity())
             {
                 enabled = false;
                 return;
+            }
+
+            _updaters = TweakScaleHandlerDatabase.CreateUpdaters(part);
+
+            if (IsRescaled)
+            {
+                // Note that if we fall in here, this part was LOADED from a craft file or vessel in flight.  newly created parts in the editor aren't rescaled.
+                ScalePartTransform();
+                CallUpdaters(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
+                // TODO: do we need to worry about drag cubes or anything else?
+            }
+            else
+            {
+                if (part.Modules.Contains("FSfuelSwitch"))
+                    ignoreResourcesForCost = true;
             }
 
             if (HighLogic.LoadedSceneIsEditor)
@@ -385,6 +375,15 @@ namespace TweakScale
             }
         }
 
+        int GetUnscaledAttachNodeSize(string attachNodeId)
+        {
+            // TODO: this is incorrect when PartModuleVariants is involved, or anything that changes the nodes at runtime.
+            // but we're only using this for the node size, so it's not a *huge* deal right now.
+            var prefabNode = _prefabPart.FindAttachNode(attachNodeId);
+
+            return prefabNode == null ? 1 : prefabNode.size;
+        }
+
         /// <summary>
         /// Updates properties that change linearly with scale.
         /// </summary>
@@ -396,26 +395,7 @@ namespace TweakScale
 
             foreach (var node in part.attachNodes)
             {
-                var nodesWithSameId = part.attachNodes
-                    .Where(a => a.id == node.id)
-                    .ToArray();
-                var idIdx = Array.FindIndex(nodesWithSameId, a => a == node);
-                
-                // TODO: this is incorrect when PartModuleVariants is involved, or anything that changes the nodes at runtime.
-                // but we're only using this for the node size, so it's not a *huge* deal right now.
-                var baseNodesWithSameId = _prefabPart.attachNodes
-                    .Where(a => a.id == node.id)
-                    .ToArray();
-                if (idIdx < baseNodesWithSameId.Length)
-                {
-                    var baseNode = baseNodesWithSameId[idIdx];
-
-                    MoveNode(node, baseNode.size, moveParts, relativeScaleFactor);
-                }
-                else
-                {
-                    Tools.LogWarning("Error scaling part. Node {0} does not have counterpart in base part.", node.id);
-                }
+                MoveNode(node, GetUnscaledAttachNodeSize(node.id), moveParts, relativeScaleFactor);
             }
 
             if (part.srfAttachNode != null)
@@ -595,8 +575,6 @@ namespace TweakScale
         {
             if (!part.PartActionWindow) return;
 
-            // This causes the slider to be non-responsive - i.e. after you click once, you must click again, not drag the slider.
-            // I can't tell if the above comment is calling out a weird bug or if that is the intention behind this code.
             part.PartActionWindow.displayDirty = true;
         }
 
