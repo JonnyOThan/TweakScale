@@ -67,6 +67,7 @@
 - [ ] make sure we can load crafts saved with TS/L
 	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
+- [ ] restore hotkey for toggling child attachment just in case people get mad
 
 # Architecture
 
@@ -109,6 +110,7 @@
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] numeric entry in PAW
 - [ ] increase crew capacity when scaling up?
+- [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [x] make chain scaling a toggle in the PAW
 
 # won't do
