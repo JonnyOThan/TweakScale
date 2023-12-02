@@ -42,7 +42,6 @@
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] scaled node sizes are not preserved after save/load (because we don't know what "baseline" is when part variants etc are involved)
 		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
-- [ ] fix scale slider dragging (due to hasty refresh?)  was this intentional?
 - [ ] clicking >> after hitting the max interval screws up the slider
 - [ ] [ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [x] chain scaling doesn't update the scale factor in the gui for child parts
@@ -60,6 +59,8 @@
 		the resources etc are saved in the protovessel, so when we try to apply the scale again it's not based on an unscaled part
 - [x] node positions on scaled parts get reverted after loading
 - [x] fix TestFlightCore error
+- [x] fix scale slider dragging (due to hasty refresh?)  was this intentional?
+		removing the refresh doesn't fix dragging but it does fix the flickering
 
 
 # Backwards Compatibilty
@@ -72,7 +73,7 @@
 # Architecture
 
 - [ ] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
-		blanket patches might need to be in LAST[TweakScale] ?
+		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
 - [ ] remove IUpdater? seems like it's only the particle emitter and that's broken
@@ -111,6 +112,8 @@
 - [ ] numeric entry in PAW
 - [ ] increase crew capacity when scaling up?
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
+- [ ] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
+	e.g. engine thrust, etc.
 - [x] make chain scaling a toggle in the PAW
 
 # won't do

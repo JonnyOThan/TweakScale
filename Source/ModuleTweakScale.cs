@@ -285,7 +285,6 @@ namespace TweakScale
             }
 
             ScalePart(true, relativeScaleFactor);
-            MarkWindowDirty();
             CallUpdaters(relativeScaleFactor);
 
             // TODO: this is going to get called multiple times when chain scaling, should move this...
