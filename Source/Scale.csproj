@@ -77,7 +77,6 @@
     <Compile Include="Updaters\EmitterUpdater.cs" />
     <Compile Include="Updaters\TweakScaleHandlerDatabase.cs" />
     <Compile Include="Updaters\TweakScaleRegistrator.cs" />
-    <Compile Include="Updaters\Updater.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

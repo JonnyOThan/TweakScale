@@ -76,9 +76,8 @@
 		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
 - [ ] format everything with tabs and add .editorconfig
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
-- [ ] remove IUpdater? seems like it's only the particle emitter and that's broken
 - [ ] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
-- [ ] change manual registration to an attribute
+- [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 - [ ] See if we need to include the TweakableEverything updaters
 		it really seems like these could just be cfg patches?
 - [ ] Errors due to removing fields from TweakScale module:
@@ -100,6 +99,7 @@
 - [x] move scale chaining hotkey handling out of the partmodule and into something global
 		probably remove the entire hotkey system?
 - [x] remove settings xml stuff (this is only used for chaing scaling setting)
+- [x] remove IUpdater? seems like it's only the particle emitter and that's broken
 
 # New Candy
 

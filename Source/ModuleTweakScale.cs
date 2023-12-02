@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
-//using ModuleWheels;
 
 namespace TweakScale
 {
@@ -129,7 +127,9 @@ namespace TweakScale
             extraCost = 0;
             // TODO: if some modules change their cost or mass based on scale, we could have a problem (feedback loop)
             // getting the module costs from the prefab isn't great either, because it would ignore any modifications that were done to the part (simple example: changing the length of the structural tube)
-            // and how do we know which modified module costs should be scaled and which shouldn't?
+            // and how do we know which modified module costs should be scaled and which shouldn't?  Probably need to do an audit of all IPartCostModifier and IPartMassModifier
+            // is this what the PrefabDryCostWriter was trying to solve?
+            // we might need to store off some info when the part is created
             float dryCost = part.partInfo.cost + part.GetModuleCosts(part.partInfo.cost); 
             foreach (var partResource in _prefabPart.Resources)
             {
@@ -317,9 +317,6 @@ namespace TweakScale
                 {
                     OnTweakScaleChanged(newScaleFactor);
                 }
-
-                // TODO: figure out what is using this and whether it really needs to be called in the editor
-                UpdateIUpdaters();
             }
             else
             {
@@ -334,34 +331,17 @@ namespace TweakScale
             isEnabled = false;
 
             // flight scene frequently nukes our OnStart resize some time later (probably portraits or crew transfers)
-            if ((part.internalModel != null) && (part.internalModel.transform.localScale != _savedIvaScale))
+            // TODO: we could intercept that with harmony and get rid of this update method
+            if (part.internalModel != null)
             {
-                part.internalModel.transform.localScale = _savedIvaScale;
-                part.internalModel.transform.hasChanged = true;
+                if (part.internalModel.transform.localScale != _savedIvaScale)
+                {
+                    part.internalModel.transform.localScale = _savedIvaScale;
+                    part.internalModel.transform.hasChanged = true;
+                }
+
                 isEnabled = true;
             }
-
-            isEnabled = UpdateIUpdaters() || isEnabled;
-        }
-
-        bool UpdateIUpdaters()
-        {
-            bool any = false;
-            if (_updaters != null)
-            {
-                int len = _updaters.Length;
-                for (int i = 0; i < len; i++)
-                {
-                    if (_updaters[i] is IUpdateable)
-                    {
-                        // TODO: we may want to differentiate between editor-only and flight-only updaters, because stuff that's editor-only could slow down flight mode or vice versa
-                        (_updaters[i] as IUpdateable).OnUpdate();
-                        any = true;
-                    }
-                }
-            }
-
-            return any;
         }
 
         void CallUpdaters(float relativeScaleFactor)
