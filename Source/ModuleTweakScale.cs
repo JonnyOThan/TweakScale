@@ -215,6 +215,11 @@ namespace TweakScale
                 ScalePartTransform();
                 CallUpdaters(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
                 // TODO: do we need to worry about drag cubes or anything else?
+                foreach (var attachNode in part.attachNodes)
+                {
+                    ScaleAttachNodeSize(attachNode);
+                }
+                ScaleAttachNodeSize(part.srfAttachNode); // does the size of the srfAttachNode even matter?
             }
             else
             {
@@ -379,29 +384,26 @@ namespace TweakScale
         {
             // TODO: this is incorrect when PartModuleVariants is involved, or anything that changes the nodes at runtime.
             // but we're only using this for the node size, so it's not a *huge* deal right now.
-            var prefabNode = _prefabPart.FindAttachNode(attachNodeId);
+            var prefabNode = attachNodeId == _prefabPart.srfAttachNode.id
+                ? _prefabPart.srfAttachNode // does the size of the srfAttachNode even matter? probably not
+                : _prefabPart.FindAttachNode(attachNodeId);
 
             return prefabNode == null ? 1 : prefabNode.size;
         }
 
-        /// <summary>
-        /// Updates properties that change linearly with scale.
-        /// </summary>
-        /// <param name="moveParts">Whether or not to move attached parts.</param>
-        /// <param name="absolute">Whether to use absolute or relative scaling.</param>
         private void ScalePart(bool moveParts, float relativeScaleFactor)
         {
             ScalePartTransform();
 
             foreach (var node in part.attachNodes)
             {
-                MoveNode(node, GetUnscaledAttachNodeSize(node.id), moveParts, relativeScaleFactor);
+                MoveNode(node, moveParts, relativeScaleFactor);
             }
-
             if (part.srfAttachNode != null)
             {
-                MoveNode(part.srfAttachNode, _prefabPart.srfAttachNode.size, moveParts, relativeScaleFactor);
+                MoveNode(part.srfAttachNode, moveParts, relativeScaleFactor);
             }
+
             if (moveParts)
             {
                 int numChilds = part.children.Count;
@@ -453,13 +455,10 @@ namespace TweakScale
             }
         }
 
-        /// <summary>
-        /// Change the size of <paramref name="node"/> to reflect the new size of the part it's attached to.
-        /// </summary>
-        /// <param name="node">The node to resize.</param>
-        /// <param name="baseNode">The same node, as found on the prefab part.</param>
-        private void ScaleAttachNode(AttachNode node, int originalNodeSize)
+        private void ScaleAttachNodeSize(AttachNode node)
         {
+            int originalNodeSize = GetUnscaledAttachNodeSize(node.id);
+
             if (isFreeScale || ScaleNodes == null || ScaleNodes.Length == 0)
             {
                 float tmpNodeSize = Mathf.Max(originalNodeSize, 0.5f);
@@ -492,7 +491,7 @@ namespace TweakScale
             part.DragCubes.ForceUpdate(true, true);
         }
 
-        private void MoveNode(AttachNode node, int originalNodeSize, bool movePart, float relativeScaleFactor)
+        private void MoveNode(AttachNode node, bool movePart, float relativeScaleFactor)
         {
             var oldPosition = node.position;
 
@@ -516,7 +515,7 @@ namespace TweakScale
                     node.attachedPart.attPos *= relativeScaleFactor;
                 }
             }
-            ScaleAttachNode(node, originalNodeSize);
+            ScaleAttachNodeSize(node);
         }
 
         /// <summary>
