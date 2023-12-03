@@ -1,0 +1,15 @@
+// sketch:
+
+I've forked pellinor's version of TweakScale and updated it for modern KSP to provide a simpler and streamlined version.  I've paid special attention to user experience, robustness, and performance.
+
+I am concerned that the design, implementation, and process decisions of modern versions of tweakscale pose a risk to users and the KSP modding ecosystem as a whole.  I believe that I can help.  Therefore, I've forked pellinor's old version of tweakscale and have been updating it for modern KSP.  My plan is to eventually offer this as an alternative to the current version of tweakscale.
+
+does it make sense to start with motivation first?  Does it need to be justified? would it make sense to just say what I've done and then explain why when people ask?
+
+need to have a canonical description of the licensing situation in here.
+
+risk to users: bugs/bad installs/bad configurations in tweakscale and related mods can REALLY mess up your craft files and save games.  TweakScale could be better engineered to avoid these problems.
+risk to modding ecosystem: TweakScale has continued to diverge from modding norms and generally accepted best practices.  It requires a lot of dependent libraries that are not necessary and can cause issues or degraded performance.  I worry that it could eventually lead to a fracturing of the modding ecosystem based on whether tweakscale is installed or not.
+
+
+WARNING: DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues, I'm pretty sure I haven't yet, and saving your stuff with this mod and then trying to go back to versions will certainly not work
