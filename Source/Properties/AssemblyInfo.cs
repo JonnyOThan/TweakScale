@@ -36,3 +36,4 @@ using System.Runtime.InteropServices;
 
 [assembly: KSPAssembly("Scale", 3, 0)]
 [assembly: KSPAssemblyDependencyEqualMajor("Scale_Redist", 3, 0)]
+[assembly: KSPAssemblyDependency("HarmonyKSP", 1, 0)]

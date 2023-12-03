@@ -87,6 +87,7 @@
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
+- [ ] "updaters" should be called "handlers" because "update" connotes something that happens every frame.  Or Rescalable to match the interface name.
 - [x] figure out why it's doing 2 passes over updaters
 - [x] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
 	this interface is internal, and it doesnt' look like there's any references to it on github

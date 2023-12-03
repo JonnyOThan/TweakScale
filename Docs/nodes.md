@@ -60,3 +60,16 @@ Proposal: use harmony to patch these 3 functions:
 		or use the prefab's position, but it won't be correct if ModulePartVariants or other node-moving mods is also in effect
 		There might not be any such parts though, already seems problematic if you're using B9PS AND something else for nodes.
 		Or maybe add a IRescalable<ModuleB9PartSwitch> that can store some extra state?
+
+
+========
+
+PartLoader.ParsePart:
+	rescaleFactor = 1.25 or value from cfg
+	rescaleFactor gets set as the localScale on the "model" gameobject transform
+	num2 = rescaleFactor
+	if cfg has "scale" or "exportscale" values:
+		num2 = value * rescaleFactor
+		part.scaleFactor = value / rescaleFactor
+	attachNode's position and originalPosition are scaled by num2
+	num2 also scales the localPosition (but not scale) of fx nodes

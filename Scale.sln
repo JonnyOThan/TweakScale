@@ -9,8 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale_Redist", "Source\Scal
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2ED14E88-B9E3-4C39-823F-B091D42D0081}"
 	ProjectSection(SolutionItems) = preProject
-		Docs\todo.md = Docs\todo.md
 		GameData\TweakScale\TweakScale.version = GameData\TweakScale\TweakScale.version
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{2E6A7FC2-286E-41AD-874B-A427B59AD3A8}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\announcement.txt = Docs\announcement.txt
+		Docs\nodes.md = Docs\nodes.md
+		Docs\todo.md = Docs\todo.md
 	EndProjectSection
 EndProject
 Global
@@ -30,6 +36,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E6A7FC2-286E-41AD-874B-A427B59AD3A8} = {2ED14E88-B9E3-4C39-823F-B091D42D0081}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6D8B77D-2956-4865-AD3A-A6C55430E712}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
