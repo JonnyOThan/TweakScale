@@ -1,15 +1,65 @@
-// sketch:
+// ROUGH DRAFT!
 
-I've forked pellinor's version of TweakScale and updated it for modern KSP to provide a simpler and streamlined version.  I've paid special attention to user experience, robustness, and performance.
+WARNING: DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will certainly not work
 
-I am concerned that the design, implementation, and process decisions of modern versions of tweakscale pose a risk to users and the KSP modding ecosystem as a whole.  I believe that I can help.  Therefore, I've forked pellinor's old version of tweakscale and have been updating it for modern KSP.  My plan is to eventually offer this as an alternative to the current version of tweakscale.
+# What is this?
 
-does it make sense to start with motivation first?  Does it need to be justified? would it make sense to just say what I've done and then explain why when people ask?
+I've forked pellinor's version of TweakScale and updated it for modern KSP to provide a simpler and streamlined version.  My plan is to eventually offer this as an alternative to the current version of TweakScale.  I've paid special attention to the following areas:
 
-need to have a canonical description of the licensing situation in here.
+## User experience
 
-risk to users: bugs/bad installs/bad configurations in tweakscale and related mods can REALLY mess up your craft files and save games.  TweakScale could be better engineered to avoid these problems.
-risk to modding ecosystem: TweakScale has continued to diverge from modding norms and generally accepted best practices.  It requires a lot of dependent libraries that are not necessary and can cause issues or degraded performance.  I worry that it could eventually lead to a fracturing of the modding ecosystem based on whether tweakscale is installed or not.
+* New buttons in part action window to adjust scaling behaviors
+ * Toggle for scaling changes to affect the entire subtree
+ * Button to apply the current part's scale to the subtree (NYI)
+* Scaling gizmo akin to offset and move (NYI)
+* All parts are supported unless they opt-out or match certain filters to trap known issues (AllTweak will still override this and enable *everything*)
+* Reduced dependencies to only ModuleManager and Harmony
+* Optimized for better performance
+ * better loading time to main menu
+ * better switch-to-editor time
+ * scaling a part is more responsive
+ * less performance impact in flight scene
+ * probably better save/load performance, but I'd have to check
+	// TODO: maybe get some data to compare?
 
+## Robustness
 
-WARNING: DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues, I'm pretty sure I haven't yet, and saving your stuff with this mod and then trying to go back to versions will certainly not work
+* fixed part attachments when variants or B9PartSwitch are involved
+* scaling engine effects works correctly (NYI)
+* scaling docking ports works as expected (NYI)
+* Craft files and saved games no longer break from changes in TweakScale configs
+* More resilient to problems caused by missing dependencies, problems with other mods, and incorrect installations
+// TODO: more here
+* Made it easier to add or customize TweakScale support for other mods
+
+# Why not work to improve the current TweakScale?
+
+The gist of it is: it would take far more energy than I have.  If I believed this option was possible, I would do it (because usually, this *is* the best option).
+
+However, TweakScaleRescaled is licensed CC-BY-NC-SA.  Its code may be used by anyone else, provided they abide by the license terms.  Pull requests are also welcome from anyone who wants to contribute.
+
+# Compatibilty
+
+Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled (once it hits final release).  However, ongoing interoperability with other versions of TweakScale is not a goal.  In order to make the fixes necessary, data structures and assumptions have to be altered in ways that are difficult to reverse.
+
+Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not been tested and are not a priority.
+
+# Dependencies
+
+* ModuleManager
+* Harmony
+* KSP Community Fixes is recommended to address stock bugs that become more apparent when using TweakScale
+
+# License Info
+
+TweakScaleRescaled is licensed CC-BY-NC-SA.
+© 2023 JonnyOThan
+© 2015-2018 pellinor
+© 2014 Gaius Godspeed and Biotronic
+
+## History
+
+1. TweakScale was [originally created by Gaius Goodspeed](https://forum.kerbalspaceprogram.com/topic/65819-0235-goodspeed-aerospace-parts-v201441b/) under CC-BY-NC-SA.
+2. [Biotronic took over](https://forum.kerbalspaceprogram.com/topic/72554-090-tweakscale-rescale-everything-v150-2014-12-24-1040-utc/) and [relicensed it as WTFPL](https://forum.kerbalspaceprogram.com/topic/72554-090-tweakscale-rescale-everything-v150-2014-12-24-1040-utc/?do=findComment&comment=1204240)
+3. [pellinor adopted it](https://forum.kerbalspaceprogram.com/topic/101540-14x-tweakscale-v2312apr-16/) and kept the WTFPL license.
+4. TweakScaleRescaled is based off of pellinor's version, and is once again licensed as CC-BY-NC-SA.

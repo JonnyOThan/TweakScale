@@ -13,41 +13,26 @@
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
 - [ ] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
+	this could also be a toggle button
+- [ ] See if we need to include the TweakableEverything updaters
+		it really seems like these could just be cfg patches?
 - [x] add 1.875m scaling option for fuel tanks etc
 - [x] handle part inventories
 - [x] check node altering from B9PS
-
-# Verification (do this last, except to generate new bugs)
-
-- [ ] check stock twin boar (since it's an engine + fuel tank)
-- [ ] check parachutes
-- [ ] check part recovery costs (with kspcf)
-- [ ] check cloning part subtrees
-- [ ] check FS buoyancy module
-- [ ] check parts that modify drag cubes
-- [ ] make sure save/load works
-- [ ] make sure subassemblies/merging works
-- [ ] make sure scaling command parts w/ kerbals works properly re: mass
-- [ ] find all TODOs and make sure there are issues tracked if necessary
-- [ ] Make sure switching a part's scale type doesn't break it
-		tsarbon's plane wing changed from stack to free, and it worked.
-		pretty sure this is mostly going to work, just need to test loading things that aren't IsFreeScale
-- [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
-- [ ] check undo after scaling
 
 # Bugs
 
 - [ ] investigate part cost scaling on HECS2
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
-- [ ] clicking >> after hitting the max interval screws up the slider
-		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
-- [ ] [ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [ ] scaled engines have a weird inverse scale to their plumes, even when we're not trying to scale anything
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
-		Could be a bug in unity where it's inverse-scaling something when it shouldn't
+		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] dragging the slider with the mouse often gets interrupted
+- [ ] clicking >> after hitting the max interval screws up the slider
+		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
+		Do we need to use harmony to patch the UI code?
 - [x] chain scaling doesn't update the scale factor in the gui for child parts
 - [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it
@@ -80,18 +65,19 @@
 
 # Architecture
 
+- [ ] make a way to dump relevant info of all parts in a way that can be compared, in order to verify configuration changes are safe
 - [ ] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
 		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
-- [ ] format everything with tabs and add .editorconfig
-- [ ] remove explicit setups for stock parts that could be handled by automatic ones (and find a way to verify that they're the same)
+		This is definitely conceptually correct, but seems pretty dangerous in terms of compatibility and could cause more problems than it solves
+- [ ] remove explicit setups for stock parts that could be handled by automatic ones
 - [ ] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
+		should fix ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
-- [ ] See if we need to include the TweakableEverything updaters
-		it really seems like these could just be cfg patches?
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
-- [ ] "updaters" should be called "handlers" because "update" connotes something that happens every frame.  Or Rescalable to match the interface name.
+- [ ] "updaters" should be called "handlers" because "update" connotes something that happens every frame.  Or Rescalable to match the interface name.  RescalableHandler?
+- [ ] format everything with tabs and add .editorconfig
 - [x] figure out why it's doing 2 passes over updaters
 - [x] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
 	this interface is internal, and it doesnt' look like there's any references to it on github
@@ -126,6 +112,24 @@
 - [ ] PAW button to propagate current scale to children
 - [ ] put scale stuff in a PAW group?
 - [x] make chain scaling a toggle in the PAW
+
+# Verification (do this last, except to generate new bugs)
+
+- [ ] check stock twin boar (since it's an engine + fuel tank)
+- [ ] check parachutes
+- [ ] check part recovery costs (with kspcf)
+- [ ] check cloning part subtrees
+- [ ] check FS buoyancy module
+- [ ] check parts that modify drag cubes
+- [ ] make sure save/load works
+- [ ] make sure subassemblies/merging works
+- [ ] make sure scaling command parts w/ kerbals works properly re: mass
+- [ ] find all TODOs and make sure there are issues tracked if necessary
+- [ ] Make sure switching a part's scale type doesn't break it
+		tsarbon's plane wing changed from stack to free, and it worked.
+		pretty sure this is mostly going to work, just need to test loading things that aren't IsFreeScale
+- [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
+- [ ] check undo after scaling
 
 # won't do
 
