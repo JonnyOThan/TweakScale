@@ -12,10 +12,10 @@
 - [ ] Check ModuleFuelTanks interaction (realfuels)
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
-- [ ] check node altering from B9PS
 - [ ] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
 - [x] add 1.875m scaling option for fuel tanks etc
 - [x] handle part inventories
+- [x] check node altering from B9PS
 
 # Verification (do this last, except to generate new bugs)
 
@@ -40,13 +40,12 @@
 - [ ] investigate part cost scaling on HECS2
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
-- [ ] scaled node sizes are not preserved after save/load (because we don't know what "baseline" is when part variants etc are involved)
-		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
 - [ ] clicking >> after hitting the max interval screws up the slider
 - [ ] [ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [ ] scaled engines have a weird inverse scale to their plumes, even when we're not trying to scale anything
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
+		Could be a bug in unity where it's inverse-scaling something when it shouldn't
 - [x] chain scaling doesn't update the scale factor in the gui for child parts
 - [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it
@@ -64,6 +63,8 @@
 - [x] fix TestFlightCore error
 - [x] fix scale slider dragging (due to hasty refresh?)  was this intentional?
 		removing the refresh doesn't fix dragging but it does fix the flickering
+- [x] scaled node sizes are not preserved after save/load (because we don't know what "baseline" is when part variants etc are involved)
+		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
 
 
 # Backwards Compatibilty
@@ -119,6 +120,8 @@
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [ ] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
 	e.g. engine thrust, etc.
+- [ ] PAW button to propagate current scale to children
+- [ ] put scale stuff in a PAW group?
 - [x] make chain scaling a toggle in the PAW
 
 # won't do
@@ -133,11 +136,6 @@
 
 How to handle nodes changing positions?
 
-Node positions are saved in the protovessel, so on loading there's nothing to be done.  But we don't have a good way to
-figure out what the original node position was, so absolute scaling is difficult to use.
+Basic approach: we need to know what the unscaled position and size of each attach node should be.  Then we can directly calculate the scaled versions using absolute scaling.
 
-I can trap all the places where the stock game changes them, but what about mods?  B9PS?  Any others?
-
-I don't really want to have to save off the last positions and poll to see if they changed every frame.
-
-For now, using relative scaling seems to work..but still need to test b9ps.  But that can surely be handled with harmony
+The TweakScale partmodule maintains a dictionary mapping attachnode id to position and size.  There are harmony patches in the stock and b9ps code that updates this dictionary as the variants are changed

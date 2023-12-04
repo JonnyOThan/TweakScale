@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -94,6 +95,28 @@ namespace TweakScale
         public ScaleType ScaleType { get; private set; }
 
         public bool IsRescaled => Math.Abs(currentScaleFactor - 1f) > 1e-5f;
+
+        // A few different systems can alter attach nodes in the editor (ModulePartVariants, ModuleB9PartSwitch, maybe more)
+        // The lifecycle between all of these is pretty complex and tough to manage, but one thing that would make it all easier is
+        // if we could always ask "what would the state of this attachnode be in an unscaled part?"  This attemps to track that.
+        struct AttachNodeInfo
+        {
+            public Vector3 position;
+            public int size;
+        }
+        Dictionary<string, AttachNodeInfo> unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>();
+        
+        public void SetUnscaledAttachNode(AttachNode attachNode)
+        {
+            unscaledAttachNodes[attachNode.id] = new AttachNodeInfo { position = attachNode.position, size = attachNode.size };
+        }
+
+        public void SetUnscaledAttachNodePosition(string attachNodeId, Vector3 position)
+        {
+            var nodeInfo = unscaledAttachNodes[attachNodeId];
+            nodeInfo.position = position;
+            unscaledAttachNodes[attachNodeId] = nodeInfo;
+        }
 
         internal void CalculateCostAndMass()
         {
@@ -192,14 +215,38 @@ namespace TweakScale
             isEnabled = true;
         }
 
+        // This is a hacky way to do some "final" loading - the part compiler will deactivate the part when it's nearly finished
+        // and that will end up here.  Note there are still a few fields that haven't been set yet
+        void OnDisable()
+        {
+            // part is null for the version of this that gets called when rendering the part icon.  Just skip.
+            if (HighLogic.LoadedScene == GameScenes.LOADING && part != null)
+            {
+				foreach (var attachNode in part.attachNodes)
+				{
+					SetUnscaledAttachNode(attachNode);
+				}
+				if (part.srfAttachNode != null)
+				{
+					SetUnscaledAttachNode(part.srfAttachNode);
+				}
+			}
+        }
+
         public override void OnStart(StartState state)
         {
             base.OnStart(state);
 
             _prefabPart = part.partInfo.partPrefab;
+			// TODO: this isn't the correct way to get the prefab module.  we should look it up by index.
+			var prefabModule = _prefabPart.FindModuleImplementing<TweakScale>();
 
-            // TODO: this isn't the correct way to get the prefab module.  we should look it up by index.
-            SetupFromConfig(_prefabPart.FindModuleImplementing<TweakScale>().ScaleType);
+            if (state == StartState.Editor)
+            {
+                unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>(prefabModule.unscaledAttachNodes);
+            }
+
+			SetupFromConfig(prefabModule.ScaleType);
 
             if (!CheckIntegrity())
             {
@@ -248,7 +295,6 @@ namespace TweakScale
             {
                 _savedIvaScale = part.internalModel.transform.localScale * currentScaleFactor;
                 part.internalModel.transform.localScale = _savedIvaScale;
-                part.internalModel.transform.hasChanged = true;
             }
         }
 
@@ -274,12 +320,13 @@ namespace TweakScale
             float relativeScaleFactor = newScaleFactor / currentScaleFactor;
             currentScaleFactor = newScaleFactor;
 
+            // TODO: would it make more sense to scale ourselves first and then the children?  Currently we might be moving each children twice
             if (scaleChildren)
             {
                 ChainScale(relativeScaleFactor);
             }
 
-            ScalePart(true, relativeScaleFactor);
+            ScalePart(relativeScaleFactor);
             CallUpdaters(relativeScaleFactor);
 
             // TODO: this is going to get called multiple times when chain scaling, should move this...
@@ -332,7 +379,6 @@ namespace TweakScale
                 if (part.internalModel.transform.localScale != _savedIvaScale)
                 {
                     part.internalModel.transform.localScale = _savedIvaScale;
-                    part.internalModel.transform.hasChanged = true;
                 }
 
                 isEnabled = true;
@@ -381,42 +427,41 @@ namespace TweakScale
         }
 
         int GetUnscaledAttachNodeSize(string attachNodeId)
-        {
-            // TODO: this is incorrect when PartModuleVariants is involved, or anything that changes the nodes at runtime.
-            // but we're only using this for the node size, so it's not a *huge* deal right now.
-            var prefabNode = attachNodeId == _prefabPart.srfAttachNode.id
-                ? _prefabPart.srfAttachNode // does the size of the srfAttachNode even matter? probably not
-                : _prefabPart.FindAttachNode(attachNodeId);
+		{
+            if (unscaledAttachNodes.TryGetValue(attachNodeId, out var nodeInfo))
+            {
+                return nodeInfo.size;
+            }
+            else
+            {
+                Tools.LogError("Couldn't find a stored unscaled attach node with ID {0} on part {1}", attachNodeId, part.partInfo.name);
+                return 1;
+            }
+		}
 
-            return prefabNode == null ? 1 : prefabNode.size;
-        }
-
-        private void ScalePart(bool moveParts, float relativeScaleFactor)
+        private void ScalePart(float relativeScaleFactor)
         {
             ScalePartTransform();
 
+            // handle nodes and node-attached parts
             foreach (var node in part.attachNodes)
             {
-                MoveNode(node, moveParts, relativeScaleFactor);
+                MoveNode(node);
             }
             if (part.srfAttachNode != null)
             {
-                MoveNode(part.srfAttachNode, moveParts, relativeScaleFactor);
+                MoveNode(part.srfAttachNode);
             }
 
-            if (moveParts)
+            // handle parts that are surface-attached to this one
+            foreach (var child in part.children)
             {
-                int numChilds = part.children.Count;
-                for (int i=0; i<numChilds; i++)
-                {
-                    var child = part.children[i];
-                    if (child.srfAttachNode == null || child.srfAttachNode.attachedPart != part)
-                        continue;
+                if (child.srfAttachNode == null || child.srfAttachNode.attachedPart != part)
+                    continue;
 
-                    var attachedPosition = child.transform.localPosition + child.transform.localRotation * child.srfAttachNode.position;
-                    var targetPosition = attachedPosition * relativeScaleFactor;
-                    child.transform.Translate(targetPosition - attachedPosition, part.transform);
-                }
+                var attachedPosition = child.transform.localPosition + child.transform.localRotation * child.srfAttachNode.position;
+                var targetPosition = attachedPosition * relativeScaleFactor;
+                child.transform.Translate(targetPosition - attachedPosition, part.transform);
             }
 
             CalculateCostAndMass();
@@ -450,8 +495,6 @@ namespace TweakScale
                 }
 
                 trafo.localScale = currentScaleFactor * defaultTransformScale;
-                trafo.hasChanged = true;
-                part.partTransform.hasChanged = true;
             }
         }
 
@@ -491,28 +534,27 @@ namespace TweakScale
             part.DragCubes.ForceUpdate(true, true);
         }
 
-        private void MoveNode(AttachNode node, bool movePart, float relativeScaleFactor)
+        internal void MoveNode(AttachNode node)
         {
             var oldPosition = node.position;
 
-            // I hate that this is the simplest fix for scaling parts that dynamically change their nodes
-            // TODO: what if we stored off the last known position of each node, and then if it's different here, we assume the new value is unscaled?
-            // at least that way you can fix any problems by changing the part scale
-            node.originalPosition = node.position = node.position * relativeScaleFactor;
+            AttachNodeInfo unscaledNodeInfo = unscaledAttachNodes[node.id];
 
-            var deltaPos = node.position - oldPosition;
+            node.originalPosition = node.position = unscaledNodeInfo.position * currentScaleFactor;
 
-            if (movePart && node.attachedPart != null)
+            if (node.attachedPart != null)
             {
+                var deltaPos = node.position - oldPosition;
+
+                // If this node connects to our parent part, then *we* need to move
                 if (node.attachedPart == part.parent)
                 {
                     part.transform.Translate(-deltaPos, part.transform);
                 }
+                // otherwise the child object needs to move
                 else
                 {
-                    var offset = node.attachedPart.attPos * (relativeScaleFactor - 1);
-                    node.attachedPart.transform.Translate(deltaPos + offset, part.transform);
-                    node.attachedPart.attPos *= relativeScaleFactor;
+                    node.attachedPart.transform.Translate(deltaPos, part.transform);
                 }
             }
             ScaleAttachNodeSize(node);
