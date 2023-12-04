@@ -41,11 +41,13 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] clicking >> after hitting the max interval screws up the slider
+		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
 - [ ] [ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [ ] scaled engines have a weird inverse scale to their plumes, even when we're not trying to scale anything
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't
+- [ ] dragging the slider with the mouse often gets interrupted
 - [x] chain scaling doesn't update the scale factor in the gui for child parts
 - [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it
@@ -65,7 +67,8 @@
 		removing the refresh doesn't fix dragging but it does fix the flickering
 - [x] scaled node sizes are not preserved after save/load (because we don't know what "baseline" is when part variants etc are involved)
 		might need a dictionary of nodeID -> nodeSize, populated from the prefab and updated when variants are applied?  Could we do the same thing for position?  
-
+- [x] node positions are broken on loading again
+	maybe a module is trying to set the unscaled node info before the tweakscale one has copied the dictionary?
 
 # Backwards Compatibilty
 

@@ -15,7 +15,7 @@ namespace TweakScale
 		void Awake()
 		{
 #if DEBUG
-			Harmony.DEBUG = true;
+			// Harmony.DEBUG = true;
 #endif
 
 			var harmony = new Harmony("TweakScale");
@@ -39,6 +39,22 @@ namespace TweakScale
 						variantNode.originalPosition *= tweakScaleModule.currentScaleFactor;
 					}
 				}
+			}
+		}
+
+		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePosition")]
+		class B9PS_AttachNodeMover_SetAttachNodePosition
+		{
+			// this gets called when loading a ship that has a partswitch already applied
+			public static bool Prefix(AttachNode ___attachNode, Vector3 ___position)
+			{
+				if (!HighLogic.LoadedSceneIsEditor) return true;
+				var tweakScaleModule = ___attachNode.owner.FindModuleImplementing<TweakScale>();
+				if (tweakScaleModule == null) return true;
+
+				tweakScaleModule.SetUnscaledAttachNodePosition(___attachNode.id, ___position);
+
+				return false;
 			}
 		}
 

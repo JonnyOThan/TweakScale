@@ -222,15 +222,27 @@ namespace TweakScale
             // part is null for the version of this that gets called when rendering the part icon.  Just skip.
             if (HighLogic.LoadedScene == GameScenes.LOADING && part != null)
             {
-				foreach (var attachNode in part.attachNodes)
-				{
-					SetUnscaledAttachNode(attachNode);
-				}
-				if (part.srfAttachNode != null)
-				{
-					SetUnscaledAttachNode(part.srfAttachNode);
-				}
-			}
+                foreach (var attachNode in part.attachNodes)
+                {
+                    SetUnscaledAttachNode(attachNode);
+                }
+                if (part.srfAttachNode != null)
+                {
+                    SetUnscaledAttachNode(part.srfAttachNode);
+                }
+            }
+        }
+
+        new void Awake()
+        {
+            base.Awake();
+
+            if (HighLogic.LoadedSceneIsEditor)
+            {
+                // This has to be really early because other modules might try to shove data in here as they're initializing
+                var prefabModule = part.partInfo.partPrefab.FindModuleImplementing<TweakScale>();
+                unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>(prefabModule.unscaledAttachNodes);
+            }
         }
 
         public override void OnStart(StartState state)
@@ -238,15 +250,10 @@ namespace TweakScale
             base.OnStart(state);
 
             _prefabPart = part.partInfo.partPrefab;
-			// TODO: this isn't the correct way to get the prefab module.  we should look it up by index.
-			var prefabModule = _prefabPart.FindModuleImplementing<TweakScale>();
+            // TODO: this isn't the correct way to get the prefab module.  we should look it up by index.
+            var prefabModule = _prefabPart.FindModuleImplementing<TweakScale>();
 
-            if (state == StartState.Editor)
-            {
-                unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>(prefabModule.unscaledAttachNodes);
-            }
-
-			SetupFromConfig(prefabModule.ScaleType);
+            SetupFromConfig(prefabModule.ScaleType);
 
             if (!CheckIntegrity())
             {
