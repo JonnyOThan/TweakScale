@@ -1,6 +1,6 @@
 # priority stuff
 
-- add attribute for scale handlers to bind to a module by name (ModuleFuelTanks)
+- dump all part configs
 - engine exhaust (can we get rid of IUpdateable?
 
 # Feature Parity
@@ -71,8 +71,6 @@
 		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
 		This is definitely conceptually correct, but seems pretty dangerous in terms of compatibility and could cause more problems than it solves
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones
-- [ ] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
-		should fix ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
@@ -96,7 +94,8 @@
 		probably remove the entire hotkey system?
 - [x] remove settings xml stuff (this is only used for chaing scaling setting)
 - [x] remove IUpdater? seems like it's only the particle emitter and that's broken
-
+- [x] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
+		should fix ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 # New Candy
 
 - [ ] handle stock exhaust particles

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TweakScale
 {
-	// this is unfortunate, because it really should be a IRescalable<ModuleFuelTanks>, but we don't want to have a hard dependency on ModularFuelTanks
+	[RescalablePartModuleHandler("ModuleFuelTanks")]
 	internal class ModuleFuelTanksUpdater : IRescalablePart
 	{
 		#region static reflection stuff

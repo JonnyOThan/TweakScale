@@ -30,8 +30,8 @@ namespace TweakScale
     }
 
     /// <summary>
-    /// Controls the ordering of updaters for a given part. 0 is default, lower priority numbers will go earlier (i.e. updaters are sorted by priority in ascending order)
-    /// i.e. use negative numbers if you need to run before most other updaters, and positive numbers to run after most updaters
+    /// Can be added to any type that implements IRescalable.  Controls the ordering of updaters for a given part. 0 is default, lower priority numbers will go earlier 
+    /// (i.e. updaters are sorted by priority in ascending order).  use negative numbers if you need to run before most other updaters, and positive numbers to run after most updaters
     /// </summary>
     public interface IRescalablePriority
     {
@@ -72,5 +72,19 @@ namespace TweakScale
 
         // I considered making this just a derived RescalableFilterAttribute but it's probably good for the database to keep things separate to speed up creation
         public readonly RescalableSceneFilter Filter;
+    }
+
+    /// <summary>
+    /// This attribute may be placed on a type that implements IRescalable (or any of its derived types).  It will register the updater for part modules of the given name
+    /// This is functionally identical to IRescalable<T>, but it does not require that you have a hard dependency on the assembly that defines the type.
+    /// </summary>
+    public class RescalablePartModuleHandlerAttribute : System.Attribute
+    {
+        public RescalablePartModuleHandlerAttribute(string partModuleName)
+        {
+            PartModuleName = partModuleName;
+        }
+
+        public readonly string PartModuleName;
     }
 }
