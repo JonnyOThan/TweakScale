@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TweakScale
 {
@@ -38,7 +34,8 @@ namespace TweakScale
 
 		public ModuleFuelTanksUpdater(PartModule partModule)
 		{
-			// *ideally* this should never happen as long as we check before registering the updater
+			// *ideally* this should never happen because this updater won't be created if no PartModule named ModuleFuelTanks exists.
+			// but it's possible that the type changes in a way that we can't find it anymore, or that some other mod creates a ModuleFuelTanks (yikes)
 			if (x_totalVolume_FieldInfo == null) return;
 
 			// TODO: this is what the old code did, but it's certainly possible to have more than one ModuleFuelTanks right?
@@ -53,7 +50,6 @@ namespace TweakScale
 
 		public void OnRescale(ScalingFactor factor)
 		{
-			// TODO: implement a way to avoid creating this when TestFlightCore isn't installed
 			if (x_totalVolume_FieldInfo == null) return;
 			
 			var data = new BaseEventDetails(BaseEventDetails.Sender.USER);

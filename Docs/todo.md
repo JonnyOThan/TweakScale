@@ -13,7 +13,7 @@
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
 - [ ] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
-	this could also be a toggle button
+	this could also be a toggle button (or hold a modifier key to change it)
 - [ ] See if we need to include the TweakableEverything updaters
 		it really seems like these could just be cfg patches?
 - [x] add 1.875m scaling option for fuel tanks etc

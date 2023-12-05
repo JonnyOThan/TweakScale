@@ -11,22 +11,14 @@ The main problems with the existing tweakscale "watchdog" stuff are:
 2. it sounds really scary, but does an awful job at explaining what is wrong and how to fix it
 3. it's not targeted enough.  It's one big warning at startup and you don't really know what might be affected
 
-I will aim to improve these 3 issues:
-
-- [ ] deploy the check dll in plugins, and have it copy itself to the root gamedata?
-- [ ] check to make sure TweakScale is in the assemblyloader's list and the right version
-- [ ] pop up a warning box explaining the situation and the causes (missing dependencies, tweakscale removed, etc) and solutions
-		should also say "delete this dll to stop these warnings"
-- [ ] If they continue, find a way to check loaded save files for vessels with scaled parts and pop up similar warnings
-- [ ] Also check when loading craft files, ditto
-
-Is there a way we can have a DLL delete itself entirely?
+The validator should be another mod folder in gamedata, so that users doing manual installs are likely to get it
+It should be a *separate* mod in CKAN, and recommended by TS/R, so that users control whether it is installed and when to remove it
 
 possible conditions/language:
 
 1. Tweakscale is installed but failed to load because of .... (needs very detailed info and specific instructions to fix)
 2. Tweakscale is installed but in an incorrect location (this might not actually cause any problems..?)
-3. TweakScale had been installed but was removed.
+3. TweakScale is not installed.
 
 Proposed dialogs:
 
@@ -35,14 +27,16 @@ tweakscale can destroy data in unrecoverable ways.  Proceed with caution.
 
 TweakScaleValidator will try to check saved games and craft files when they are loaded and warn you if they might be affected.
 
-(we could offer to scan saved games and craft files here....)
+To remove these checks permanently, uninstall TweakScaleValidator.
 
-buttons: "OK", maybe: "Remove TweakscaleValidator"
+buttons: "Proceed", "Don't show this again", maybe: "scan my saves now"
+	note that whatever state is tracking "don't show this again" probably should be cleared if tweakscale is ever reinstalled/loaded correctly
 
-OR:
-To suppress this message forever and disable all safety checks, delete TSRValidator.dll from GameData"
+2. when loading a save: "This save file has vessels in flight that have parts scaled by TweakScale.  [ConditionText].  Loading this save could destroy data in unrecoverable ways.  Proceed with caution.  A backup save file has been saved to some/path[TweakScale].sfs.  To remove this check forever, uninstall TweakScaleValidator"
+	(list of vessels that are affected)
+	buttons: "Proceed", "Cancel"
 
-2. when loading a save: "hey this save file has vessels in flight that used tweakscale, which is not currently installed or loaded.  Loading this save could destroy data in unrecoverable ways.  Proceed with caution.  A backup save file has been save to some/path.sfs.  To suppress this message forever, delete TweakScaleValidator.dll from GameData"
+3. When loading a craft: "This craft file has parts scaled by tweakscale.  [Condition Text].  Re-saving this craft file will permanently remove tweakscale's information which could affect part mass, cost, size, resources, etc.  Proceed with caution.  A backup of the original has been saved to someCraft[TweakScale].craft.  To remove this check forever, uninstall TweakScaleValidator"
+	No options here needed, because now it's on the user
 
-3. When loading a craft: "hey this craft file uses tweakscale, which is not currently installed or loaded.  Resaving this craft file could destroy data in unrecoverable ways.  Proceed with caution.  A backup has been saved to some/path.craft.  To suppress this message forever, delete TweakScaleValidator.dll from GameData"
 and to be clear, all of these can check for actually scaled parts, not just "the thing was saved while I had tweakscale installed"

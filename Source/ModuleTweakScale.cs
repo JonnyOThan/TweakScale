@@ -212,7 +212,7 @@ namespace TweakScale
             }
 
             guiScaleValue = currentScaleFactor * guiDefaultScale;
-            isEnabled = true;
+            isEnabled = true; // isEnabled gets persisted in the cfg, and we want to always start enabled and then go to sleep
         }
 
         // This is a hacky way to do some "final" loading - the part compiler will deactivate the part when it's nearly finished
@@ -324,6 +324,8 @@ namespace TweakScale
         {
             // TODO: I really hate the concept of the relative scale factor.  It will introduce floating point errors when used repeatedly
             // everything should be computed from the absolute scale and the prefab
+            // this might not be possible in cases where we can't access the original value from the prefab
+            // (attach nodes are a good example of this, because WHICH attachnode should be considered the "default" can change, and I had to build a whole system to solve it)
             float relativeScaleFactor = newScaleFactor / currentScaleFactor;
             currentScaleFactor = newScaleFactor;
 
@@ -358,6 +360,7 @@ namespace TweakScale
         {
             if (HighLogic.LoadedSceneIsEditor)
             {
+                // copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
                 scaleChildren = x_scaleChildren;
 
                 // TODO: perhaps this could be done with a callback?
@@ -593,10 +596,6 @@ namespace TweakScale
             }
         }
 
-        /// <summary>
-        /// Disable TweakScale module if something is wrong.
-        /// </summary>
-        /// <returns>True if something is wrong, false otherwise.</returns>
         private bool CheckIntegrity()
         {
             if (ScaleFactors == null || ScaleFactors.Length == 0)
