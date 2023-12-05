@@ -290,6 +290,8 @@ namespace TweakScale
 
                 scaleChildren = x_scaleChildren;
                 Fields["scaleChildren"].OnValueModified += OnScaleChildrenModified;
+                Fields["guiScaleValue"].OnValueModified += OnGuiScaleModified;
+                Fields["guiScaleNameIndex"].OnValueModified += OnGuiScaleModified;
             }
             else if (!IsRescaled)
             {
@@ -305,16 +307,28 @@ namespace TweakScale
             }
         }
 
-        private void OnScaleChildrenModified(object arg1)
-        {
-            x_scaleChildren = scaleChildren;
-        }
-
         void OnDestroy()
         {
             Fields["scaleChildren"].OnValueModified -= OnScaleChildrenModified;
+            Fields["guiScaleValue"].OnValueModified -= OnGuiScaleModified;
+            Fields["guiScaleNameIndex"].OnValueModified -= OnGuiScaleModified;
             GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
             _updaters = null; // probably not necessary, but we can help the garbage collector along maybe
+        }
+        private void OnGuiScaleModified(object arg1)
+        {
+            float newScaleFactor = GetScaleFactorFromGUI();
+            if (newScaleFactor != currentScaleFactor)
+            {
+                OnTweakScaleChanged(newScaleFactor);
+
+                GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+            }
+        }
+
+        private void OnScaleChildrenModified(object arg1)
+        {
+            x_scaleChildren = scaleChildren;
         }
 
         /// <summary>
@@ -337,9 +351,6 @@ namespace TweakScale
 
             ScalePart(relativeScaleFactor);
             CallUpdaters(relativeScaleFactor);
-
-            // TODO: this is going to get called multiple times when chain scaling, should move this...
-            GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
         }
 
         void OnEditorShipModified(ShipConstruct ship)
@@ -362,13 +373,6 @@ namespace TweakScale
             {
                 // copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
                 scaleChildren = x_scaleChildren;
-
-                // TODO: perhaps this could be done with a callback?
-                float newScaleFactor = GetScaleFactorFromGUI();
-                if (newScaleFactor != currentScaleFactor)
-                {
-                    OnTweakScaleChanged(newScaleFactor);
-                }
             }
             else
             {
@@ -437,7 +441,7 @@ namespace TweakScale
         }
 
         int GetUnscaledAttachNodeSize(string attachNodeId)
-		{
+        {
             if (unscaledAttachNodes.TryGetValue(attachNodeId, out var nodeInfo))
             {
                 return nodeInfo.size;
@@ -447,7 +451,7 @@ namespace TweakScale
                 Tools.LogError("Couldn't find a stored unscaled attach node with ID {0} on part {1}", attachNodeId, part.partInfo.name);
                 return 1;
             }
-		}
+        }
 
         private void ScalePart(float relativeScaleFactor)
         {
