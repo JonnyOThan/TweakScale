@@ -29,12 +29,13 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] (from kurgut): when using TS on some cryo tanks (and others mods I don't remember rn), the fuel volume gets messed up completely, there is workaround in VAB by copy pasta or whatever, but it's really annoying and barely playable.
-- [ ] exception thrown from patching when B9PS isn't installed.  This isn't a bug, but it looks scary.  need a better way to report this.
-		[EXC 14:51:48.160] ArgumentException: Undefined target method for patch method static System.Boolean TweakScale.B9PS_AttachNodeMover_SetAttachNodePosition::Prefix(AttachNode ___attachNode, UnityEngine.Vector3 ___position)
 - [ ] dragging the slider with the mouse often gets interrupted
 - [ ] clicking >> after hitting the max interval screws up the slider
 		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
 		Do we need to use harmony to patch the UI code?
+- [x] exception thrown from patching when B9PS isn't installed.  This isn't a bug, but it looks scary.  need a better way to report this.
+		[EXC 14:51:48.160] ArgumentException: Undefined target method for patch method static System.Boolean TweakScale.B9PS_AttachNodeMover_SetAttachNodePosition::Prefix(AttachNode ___attachNode, UnityEngine.Vector3 ___position)
+
 - [x] chain scaling doesn't update the scale factor in the gui for child parts
 - [x] the builtin IRescalables don't seem to be handled properly, e.g.
 	[ERR 23:56:14.016] [TweakScale] Found an IRescalable type TweakScale.CrewManifestUpdater but don't know what to do with it

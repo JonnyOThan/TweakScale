@@ -45,6 +45,11 @@ namespace TweakScale
 		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePosition")]
 		class B9PS_AttachNodeMover_SetAttachNodePosition
 		{
+			static bool Prepare()
+			{
+				return AssemblyLoader.loadedAssemblies.Contains("B9PartSwitch");
+			}
+
 			// this gets called when loading a ship that has a partswitch already applied
 			public static bool Prefix(AttachNode ___attachNode, Vector3 ___position)
 			{
@@ -61,6 +66,11 @@ namespace TweakScale
 		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePositionAndMoveParts")]
 		class B9PS_AttachNodeMover_SetAttachNodePositionAndMoveParts
 		{
+			static bool Prepare()
+			{
+				return AssemblyLoader.loadedAssemblies.Contains("B9PartSwitch");
+			}
+
 			// B9PS only sets the attachnode position, not originalPosition, and this seems to be necessary to keep everything working
 			public static bool Prefix(AttachNode ___attachNode, Vector3 ___position)
 			{
@@ -77,6 +87,11 @@ namespace TweakScale
 		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "UnsetAttachNodePositionAndMoveParts")]
 		class B9PS_AttachNodeMover_UnsetAttachNodePositionAndMoveParts
 		{
+			static bool Prepare()
+			{
+				return AssemblyLoader.loadedAssemblies.Contains("B9PartSwitch");
+			}
+
 			// the B9PS version of this function depends on originalPosition being the one from the prefab, but thanks to our patch above it's not.
 			public static bool Prefix(AttachNode ___attachNode, Vector3 ___position)
 			{
