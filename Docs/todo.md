@@ -1,6 +1,5 @@
 # priority stuff
 
-- dump all part configs
 - engine exhaust (can we get rid of IUpdateable?
 
 # Feature Parity
@@ -30,6 +29,8 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] (from kurgut): when using TS on some cryo tanks (and others mods I don't remember rn), the fuel volume gets messed up completely, there is workaround in VAB by copy pasta or whatever, but it's really annoying and barely playable.
+- [ ] exception thrown from patching when B9PS isn't installed.  This isn't a bug, but it looks scary.  need a better way to report this.
+		[EXC 14:51:48.160] ArgumentException: Undefined target method for patch method static System.Boolean TweakScale.B9PS_AttachNodeMover_SetAttachNodePosition::Prefix(AttachNode ___attachNode, UnityEngine.Vector3 ___position)
 - [ ] dragging the slider with the mouse often gets interrupted
 - [ ] clicking >> after hitting the max interval screws up the slider
 		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
@@ -66,7 +67,6 @@
 
 # Architecture
 
-- [ ] make a way to dump relevant info of all parts in a way that can be compared, in order to verify configuration changes are safe
 - [ ] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
 		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
 		This is definitely conceptually correct, but seems pretty dangerous in terms of compatibility and could cause more problems than it solves
@@ -96,6 +96,8 @@
 - [x] remove IUpdater? seems like it's only the particle emitter and that's broken
 - [x] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
 		should fix ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
+- [x] make a way to dump relevant info of all parts in a way that can be compared, in order to verify configuration changes are safe
+
 # New Candy
 
 - [ ] handle stock exhaust particles

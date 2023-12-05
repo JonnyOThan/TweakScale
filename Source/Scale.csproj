@@ -61,6 +61,7 @@
     <PostBuildEvent>xcopy /Y $(TargetDir) $(SolutionDir)GameData\TweakScale\plugins</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationDumper.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="HarmonyPatching.cs" />
     <Compile Include="MemberUpdater.cs" />
