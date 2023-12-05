@@ -29,6 +29,7 @@
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
+- [ ] (from kurgut): when using TS on some cryo tanks (and others mods I don't remember rn), the fuel volume gets messed up completely, there is workaround in VAB by copy pasta or whatever, but it's really annoying and barely playable.
 - [ ] dragging the slider with the mouse often gets interrupted
 - [ ] clicking >> after hitting the max interval screws up the slider
 		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
@@ -109,7 +110,13 @@
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [ ] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
 	e.g. engine thrust, etc.
-- [ ] PAW button to propagate current scale to children
+- [ ] PAW button to propagate current absolute scale to children
+- [ ] copy/paste scale values?  
+		could be hotkeys for this stuff when in scale tool mode.  
+		And a button in the PAW.  For stack sizes, maybe have both "copy absolute scale" and "copy stack size" - possibly swap when alt is held?
+- [ ] maybe some tool to make new items inherit scale? 
+		1. global toggle (like scale children) for "inherit scale on attachment" (maybe 3 states - off, absolute, stack (diameter))
+		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
 - [ ] put scale stuff in a PAW group?
 - [x] make chain scaling a toggle in the PAW
 

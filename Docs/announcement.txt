@@ -4,6 +4,8 @@ WARNING: DO NOT use this on your existing saves or craft files without backing t
 
 # What is this?
 
+TweakScale is a mod that allows you to rescale parts in the vessel editor.  All of their stats and properties are affected realistically - tanks contain more fuel, engines get stronger, solar panels produce more power, etc.  It's one of KSP's oldest mods and has been maintained by many different people over the years.
+
 I've forked pellinor's version of TweakScale and updated it for modern KSP to provide a simpler and streamlined version.  My plan is to eventually offer this as an alternative to the current version of TweakScale.  I've paid special attention to the following areas:
 
 ## User experience
@@ -36,11 +38,13 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
 
 The gist of it is: it would take far more energy than I have.  If I believed this option was possible, I would do it (because usually, this *is* the best option).
 
-However, TweakScaleRescaled is licensed CC-BY-NC-SA.  Its code may be used by anyone else, provided they abide by the license terms.  Pull requests are also welcome from anyone who wants to contribute.
+However, TweakScaleRescaled (this fork) is licensed CC-BY-NC-SA.  Its code may be used by anyone else provided they abide by the license terms.  Pull requests are also welcome from anyone who wants to contribute.
 
 # Compatibilty
 
-Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled (once it hits final release).  However, ongoing interoperability with other versions of TweakScale is not a goal.  In order to make the fixes necessary, data structures and assumptions have to be altered in ways that are difficult to reverse.
+Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled (once it hits final release).  However, ongoing interoperability with other versions of TweakScale is not a goal.  In order to make the improvements necessary, data structures and assumptions have to be altered in ways that are difficult to reverse.
+
+TweakScaleRescaled should *just work* with almost all stock or modded parts.  It includes the stock and mod-support patches that were written by the previous authors (updated as necessary).  There's also a new patching system based on heuristics that will apply to all other parts unless they opt out or are blocked by filters for things that are known to break.
 
 Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not been tested and are not a priority.
 
