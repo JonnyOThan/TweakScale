@@ -12,8 +12,6 @@
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
 - [ ] Check KIS support
-- [ ] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
-	this could also be a toggle button (or hold a modifier key to change it)
 - [ ] See if we need to include the TweakableEverything updaters
 		it really seems like these could just be cfg patches?
 - [ ] test with existing companion
@@ -73,6 +71,7 @@
 		1. global toggle (like scale children) for "inherit scale on attachment" (maybe 3 states - off, absolute, stack (diameter))
 		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
 - [ ] put scale stuff in a PAW group?
+- [ ] toggle button or hotkey to disable step behavior on scale slider
 
 # Verification (do this last, except to generate new bugs)
 
@@ -156,6 +155,7 @@
 		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
 		for example: https://github.com/KSP-RO/RealismOverhaul/blob/32ab62ccbde3600b6c22c5bd78d1161ef1f5c08e/GameData/RealismOverhaul/REWORK/RO_NovaPunch_Misc.cfg#L25
 		This will need some rethinking...
+- [x] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
 
 ======
 
