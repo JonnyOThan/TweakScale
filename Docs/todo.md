@@ -1,6 +1,8 @@
 # priority stuff
 
 - numeric entry in PAW
+- tweakable everything
+- check if DryCost and MassScale errors are important
 - engine exhaust (can we get rid of IUpdateable?
 
 # Feature Parity
@@ -47,6 +49,7 @@
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
+- [ ] validation system (unfortunately I think this is required if I have to break out the "risk to users" line)
 
 # New Candy
 
