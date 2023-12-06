@@ -193,26 +193,41 @@ namespace TweakScale
         {
             base.OnLoad(node);
 
-            // try to load old persisted data
-            {
-                float currentScaleFromCfgNode = -1;
-                node.TryGetValue("defaultScale", ref guiDefaultScale);
-                if (node.TryGetValue("currentScale", ref currentScaleFromCfgNode) && currentScaleFromCfgNode > 0 && guiDefaultScale > 0)
-                {
-                    currentScaleFactor = currentScaleFromCfgNode / guiDefaultScale;
-                }
-            }
-
-            if (part.partInfo == null)
+            if (HighLogic.LoadedScene == GameScenes.LOADING)
             {
                 // Loading of the prefab from the part config
                 _prefabPart = part;
-
                 SetupFromConfig(new ScaleType(node));
             }
+            else
+            {
+                // try to load old persisted data
+                if (!node.HasValue(nameof(currentScaleFactor)))
+                {
+                    float currentScaleFromCfgNode = -1;
+                    node.TryGetValue("defaultScale", ref guiDefaultScale);
+                    if (node.TryGetValue("currentScale", ref currentScaleFromCfgNode) && currentScaleFromCfgNode > 0 && guiDefaultScale > 0)
+                    {
+                        currentScaleFactor = currentScaleFromCfgNode / guiDefaultScale;
+                    }
+                }
 
-            guiScaleValue = currentScaleFactor * guiDefaultScale;
-            isEnabled = true; // isEnabled gets persisted in the cfg, and we want to always start enabled and then go to sleep
+                guiScaleValue = currentScaleFactor * guiDefaultScale;
+                isEnabled = true; // isEnabled gets persisted in the cfg, and we want to always start enabled and then go to sleep
+            }
+        }
+
+        public override void OnSave(ConfigNode node)
+        {
+            base.OnSave(node);
+
+            // write some of the old keys to try to help interoperability with other versions of tweakscale
+            if (ScaleType != null)
+            {
+                node.AddValue("type", ScaleType.Name);
+            }
+            node.AddValue("defaultScale", guiDefaultScale);
+            node.AddValue("currentScale", guiScaleValue);
         }
 
         // This is a hacky way to do some "final" loading - the part compiler will deactivate the part when it's nearly finished
@@ -253,6 +268,8 @@ namespace TweakScale
             // TODO: this isn't the correct way to get the prefab module.  we should look it up by index.
             var prefabModule = _prefabPart.FindModuleImplementing<TweakScale>();
 
+            // TODO: is anything in here needed for flight mode?  should this call be moved to OnLoad and restricted to LOADING and EDITOR scenes?
+            // just conceptually, it does seem to be more closely tied to loading data from the cfg.
             SetupFromConfig(prefabModule.ScaleType);
 
             if (!CheckIntegrity())

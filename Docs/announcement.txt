@@ -42,7 +42,9 @@ However, TweakScaleRescaled (this fork) is licensed CC-BY-NC-SA.  Its code may b
 
 # Compatibilty
 
-Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled (once it hits final release).  However, ongoing interoperability with other versions of TweakScale is not a goal.  In order to make the improvements necessary, data structures and assumptions have to be altered in ways that are difficult to reverse.
+Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled (once all the bugs are worked out and it hits final release).
+
+However, ongoing interoperability with other versions of TweakScale is not a goal.  I will make a reasonable effort to support it where it's easy.  In order to make the improvements necessary, data structures and assumptions have to be altered in ways that are difficult to reverse.
 
 TweakScaleRescaled should *just work* with almost all stock or modded parts.  It includes the stock and mod-support patches that were written by the previous authors (updated as necessary).  There's also a new patching system based on heuristics that will apply to all other parts unless they opt out or are blocked by filters for things that are known to break.
 

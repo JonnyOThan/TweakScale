@@ -69,7 +69,7 @@ namespace TweakScale
 
         public int[] ScaleNodes { get; private set; }
 
-        // config is a part config
+        // config is a module config
         public ScaleType(ConfigNode moduleConfig)
         {
             ConfigNode scaleConfig = null;
