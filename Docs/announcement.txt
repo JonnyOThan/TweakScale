@@ -1,6 +1,6 @@
 // ROUGH DRAFT!
 
-WARNING: DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will certainly not work
+WARNING: DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will most likely not work
 
 # What is this?
 
@@ -14,7 +14,7 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
  * Toggle for scaling changes to affect the entire subtree
  * Button to apply the current part's scale to the subtree (NYI)
 * Scaling gizmo akin to offset and move (NYI)
-* All parts are supported unless they opt-out or match certain filters to trap known issues (AllTweak will still override this and enable *everything*)
+* All parts are supported with reasonable defaults unless they opt-out or match certain filters to trap known issues (AllTweak will still override this and enable *everything*)
 * Reduced dependencies to only ModuleManager and Harmony
 * Optimized for better performance
  * better loading time to main menu

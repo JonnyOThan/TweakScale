@@ -1,6 +1,5 @@
 # priority stuff
 
-- pass surgery?
 - engine exhaust (can we get rid of IUpdateable?
 
 # Feature Parity
@@ -9,9 +8,10 @@
 	part support seems done, but not sure if everything is using exactly the same settings as TS/L
 - [ ] audit and fix mod support
 - [ ] verify tech unlocks are correct (fuel tanks, etc)
-- [ ] Check ModuleFuelTanks interaction (realfuels)
+- [ ] Check RealFuels support (tanks and engines)
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
+- [ ] Check KIS support
 - [ ] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
 	this could also be a toggle button (or hold a modifier key to change it)
 - [ ] See if we need to include the TweakableEverything updaters
@@ -44,11 +44,6 @@
 
 # Architecture
 
-- [ ] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
-		This is definitely conceptually correct, but seems pretty dangerous in terms of compatibility and could cause more problems than it solves
-		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
-		for example: https://github.com/KSP-RO/RealismOverhaul/blob/32ab62ccbde3600b6c22c5bd78d1161ef1f5c08e/GameData/RealismOverhaul/REWORK/RO_NovaPunch_Misc.cfg#L25
-		This will need some rethinking...
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
@@ -155,6 +150,12 @@
 - [x] make a way to dump relevant info of all parts in a way that can be compared, in order to verify configuration changes are safe
 - [x] "updaters" should be called "handlers" because "update" connotes something that happens every frame.  Or Rescalable to match the interface name.  RescalableHandler?
 - [x] make chain scaling a toggle in the PAW
+- [x] write currentScale and defaultScale keys in OnSave in an attempt to provide interoperability
+- [x] Make sure all patches are in the FOR[TweakScale] pass (and make sure that other mods are OK with this)
+		This is definitely conceptually correct, but seems pretty dangerous in terms of compatibility and could cause more problems than it solves
+		blanket patches might need to be in LAST[TweakScale], considering that some mods might add modules in FOR passes of their own
+		for example: https://github.com/KSP-RO/RealismOverhaul/blob/32ab62ccbde3600b6c22c5bd78d1161ef1f5c08e/GameData/RealismOverhaul/REWORK/RO_NovaPunch_Misc.cfg#L25
+		This will need some rethinking...
 
 ======
 
