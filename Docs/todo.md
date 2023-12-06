@@ -1,7 +1,6 @@
 # priority stuff
 
 - numeric entry in PAW
-- tweakable everything
 - check if DryCost and MassScale errors are important
 - engine exhaust (can we get rid of IUpdateable?
 
@@ -15,8 +14,6 @@
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check B9PS mass changing interactions
 - [ ] Check KIS support
-- [ ] See if we need to include the TweakableEverything updaters
-		it really seems like these could just be cfg patches?
 - [ ] test with existing companion
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
 
@@ -163,6 +160,9 @@
 		Do we need to use harmony to patch the UI code?
 - [x] dragging the slider with the mouse often gets interrupted
 	not sure what caused this but it doesn't happen anymore
+- [x] See if we need to include the TweakableEverything updaters
+		this really doesn't seem to be necessary.  they're derived modules from stock which should get updated by normal exponents
+		it really seems like these could just be cfg patches?
 
 ======
 

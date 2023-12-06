@@ -1,3 +1,5 @@
+// TODO: audit ckan's suggest and support list for stuff that might be missing here
+
 Need to figure out how existing mods are using tweakscale - what passes are their patches in?
 
 # Early patches
