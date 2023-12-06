@@ -4,14 +4,14 @@ using System.Reflection;
 namespace TweakScale
 {
 	[RescalablePartModuleHandler("ModuleFuelTanks")]
-	internal class ModuleFuelTanksUpdater : IRescalablePart
+	internal class ModuleFuelTanksHandler : IRescalablePart
 	{
 		#region static reflection stuff
 
 		static Type x_moduleFuelTanksType;
 		static FieldInfo x_totalVolume_FieldInfo;
 
-		static ModuleFuelTanksUpdater()
+		static ModuleFuelTanksHandler()
 		{
 			x_moduleFuelTanksType = AssemblyLoader.GetClassByName(typeof(PartModule), "ModuleFuelTanks");
 
@@ -32,7 +32,7 @@ namespace TweakScale
 
 		#endregion
 
-		public ModuleFuelTanksUpdater(PartModule partModule)
+		public ModuleFuelTanksHandler(PartModule partModule)
 		{
 			// *ideally* this should never happen because this updater won't be created if no PartModule named ModuleFuelTanks exists.
 			// but it's possible that the type changes in a way that we can't find it anymore, or that some other mod creates a ModuleFuelTanks (yikes)

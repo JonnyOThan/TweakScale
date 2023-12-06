@@ -1,5 +1,6 @@
 # priority stuff
 
+- pass surgery?
 - engine exhaust (can we get rid of IUpdateable?
 
 # Feature Parity
@@ -76,7 +77,6 @@
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
-- [ ] "updaters" should be called "handlers" because "update" connotes something that happens every frame.  Or Rescalable to match the interface name.  RescalableHandler?
 - [ ] format everything with tabs and add .editorconfig
 - [x] figure out why it's doing 2 passes over updaters
 - [x] find out what mods if any are using IUpdater's OnUpdate call, and see if they need to be split into editor and flight versions
@@ -98,6 +98,7 @@
 - [x] add attribute for handling partmodules by name (e.g. ModuleFuelTanks)
 		should fix ERR 15:50:18.696] [TweakScale] Part updater TweakScale.ModuleFuelTanksUpdater doesn't have an appropriate constructor
 - [x] make a way to dump relevant info of all parts in a way that can be compared, in order to verify configuration changes are safe
+- [x] "updaters" should be called "handlers" because "update" connotes something that happens every frame.  Or Rescalable to match the interface name.  RescalableHandler?
 
 # New Candy
 

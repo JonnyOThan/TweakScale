@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TweakScale.Updaters
 {
-	internal class ModuleDataTransmitterUpdater : IRescalable<ModuleDataTransmitter>
+	internal class ModuleDataTransmitterHandler : IRescalable<ModuleDataTransmitter>
 	{
-		public ModuleDataTransmitterUpdater(ModuleDataTransmitter dataTransmitter)
+		public ModuleDataTransmitterHandler(ModuleDataTransmitter dataTransmitter)
 		{
 			_dataTransmitter = dataTransmitter;
 		}

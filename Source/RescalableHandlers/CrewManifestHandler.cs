@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace TweakScale
 {
 	[RescalableSceneFilter(RescalableSceneFilter.EditorOnly)]
-	internal class CrewManifestUpdater : IRescalablePart
+	internal class CrewManifestHandler : IRescalablePart
 	{
-		public CrewManifestUpdater(Part part)
+		public CrewManifestHandler(Part part)
 		{
 			// TODO: find a way to not create this for parts that don't have crew capacity (potentially tricky since some parts can dynnamically change it)
 			_part = part;

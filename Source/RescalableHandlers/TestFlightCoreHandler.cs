@@ -6,14 +6,14 @@ using UnityEngine;
 namespace TweakScale
 {
 	// TODO: go check out the TestFlightCore code and see what this is actually doing.  Ideally they'd implement this kind of thing over there
-	internal class TestFlightCoreUpdater : IRescalablePart
+	internal class TestFlightCoreHandler : IRescalablePart
 	{
 		#region Static reflection setup
 
 		static Type tfInterface;
 		static MethodInfo addInteropValue_MethodInfo;
 
-		static TestFlightCoreUpdater()
+		static TestFlightCoreHandler()
 		{
 			var testFlightCoreAssemly = AssemblyLoader.loadedAssemblies.FirstOrDefault(a => a.assembly.GetName().Name == "TestFlightCore");
 			if (testFlightCoreAssemly == null) return;
@@ -36,7 +36,7 @@ namespace TweakScale
 
 		#endregion
 
-		public TestFlightCoreUpdater(Part part)
+		public TestFlightCoreHandler(Part part)
 		{
 			_part = part;
 		}

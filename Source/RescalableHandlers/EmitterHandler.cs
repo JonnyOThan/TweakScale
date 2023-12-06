@@ -9,12 +9,12 @@ using UnityEngine;
 namespace TweakScale
 {
 	[RescalableSceneFilter(RescalableSceneFilter.FlightOnly)]
-	class EmitterUpdater : IRescalablePart
+	class EmitterHandler : IRescalablePart
 	{
 		readonly Part _part;
 		readonly TweakScale _tweakScaleModule;
 
-		public EmitterUpdater(Part part)
+		public EmitterHandler(Part part)
 		{
 			_part = part;
 			_tweakScaleModule = part.FindModuleImplementing<TweakScale>();

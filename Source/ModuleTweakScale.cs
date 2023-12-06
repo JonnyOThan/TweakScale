@@ -67,9 +67,9 @@ namespace TweakScale
         public bool scaleMass = true;
 
         /// <summary>
-        /// Updaters for different PartModules.
+        /// Handlers for different PartModules.
         /// </summary>
-        private IRescalable[] _updaters;
+        private IRescalable[] _handlers;
 
         /// <summary>
         /// the amount of extra funds caused by scaling (could be negative)
@@ -261,13 +261,13 @@ namespace TweakScale
                 return;
             }
 
-            _updaters = TweakScaleHandlerDatabase.CreateUpdaters(part);
+            _handlers = TweakScaleHandlerDatabase.CreateHandlers(part);
 
             if (IsRescaled)
             {
                 // Note that if we fall in here, this part was LOADED from a craft file or vessel in flight.  newly created parts in the editor aren't rescaled.
                 ScalePartTransform();
-                CallUpdaters(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
+                CallHandlers(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
                 // TODO: do we need to worry about drag cubes or anything else?
                 foreach (var attachNode in part.attachNodes)
                 {
@@ -313,7 +313,7 @@ namespace TweakScale
             Fields["guiScaleValue"].OnValueModified -= OnGuiScaleModified;
             Fields["guiScaleNameIndex"].OnValueModified -= OnGuiScaleModified;
             GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
-            _updaters = null; // probably not necessary, but we can help the garbage collector along maybe
+            _handlers = null; // probably not necessary, but we can help the garbage collector along maybe
         }
         private void OnGuiScaleModified(object arg1)
         {
@@ -350,14 +350,14 @@ namespace TweakScale
             }
 
             ScalePart(relativeScaleFactor);
-            CallUpdaters(relativeScaleFactor);
+            CallHandlers(relativeScaleFactor);
         }
 
         void OnEditorShipModified(ShipConstruct ship)
         {
             if (part.CrewCapacity < _prefabPart.CrewCapacity)
             {
-                CrewManifestUpdater.UpdateCrewManifest(part);
+                CrewManifestHandler.UpdateCrewManifest(part);
             }
         }
 
@@ -399,7 +399,7 @@ namespace TweakScale
             }
         }
 
-        void CallUpdaters(float relativeScaleFactor)
+        void CallHandlers(float relativeScaleFactor)
         {
             ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
          
@@ -424,17 +424,17 @@ namespace TweakScale
             data.Set<float>("factorRelative", notificationPayload.relative.linear);
             part.SendEvent("OnPartScaleChanged", data, 0);
 
-            if (_updaters != null)
+            if (_handlers != null)
             {
-                foreach (var updater in _updaters)
+                foreach (var handler in _handlers)
                 {
                     try
                     {
-                        updater.OnRescale(notificationPayload);
+                        handler.OnRescale(notificationPayload);
                     }
                     catch (Exception ex)
                     {
-                        Tools.LogException(ex, "Updater {0} {1} on part [{2}] threw an exception:", updater.GetType(), updater, part.partInfo.name);
+                        Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
                     }
                 }
             }
