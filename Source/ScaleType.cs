@@ -157,18 +157,6 @@ namespace TweakScale
                     IncrementSlide[i] = (_scaleFactors[i+1]-_scaleFactors[i])/50f;
             }
 
-            if (IsFreeScale)
-            {
-                // workaround for stock bug in tweakable UI_ScaleEdit:
-                // add a tiny dummy interval to the range because the highest one is bugged
-                var tmp = _scaleFactors;
-                _scaleFactors = new float[tmp.Length + 1];
-                for (int i = 0; i < tmp.Length; i++)
-                    _scaleFactors[i] = tmp[i];
-
-                _scaleFactors[tmp.Length] = _scaleFactors[tmp.Length - 1] + 0.1f * IncrementSlide.Max();
-            }
-
             var numTechs = TechRequired.Length;
             if ((numTechs > 0) && (numTechs != _scaleFactors.Length))
             {

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using KSP.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,8 @@ namespace TweakScale
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 		}
 
+		// ----- ModulePartVariants
+
 		[HarmonyPatch(typeof(ModulePartVariants), nameof(ModulePartVariants.UpdateNode))]
 		class ModulePartVariants_UpdateNode
 		{
@@ -41,6 +44,8 @@ namespace TweakScale
 				}
 			}
 		}
+
+		// ----- B9PS AttachNodes
 
 		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePosition")]
 		class B9PS_AttachNodeMover_SetAttachNodePosition
@@ -106,6 +111,40 @@ namespace TweakScale
 				tweakScaleModule.MoveNode(___attachNode);
 
 				return false;
+			}
+		}
+
+		// ----- stock UIPartActionScaleEdit
+
+		[HarmonyPatch(nameof(UIPartActionScaleEdit), nameof(UIPartActionScaleEdit.UpdateInterval))]
+		class UIPartActionScaleEdit_UpdateInterval
+		{
+			static void SetValue(UIPartActionScaleEdit instance, float value, UIButtonToggle button)
+			{
+				// note we should not mess with changing the interval here, only the slider value
+				instance.slider.value = value;
+				instance.UpdateDisplay(value, button);
+				instance.SetFieldValue(value);
+			}
+
+			public static bool Prefix(UIPartActionScaleEdit __instance, bool up, UIButtonToggle button)
+			{
+				// if we hit the up button while already on the top of the range
+				if (up && __instance.intervalIndex == __instance.scaleControl.intervals.Length - 2)
+				{
+					float value = __instance.scaleControl.intervals.Last();
+					SetValue(__instance, value, button);
+					return false;
+				}
+				// hit the down button at the bottom of the range
+				if (!up && __instance.intervalIndex == 0)
+				{
+					float value = __instance.scaleControl.intervals.First();
+					SetValue(__instance, value, button);
+					return false;
+				}
+
+				return true;
 			}
 		}
 	}

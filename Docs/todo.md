@@ -1,5 +1,6 @@
 # priority stuff
 
+- numeric entry in PAW
 - engine exhaust (can we get rid of IUpdateable?
 
 # Feature Parity
@@ -27,10 +28,6 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] (from kurgut): when using TS on some cryo tanks (and others mods I don't remember rn), the fuel volume gets messed up completely, there is workaround in VAB by copy pasta or whatever, but it's really annoying and barely playable.
-- [ ] dragging the slider with the mouse often gets interrupted
-- [ ] clicking >> after hitting the max interval screws up the slider
-		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
-		Do we need to use harmony to patch the UI code?
 
 # Backwards Compatibilty
 
@@ -50,6 +47,7 @@
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
+
 # New Candy
 
 - [ ] handle stock exhaust particles
@@ -72,6 +70,7 @@
 		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
 - [ ] put scale stuff in a PAW group?
 - [ ] toggle button or hotkey to disable step behavior on scale slider
+	probably not too useful if numeric editing is added
 
 # Verification (do this last, except to generate new bugs)
 
@@ -156,6 +155,11 @@
 		for example: https://github.com/KSP-RO/RealismOverhaul/blob/32ab62ccbde3600b6c22c5bd78d1161ef1f5c08e/GameData/RealismOverhaul/REWORK/RO_NovaPunch_Misc.cfg#L25
 		This will need some rethinking...
 - [x] bring back scale interval (or not? analog seems fine, but need to fix the slider dragging or add numeric entry)
+- [x] clicking >> after hitting the max interval screws up the slider
+		this may be due to the workaround in ScaleType that mentions a bug - I tried remove the workaround and the behaviour was way worse
+		Do we need to use harmony to patch the UI code?
+- [x] dragging the slider with the mouse often gets interrupted
+	not sure what caused this but it doesn't happen anymore
 
 ======
 

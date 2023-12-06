@@ -90,6 +90,9 @@
     <Reference Include="$(ManagedPath)\UnityEngine.CoreModule.dll">
       <Private>false</Private>
     </Reference>
+    <Reference Include="$(ManagedPath)\UnityEngine.UI.dll">
+      <Private>false</Private>
+    </Reference>
     <Reference Include="$(ManagedPath)\UnityEngine.IMGUIModule.dll">
       <Private>false</Private>
     </Reference>
