@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props" Condition="Exists('..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props')" />
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props" Condition="Exists('..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{70D38878-43DB-4F6E-8002-45ADA5391AF7}</ProjectGuid>
+    <ProjectGuid>{68D4513A-C4F9-456D-84AC-B318684716C5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TweakScale</RootNamespace>
-    <AssemblyName>Scale</AssemblyName>
+    <RootNamespace>TweakScaleSafetyNet</RootNamespace>
+    <AssemblyName>TweakScaleSafetyNet</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -26,17 +24,14 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
@@ -58,30 +53,13 @@
     <StartWorkingDirectory>$(ReferencePath)</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y $(TargetDir) $(SolutionDir)GameData\TweakScale\plugins\</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y $(TargetDir) $(SolutionDir)GameData\TSSafetyNet\</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationDumper.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="HarmonyPatching.cs" />
-    <Compile Include="MemberUpdater.cs" />
-    <Compile Include="ScaleExponents.cs" />
-    <Compile Include="SingletonBehavior.cs" />
-    <Compile Include="RescalableHandlers\CrewManifestHandler.cs" />
-    <Compile Include="RescalableHandlers\ModuleFuelTanksHandler.cs" />
-    <Compile Include="RescalableHandlers\ModuleDataTransmitterHandler.cs" />
-    <Compile Include="RescalableHandlers\TestFlightCoreHandler.cs" />
-    <Compile Include="Tools.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ModuleTweakScale.cs" />
-    <Compile Include="ScaleType.cs" />
-    <Compile Include="RescalableHandlers\EmitterHandler.cs" />
-    <Compile Include="RescalableHandlers\TweakScaleHandlerDatabase.cs" />
-    <Compile Include="RescalableHandlers\TweakScaleRegistrator.cs" />
-    <Compile Include="UI_ScaleEditNumeric.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="$(ManagedPath)\Assembly-CSharp.dll">
       <Private>false</Private>
     </Reference>
@@ -97,16 +75,10 @@
     <Reference Include="$(ManagedPath)\UnityEngine.IMGUIModule.dll">
       <Private>false</Private>
     </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.TextRenderingModule.dll">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="$(ManagedPath)\UnityEngine.InputLegacyModule.dll">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="$(ReferencePath)GameData\000_Harmony\0Harmony.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SafetyNetAddon.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
@@ -118,22 +90,15 @@
     <PublicizeAsReferenceAssemblies>false</PublicizeAsReferenceAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="Scale_Redist\Scale_Redist.csproj">
-      <Project>{2be63d8b-350e-4edd-959c-4b7397984364}</Project>
-      <Name>Scale_Redist</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props'))" />
-    <Error Condition="!Exists('..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.props'))" />
+    <Error Condition="!Exists('..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets'))" />
   </Target>
-  <Import Project="..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets" Condition="Exists('..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets')" />
+  <Import Project="..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets" Condition="Exists('..\..\packages\Krafs.Publicizer.1.0.3\build\Krafs.Publicizer.targets')" />
 </Project>

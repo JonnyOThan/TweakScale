@@ -46,6 +46,7 @@
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
 - [ ] validation system (unfortunately I think this is required if I have to break out the "risk to users" line)
+- [ ] add a FOR[TweakScale] patch somewhere to reduce the impact of installing incorrectly
 
 # New Candy
 
