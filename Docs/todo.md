@@ -1,6 +1,5 @@
 # priority stuff
 
-- numeric entry in PAW
 - check if DryCost and MassScale errors are important
 - engine exhaust (can we get rid of IUpdateable?
 
@@ -56,7 +55,6 @@
 - [ ] implement waterfall support
 - [ ] realplume support?
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
-- [ ] numeric entry in PAW
 - [ ] increase crew capacity when scaling up?
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [ ] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
@@ -163,6 +161,8 @@
 - [x] See if we need to include the TweakableEverything updaters
 		this really doesn't seem to be necessary.  they're derived modules from stock which should get updated by normal exponents
 		it really seems like these could just be cfg patches?
+- [x] numeric entry in PAW
+- [x] dragging the scale slider around doesn't update the resources in the PAW
 
 ======
 

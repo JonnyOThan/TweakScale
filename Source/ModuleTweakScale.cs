@@ -11,7 +11,7 @@ namespace TweakScale
         /// The selected scale. Different from currentScale only for destination single update, where currentScale is set to match this.
         /// </summary>
         [KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", guiFormat = "0.000", guiUnits = "m")]
-        [UI_ScaleEdit(scene = UI_Scene.Editor)]
+        [UI_ScaleEditNumeric(scene = UI_Scene.Editor)]
         public float guiScaleValue = -1;
 
         /// <summary>
@@ -340,6 +340,8 @@ namespace TweakScale
                 OnTweakScaleChanged(newScaleFactor);
 
                 GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+
+                UpdatePartActionWindow(false);
             }
         }
 
@@ -612,7 +614,7 @@ namespace TweakScale
                 {
                     b.guiScaleNameIndex = Tools.ClosestIndex(b.guiScaleValue, b.ScaleFactors);
                 }
-                b.MarkWindowDirty();
+                b.UpdatePartActionWindow(true);
                 b.OnTweakScaleChanged(b.GetScaleFactorFromGUI());
             }
         }
@@ -636,14 +638,20 @@ namespace TweakScale
             return true;
         }
 
-        /// <summary>
-        /// Marks the right-click window as dirty (i.e. tells it to update).
-        /// </summary>
-        private void MarkWindowDirty() // redraw the right-click window with the updated stats
+        
+        private void UpdatePartActionWindow(bool includeScaleControls)
         {
             if (!part.PartActionWindow) return;
 
-            part.PartActionWindow.displayDirty = true;
+            var scaleValueItem = Fields["guiScaleValue"]._uiControlEditor.partActionItem;
+            var scaleNameIndexItem = Fields["guiScaleNameIndex"].uiControlEditor.partActionItem;
+            foreach (var item in part.PartActionWindow.listItems)
+            {
+                if (includeScaleControls || (item != scaleValueItem && item != scaleNameIndexItem))
+                {
+                    item.UpdateItem();
+                }
+            }
         }
 
         float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)

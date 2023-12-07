@@ -78,6 +78,7 @@
     <Compile Include="RescalableHandlers\EmitterHandler.cs" />
     <Compile Include="RescalableHandlers\TweakScaleHandlerDatabase.cs" />
     <Compile Include="RescalableHandlers\TweakScaleRegistrator.cs" />
+    <Compile Include="UI_ScaleEditNumeric.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

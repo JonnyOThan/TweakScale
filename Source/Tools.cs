@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Smooth.Algebraics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -294,6 +295,48 @@ namespace TweakScale
                     VisitRecursive(property.Name, value, callback, maxDepth, flags, currentDepth + 1);
                 }
             }
+        }
+
+        public static void CopyComponentData<FROM, TO>(FROM oldComponent, TO newComponent) where FROM : Component where TO : FROM
+        {
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            Type sourceType = oldComponent.GetType();
+            FieldInfo[] fields = sourceType.GetFields(flags);
+            foreach (var field in fields)
+            {
+                object value = field.GetValue(oldComponent);
+                field.SetValue(newComponent, value);
+            }
+
+            PropertyInfo[] properties = sourceType.GetProperties(flags);
+            foreach (var property in properties)
+            {
+                if (property.CanWrite)
+                {
+                    try
+                    {
+                        property.SetValue(newComponent, property.GetValue(oldComponent, null), null);
+                    }
+                    catch (Exception e)
+                    {
+                        Tools.LogException(e, "exception copying property {0}.{1}", sourceType.Name, property.Name);
+                    }
+                }
+            }
+        }
+
+        public static T CloneComponent<T>(T oldComponent, GameObject to) where T : Component
+        {
+            if (oldComponent != null)
+            {
+                var newComponent = to.AddComponent<T>();
+
+                CopyComponentData(oldComponent, newComponent);
+
+                return newComponent;
+            }
+
+            return null;
         }
     }
 }

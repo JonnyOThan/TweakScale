@@ -4,8 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace TweakScale
@@ -116,7 +115,7 @@ namespace TweakScale
 
 		// ----- stock UIPartActionScaleEdit
 
-		[HarmonyPatch(nameof(UIPartActionScaleEdit), nameof(UIPartActionScaleEdit.UpdateInterval))]
+		[HarmonyPatch(typeof(UIPartActionScaleEdit), nameof(UIPartActionScaleEdit.UpdateInterval))]
 		class UIPartActionScaleEdit_UpdateInterval
 		{
 			static void SetValue(UIPartActionScaleEdit instance, float value, UIButtonToggle button)
@@ -145,6 +144,48 @@ namespace TweakScale
 				}
 
 				return true;
+			}
+		}
+
+		[HarmonyPatch(typeof(UIPartActionScaleEdit), nameof(UIPartActionScaleEdit.FindInterval))]
+		class UIPartActionScaleEdit_FindInterval
+		{
+			// The stock version of this function has an off-by-one error where it won't consider the final interval range
+			static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+			{
+				foreach (CodeInstruction instruction in instructions)
+				{
+					if (instruction.LoadsConstant(2))
+					{
+						instruction.opcode = OpCodes.Ldc_I4_1;
+					}
+
+					yield return instruction;
+				}
+			}
+		}
+
+		// ----- stock UIPartActionController
+
+		[HarmonyPatch(typeof(UIPartActionController), nameof(UIPartActionController.Awake))]
+		class UIPartActionController_Awake
+		{
+			static void Postfix(UIPartActionController __instance)
+			{
+				// needs to happen before UIPartActionController.SetupItemControls which is called in awake
+				__instance.fieldPrefabs.Add(UIPartActionScaleEditNumeric.CreatePrefab());
+			}
+		}
+
+		// ----- stock UIPartActionResourceEditor
+
+		[HarmonyPatch(typeof(UIPartActionResourceEditor), nameof(UIPartActionResourceEditor.UpdateItem))]
+		class UIPartActionResourceEditor_UpdateItem
+		{
+			static void Postfix(UIPartActionResourceEditor __instance)
+			{
+				__instance.resourceAmnt.text = KSPUtil.LocalizeNumber(__instance.resource.amount, "F1");
+				__instance.resourceMax.text = KSPUtil.LocalizeNumber(__instance.resource.maxAmount, "F1");
 			}
 		}
 	}
