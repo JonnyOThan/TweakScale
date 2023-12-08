@@ -6,7 +6,7 @@ TweakScaleSafetyNet does nothing when TweakScale is installed and working proper
 
 1. Shows a dialog box on startup with a shorter form of the above warning.  You can choose to hide this warning permanently.
 
-2. Each time you load a save file from the main menu, it scans the save for vessels in flight that have scaled parts.  If there are any, it will warn you and create a backup copy of the save.  Note that currently, quicksaves are not checked.
+2. Each time you load a save file from the main menu, it scans the save for vessels in flight that have scaled parts.  If there are any, it will warn you and create a backup copy of the save.
 
-3. Each time you load a craft file, it scans the craft for scaled parts.  If there are any, it will warn you and create a backup copy of the craft.
+3. Each time you load a craft file in the editor, it scans the craft for scaled parts.  If there are any, it will warn you and create a backup copy of the craft.
 
