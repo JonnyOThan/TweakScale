@@ -25,7 +25,6 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] investigate craft file from StormCircuit
-- [ ] fl-t400 tank has 2 "type" entries in its cfg
 
 # Backwards Compatibilty
 
@@ -165,6 +164,7 @@
 - [x] format everything with tabs and add .editorconfig
 - [x] Check B9PS mass changing interactions
 - [x] (from kurgut): when using TS on some cryo tanks (and others mods I don't remember rn), the fuel volume gets messed up completely, there is workaround in VAB by copy pasta or whatever, but it's really annoying and barely playable.
+- [x] fl-t400 tank has 2 "type" entries in its cfg
 
 ======
 
