@@ -118,36 +118,51 @@ namespace TweakScale
 			unscaledAttachNodes[attachNodeId] = nodeInfo;
 		}
 
+		// modules that understand scaling themselves should be excluded from cost/mass adjustments
+		static HashSet<string> x_modulesToExcludeForDryStats = new string[]
+		{
+			"ModuleB9PartSwitch",
+			"TweakScale",
+			"ModuleInventoryPart",
+		}.ToHashSet();
+
 		internal void CalculateCostAndMass()
 		{
-			extraCost = 0;
-			// TODO: if some modules change their cost or mass based on scale, we could have a problem (feedback loop)
-			// getting the module costs from the prefab isn't great either, because it would ignore any modifications that were done to the part (simple example: changing the length of the structural tube)
-			// and how do we know which modified module costs should be scaled and which shouldn't?  Probably need to do an audit of all IPartCostModifier and IPartMassModifier
-			// it might work to have a registry of which modifiers should be applied here and which shouldn't ?
-			// is this what the PrefabDryCostWriter was trying to solve?
-			// we might need to store off some info when the part is created
-			float dryCost = part.partInfo.cost + part.GetModuleCosts(part.partInfo.cost);
+			float cost = part.partInfo.cost;
+			float mass = part.partInfo.partPrefab.mass;
+
+			foreach (var module in part.modules.modules)
+			{
+				if (x_modulesToExcludeForDryStats.Contains(module.ClassName)) continue;
+
+				if (module is IPartCostModifier costModifier)
+				{
+					cost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
+				}
+				if (module is IPartMassModifier massModifier)
+				{
+					mass += massModifier.GetModuleMass(part.partInfo.partPrefab.mass, ModifierStagingSituation.CURRENT);
+				}
+			}
+
+			// the cost from the prefab includes the price of resources
 			foreach (var partResource in _prefabPart.Resources)
 			{
-				dryCost -= (float)partResource.maxAmount * partResource.info.unitCost;
+				cost -= (float)partResource.maxAmount * partResource.info.unitCost;
 			}
 
 			float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
 			float costScale = Mathf.Pow(currentScaleFactor, costExponent);
-			float newCost = costScale * dryCost;
+			float newCost = costScale * cost;
 
-			extraCost = newCost - dryCost;
+			extraCost = newCost - cost;
 
 			// TODO: do we need to consider the mass of kerbals here?
 			// TODO: we no longer consider the scaleMass flag - need to figure out if we need to.  it's related to ModuleFuelTanks
-			extraMass = 0;
-			part.UpdateMass();
-			float dryMass = part.mass - part.inventoryMass;
 			float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
 			float massScale = Mathf.Pow(currentScaleFactor, massExponent);
-			float newMass = massScale * dryMass;
-			extraMass = newMass - dryMass;
+			float newMass = massScale * mass;
+			extraMass = newMass - mass;
 			part.UpdateMass();
 		}
 
@@ -370,6 +385,7 @@ namespace TweakScale
 
 			ScalePart(relativeScaleFactor);
 			CallHandlers(relativeScaleFactor);
+			CalculateCostAndMass();
 		}
 
 		void OnEditorShipModified(ShipConstruct ship)
@@ -497,7 +513,6 @@ namespace TweakScale
 				child.transform.Translate(targetPosition - attachedPosition, part.transform);
 			}
 
-			CalculateCostAndMass();
 			ScaleDragCubes(relativeScaleFactor);
 		}
 

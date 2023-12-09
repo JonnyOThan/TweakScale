@@ -17,6 +17,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{2E6A7FC2-286E-41AD-874B-A427B59AD3A8}"
 	ProjectSection(SolutionItems) = preProject
 		Docs\announcement.md = Docs\announcement.md
+		b9ps.md = b9ps.md
 		Docs\nodes.md = Docs\nodes.md
 		Docs\todo.md = Docs\todo.md
 		Docs\validator.md = Docs\validator.md
