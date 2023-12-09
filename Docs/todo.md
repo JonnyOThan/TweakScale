@@ -45,7 +45,6 @@
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
-- [ ] validation system (unfortunately I think this is required if I have to break out the "risk to users" line)
 
 # New Candy
 
@@ -163,6 +162,7 @@
 		it really seems like these could just be cfg patches?
 - [x] numeric entry in PAW
 - [x] dragging the scale slider around doesn't update the resources in the PAW
+- [x] validation system (unfortunately I think this is required if I have to break out the "risk to users" line)
 
 ======
 

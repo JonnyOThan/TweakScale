@@ -72,8 +72,6 @@ namespace TweakScale.SafetyNet
 				suffix;
 		}
 
-		const string backupFolder = "TSSafetyNet";
-
 		void ShowWarningDialog(List<string> scaledVessels, string saveFolder)
 		{
 			var message =
@@ -81,7 +79,7 @@ namespace TweakScale.SafetyNet
 				GetVesselListText(scaledVessels) + "\n" +
 				"TweakScale is " + SafetyNetAddon.StateDescription + ".\n\n" +
 				SafetyNetAddon.DiagnosticMessage +
-				"If you continue, a backup will be saved to " + saveFolder + "/" + backupFolder + ".\n" +
+				"If you continue, a backup will be saved to saves/" + saveFolder + "/" + Utils.BackupFolderName + ".\n" +
 				"To remove this check permanently, uninstall TweakScaleSafetyNet.\n" + 
 				"Proceed with caution.";
 
@@ -96,7 +94,7 @@ namespace TweakScale.SafetyNet
 		{
 			var backupFileName = KSPUtil.SystemDateTime.DateTimeNow().ToString("yyyy-MM-dd_HH-mm-ss") + ".sfs";
 			var saveGamePath = Utils.GetSaveFileFullPath(saveFolder, "persistent");
-			var backupDirectory = Path.Combine(Utils.GetSavesDirectory(), saveFolder, backupFolder);
+			var backupDirectory = Path.Combine(Utils.GetSavesDirectory(), saveFolder, Utils.BackupFolderName);
 			var backupPath = Path.Combine(backupDirectory, backupFileName);
 			Directory.CreateDirectory(backupDirectory);
 			File.Copy(saveGamePath, backupPath, overwrite: false);

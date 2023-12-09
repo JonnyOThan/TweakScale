@@ -9,6 +9,8 @@ namespace TweakScale.SafetyNet
 {
 	static class Utils
 	{
+		public const string BackupFolderName = "TSSafetyNet";
+
 		internal static string GetSaveFilePath(string saveFolder, string saveName)
 		{
 			return Path.ChangeExtension(Path.Combine(saveFolder, saveName), ".sfs");
