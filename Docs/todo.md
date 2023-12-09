@@ -26,6 +26,7 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] (from kurgut): when using TS on some cryo tanks (and others mods I don't remember rn), the fuel volume gets messed up completely, there is workaround in VAB by copy pasta or whatever, but it's really annoying and barely playable.
+- [ ] investigate craft file from StormCircuit
 
 # Backwards Compatibilty
 
@@ -41,7 +42,6 @@
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
-- [ ] format everything with tabs and add .editorconfig
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
@@ -163,6 +163,7 @@
 - [x] numeric entry in PAW
 - [x] dragging the scale slider around doesn't update the resources in the PAW
 - [x] validation system (unfortunately I think this is required if I have to break out the "risk to users" line)
+- [x] format everything with tabs and add .editorconfig
 
 ======
 
