@@ -64,7 +64,6 @@ namespace TweakScale
 
 		// TODO: these are not being used anymore, need to check the mods that they are related to and see if they're still necessary
 		public bool ignoreResourcesForCost = false;
-		public bool scaleMass = true;
 
 		/// <summary>
 		/// Handlers for different PartModules.
@@ -118,12 +117,13 @@ namespace TweakScale
 			unscaledAttachNodes[attachNodeId] = nodeInfo;
 		}
 
-		// modules that understand scaling themselves should be excluded from cost/mass adjustments
+		// modules that understand scaling themselves (or more generally: apply modifiers that shouldn't be scaled) should be excluded from cost/mass adjustments
 		static HashSet<string> x_modulesToExcludeForDryStats = new string[]
 		{
 			"ModuleB9PartSwitch",
 			"TweakScale",
 			"ModuleInventoryPart",
+			"ModuleFuelTanks",
 		}.ToHashSet();
 
 		internal void CalculateCostAndMass()

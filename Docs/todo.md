@@ -9,7 +9,6 @@
 	part support seems done, but not sure if everything is using exactly the same settings as TS/L
 - [ ] audit and fix mod support
 - [ ] verify tech unlocks are correct (fuel tanks, etc)
-- [ ] Check RealFuels support (tanks and engines)
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check KIS support
 - [ ] test with existing companion
@@ -165,6 +164,7 @@
 - [x] Check B9PS mass changing interactions
 - [x] (from kurgut): when using TS on some cryo tanks (and others mods I don't remember rn), the fuel volume gets messed up completely, there is workaround in VAB by copy pasta or whatever, but it's really annoying and barely playable.
 - [x] fl-t400 tank has 2 "type" entries in its cfg
+- [x] Check RealFuels support (tanks and engines)
 
 ======
 
