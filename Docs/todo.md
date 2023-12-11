@@ -24,6 +24,13 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] investigate craft file from StormCircuit
+- [ ] Match node size: scale doesn't update in selected part's PAW if you have it open
+- [ ] Match node size: need to revert to previous size if toggle is disabled mid-placement
+- [ ] match node size: analyze actual node size to better support adapter parts
+- [ ] Match node size: parent part shouldn't actually need to have tweakscale module
+- [ ] Match node size: reliant doesn't scale properly (but swivel does?)
+- [ ] Match node size: part can "jump" when rescaled and lose attachment - is there a way to offset this?
+		e.g. try to attach a fl-t400 to a 2.5m tank
 
 # Backwards Compatibilty
 
@@ -55,9 +62,6 @@
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [ ] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
 	e.g. engine thrust, etc.
-- [ ] maybe some tool to make new items inherit scale? 
-		1. global toggle (like scale children) for "inherit scale on attachment" (maybe 3 states - off, absolute, stack (diameter))
-		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
 - [ ] support localization
 
 # Verification (do this last, except to generate new bugs)
@@ -169,6 +173,9 @@
 	mass seems off (realfuels too)
 - [x] put scale stuff in a PAW group?
 - [x] restore hotkey for toggling child attachment just in case people get mad
+- [x] maybe some tool to make new items inherit scale? 
+		1. global toggle (like scale children) for "inherit scale on attachment" (maybe 3 states - off, absolute, stack (diameter))
+		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
 
 ======
 

@@ -92,10 +92,13 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public float extraMass;
 
-		// this is shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.
+		// these are shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.
 		[KSPField(guiActiveEditor = true, guiName = "Scale Children", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
 		public bool scaleChildren = false;
+		[KSPField(guiActiveEditor = true, guiName = "Match Node Size", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
+		public bool matchNodeSize = false;
 
 		/// <summary>
 		/// The ScaleType for this part.
@@ -336,9 +339,13 @@ namespace TweakScale
 				}
 
 				scaleChildren = TweakScaleEditorLogic.Instance.ScaleChildren;
-				Fields["scaleChildren"].OnValueModified += OnScaleChildrenModified;
-				Fields["guiScaleValue"].OnValueModified += OnGuiScaleModified;
-				Fields["guiScaleNameIndex"].OnValueModified += OnGuiScaleModified;
+				Fields[nameof(scaleChildren)].OnValueModified += OnScaleChildrenModified;
+
+				matchNodeSize = TweakScaleEditorLogic.Instance.MatchNodeSize;
+				Fields[nameof(matchNodeSize)].OnValueModified += OnMatchNodeSizeModified;
+
+				Fields[nameof(guiScaleValue)].OnValueModified += OnGuiScaleModified;
+				Fields[nameof(guiScaleNameIndex)].OnValueModified += OnGuiScaleModified;
 			}
 			else if (!IsRescaled)
 			{
@@ -356,9 +363,10 @@ namespace TweakScale
 
 		void OnDestroy()
 		{
-			Fields["scaleChildren"].OnValueModified -= OnScaleChildrenModified;
-			Fields["guiScaleValue"].OnValueModified -= OnGuiScaleModified;
-			Fields["guiScaleNameIndex"].OnValueModified -= OnGuiScaleModified;
+			Fields[nameof(scaleChildren)].OnValueModified -= OnScaleChildrenModified;
+			Fields[nameof(matchNodeSize)].OnValueModified -= OnMatchNodeSizeModified;
+			Fields[nameof(guiScaleValue)].OnValueModified -= OnGuiScaleModified;
+			Fields[nameof(guiScaleNameIndex)].OnValueModified -= OnGuiScaleModified;
 			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
 			_handlers = null; // probably not necessary, but we can help the garbage collector along maybe
 		}
@@ -378,6 +386,11 @@ namespace TweakScale
 		private void OnScaleChildrenModified(object arg1)
 		{
 			TweakScaleEditorLogic.Instance.ScaleChildren.State = scaleChildren;
+		}
+
+		private void OnMatchNodeSizeModified(object arg1)
+		{
+			TweakScaleEditorLogic.Instance.MatchNodeSize.State = matchNodeSize;
 		}
 
 		/// <summary>
@@ -423,6 +436,7 @@ namespace TweakScale
 			{
 				// copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
 				scaleChildren = TweakScaleEditorLogic.Instance.ScaleChildren;
+				matchNodeSize = TweakScaleEditorLogic.Instance.MatchNodeSize;
 			}
 			else
 			{
@@ -445,6 +459,7 @@ namespace TweakScale
 					part.internalModel.transform.localScale = _savedIvaScale;
 				}
 
+				// TODO: the part's internal model might be spawned later (freeiva, crew transfers, moduleanimategeneric, etc) at which point we need to wake up.
 				isEnabled = true;
 			}
 		}
@@ -468,7 +483,7 @@ namespace TweakScale
 			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload);
 			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
 
-			// send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the updater list empty for many parts
+			// send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the handler list empty for many parts
 			var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
 			data.Set<float>("factorAbsolute", notificationPayload.absolute.linear);
 			data.Set<float>("factorRelative", notificationPayload.relative.linear);
