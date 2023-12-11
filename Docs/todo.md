@@ -30,7 +30,6 @@
 - [ ] make sure we can load crafts saved with TS/L
 	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
-- [ ] restore hotkey for toggling child attachment just in case people get mad
 
 
 # Architecture
@@ -169,6 +168,7 @@
 - [x] investigate modular fuel tanks
 	mass seems off (realfuels too)
 - [x] put scale stuff in a PAW group?
+- [x] restore hotkey for toggling child attachment just in case people get mad
 
 ======
 

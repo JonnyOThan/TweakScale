@@ -64,6 +64,9 @@
     <Compile Include="ConfigurationDumper.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="HarmonyPatching.cs" />
+    <Compile Include="Hotkeys\Hotkey.cs" />
+    <Compile Include="Hotkeys\HotkeyAble.cs" />
+    <Compile Include="Hotkeys\HotkeyManager.cs" />
     <Compile Include="MemberUpdater.cs" />
     <Compile Include="ScaleExponents.cs" />
     <Compile Include="SingletonBehavior.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="RescalableHandlers\EmitterHandler.cs" />
     <Compile Include="RescalableHandlers\TweakScaleHandlerDatabase.cs" />
     <Compile Include="RescalableHandlers\TweakScaleRegistrator.cs" />
+    <Compile Include="TweakScaleEditorLogic.cs" />
     <Compile Include="UI_ScaleEditNumeric.cs" />
   </ItemGroup>
   <ItemGroup>

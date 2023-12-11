@@ -92,11 +92,10 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public float extraMass;
 
+		// this is shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.
 		[KSPField(guiActiveEditor = true, guiName = "Scale Children", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
 		public bool scaleChildren = false;
-		// this is shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.
-		public static bool x_scaleChildren = false;
 
 		/// <summary>
 		/// The ScaleType for this part.
@@ -336,7 +335,7 @@ namespace TweakScale
 					GameEvents.onEditorShipModified.Add(OnEditorShipModified);
 				}
 
-				scaleChildren = x_scaleChildren;
+				scaleChildren = TweakScaleEditorLogic.Instance.ScaleChildren;
 				Fields["scaleChildren"].OnValueModified += OnScaleChildrenModified;
 				Fields["guiScaleValue"].OnValueModified += OnGuiScaleModified;
 				Fields["guiScaleNameIndex"].OnValueModified += OnGuiScaleModified;
@@ -378,7 +377,7 @@ namespace TweakScale
 
 		private void OnScaleChildrenModified(object arg1)
 		{
-			x_scaleChildren = scaleChildren;
+			TweakScaleEditorLogic.Instance.ScaleChildren.State = scaleChildren;
 		}
 
 		/// <summary>
@@ -423,7 +422,7 @@ namespace TweakScale
 			if (HighLogic.LoadedSceneIsEditor)
 			{
 				// copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
-				scaleChildren = x_scaleChildren;
+				scaleChildren = TweakScaleEditorLogic.Instance.ScaleChildren;
 			}
 			else
 			{
