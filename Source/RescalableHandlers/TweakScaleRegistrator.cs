@@ -54,7 +54,7 @@ namespace TweakScale
 			// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
 			Func<PartModule, IRescalable> creator = partModule => (IRescalable)constructor.Invoke(new object[] { partModule });
 
-			Tools.Log("Found an handler {0} for PartModule type {1}: sceneFilter: {2}", handlerType, partModuleType, sceneFilter);
+			Tools.Log("Found a handler {0} for PartModule type {1}: sceneFilter: {2}", handlerType, partModuleType, sceneFilter);
 			TweakScaleHandlerDatabase.RegisterPartModuleHandler(partModuleType, creator, sceneFilter);
 		}
 
@@ -86,7 +86,7 @@ namespace TweakScale
 					Type partModuleType = GetPartModuleTypeByName(attribute.PartModuleName);
 					if (partModuleType == null)
 					{
-						Tools.LogWarning("Found an handler {0} for PartModule named {1} but no matching PartModule type exists", handlerType, attribute.PartModuleName);
+						Tools.LogWarning("Found a handler {0} for PartModule named {1} but no matching PartModule type exists", handlerType, attribute.PartModuleName);
 					}
 					else
 					{
@@ -115,7 +115,7 @@ namespace TweakScale
 				// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
 				Func<Part, IRescalable> creator = part => (IRescalable)constructor.Invoke(new object[] { part });
 
-				Tools.Log("Found an handler {0} for Parts: sceneFilter: {1}", handlerType, sceneFilter);
+				Tools.Log("Found a handler {0} for Parts: sceneFilter: {1}", handlerType, sceneFilter);
 				TweakScaleHandlerDatabase.RegisterPartHandler(creator, sceneFilter);
 			}
 			// PartModule implementing IRescalable

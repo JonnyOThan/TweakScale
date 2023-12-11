@@ -14,7 +14,7 @@ namespace TweakScale
 		static readonly List<Func<Part, IRescalable>> flightPartHandlers = new List<Func<Part, IRescalable>>();
 
 		/// <summary>
-		/// Registers an handler for partmodules of type <paramref name="partModuleType"/>.
+		/// Registers a handler for partmodules of type <paramref name="partModuleType"/>.
 		/// </summary>
 		/// <param name="partModuleType">Type of the PartModule type to handle.</param>
 		/// <param name="creator">A function that creates a handler for this PartModule type.</param>
@@ -22,7 +22,7 @@ namespace TweakScale
 		{
 			if (!typeof(PartModule).IsAssignableFrom(partModuleType))
 			{
-				Tools.LogError("Tried to register an handler for type {0} but it doesn't inherit from PartModule", partModuleType);
+				Tools.LogError("Tried to register a handler for type {0} but it doesn't inherit from PartModule", partModuleType);
 				return;
 			}
 			
@@ -61,7 +61,7 @@ namespace TweakScale
 		// reusing a list to reduce memory allocations
 		static List<IRescalable> x_scratchHandlers = new List<IRescalable>();
 
-		// Creates an handler for each modules attached to destination part.
+		// Creates a handler for each modules attached to destination part.
 		public static IRescalable[] CreateHandlers(Part part)
 		{
 			var (partModuleHandlers, partHandlers) = HighLogic.LoadedSceneIsEditor 

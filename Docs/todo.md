@@ -24,6 +24,8 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] investigate craft file from StormCircuit
+- [ ] investigate modular fuel tanks
+	mass seems off (realfuels too)
 
 # Backwards Compatibilty
 
@@ -36,6 +38,7 @@
 # Architecture
 
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones
+	maybe? would other things break if these aren't set up early enough?
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
@@ -55,16 +58,10 @@
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [ ] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
 	e.g. engine thrust, etc.
-- [ ] PAW button to propagate current absolute scale to children
-- [ ] copy/paste scale values?  
-		could be hotkeys for this stuff when in scale tool mode.  
-		And a button in the PAW.  For stack sizes, maybe have both "copy absolute scale" and "copy stack size" - possibly swap when alt is held?
 - [ ] maybe some tool to make new items inherit scale? 
 		1. global toggle (like scale children) for "inherit scale on attachment" (maybe 3 states - off, absolute, stack (diameter))
 		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
 - [ ] put scale stuff in a PAW group?
-- [ ] toggle button or hotkey to disable step behavior on scale slider
-	probably not too useful if numeric editing is added
 
 # Verification (do this last, except to generate new bugs)
 
@@ -91,6 +88,12 @@
 		maybe leave scale.dll where it is and add a placeholder tweakscale-rescaled.dll?  Or just accept that it won't be auto-detected by ckan (this may improve globally later anyway)
 - remove concept of "force relative scale" - not really sure what this was even for
 		Maybe not - this might be the only way to handle things that aren't in the prefab?
+- toggle button or hotkey to disable step behavior on scale slider
+	probably not too useful if numeric editing is added
+- PAW button to propagate current absolute scale to children
+- copy/paste scale values?  
+		could be hotkeys for this stuff when in scale tool mode.  
+		And a button in the PAW.  For stack sizes, maybe have both "copy absolute scale" and "copy stack size" - possibly swap when alt is held?
 
 # Done
 
