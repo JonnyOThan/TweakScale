@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace TweakScale
@@ -13,14 +14,14 @@ namespace TweakScale
 		/// <summary>
 		/// The selected scale. Different from currentScale only for destination single update, where currentScale is set to match this.
 		/// </summary>
-		[KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName, guiFormat = "0.000", guiUnits = "m")]
+		[KSPField(guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName, guiFormat = "0.000", guiUnits = "m")]
 		[UI_ScaleEditNumeric(scene = UI_Scene.Editor)]
 		public float guiScaleValue = -1;
 
 		/// <summary>
 		/// Index into scale values array.
 		/// </summary>
-		[KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		[KSPField(guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_ChooseOption(scene = UI_Scene.Editor)]
 		public int guiScaleNameIndex = -1;
 
@@ -32,6 +33,21 @@ namespace TweakScale
 		// the actual scale factor in use.  1.0 means no scaling, 2.0 is twice as big, etc
 		[KSPField(isPersistant = true)]
 		public float currentScaleFactor = 1;
+
+		// these are shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.
+		[KSPField(guiActiveEditor = true, guiName = "Scale Children", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
+		public bool scaleChildren = false;
+		[KSPField(guiActiveEditor = true, guiName = "Match Node Size", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
+		public bool matchNodeSize = false;
+		[KSPField(guiActiveEditor = true, guiName = "Show Stats", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
+		public bool showStats = false;
+
+		[UI_Label]
+		[KSPField(guiActiveEditor = false, guiName = "Stats", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		public string guiStatsText = "";
 
 		/// <summary>
 		/// Whether the part should be freely scalable or limited to destination list of allowed values.
@@ -91,14 +107,6 @@ namespace TweakScale
 		/// </summary>
 		[KSPField(isPersistant = true)]
 		public float extraMass;
-
-		// these are shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.
-		[KSPField(guiActiveEditor = true, guiName = "Scale Children", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
-		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
-		public bool scaleChildren = false;
-		[KSPField(guiActiveEditor = true, guiName = "Match Node Size", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
-		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
-		public bool matchNodeSize = false;
 
 		/// <summary>
 		/// The ScaleType for this part.
@@ -327,6 +335,7 @@ namespace TweakScale
 			}
 			else
 			{
+				SetStatsLabel("");
 				if (part.Modules.Contains("FSfuelSwitch"))
 					ignoreResourcesForCost = true;
 			}
@@ -343,6 +352,9 @@ namespace TweakScale
 
 				matchNodeSize = TweakScaleEditorLogic.Instance.MatchNodeSize;
 				Fields[nameof(matchNodeSize)].OnValueModified += OnMatchNodeSizeModified;
+
+				showStats = TweakScaleEditorLogic.Instance.ShowStats;
+				Fields[nameof(showStats)].OnValueModified += OnShowStatsModified;
 
 				Fields[nameof(guiScaleValue)].OnValueModified += OnGuiScaleModified;
 				Fields[nameof(guiScaleNameIndex)].OnValueModified += OnGuiScaleModified;
@@ -365,6 +377,7 @@ namespace TweakScale
 		{
 			Fields[nameof(scaleChildren)].OnValueModified -= OnScaleChildrenModified;
 			Fields[nameof(matchNodeSize)].OnValueModified -= OnMatchNodeSizeModified;
+			Fields[nameof(showStats)].OnValueModified -= OnShowStatsModified;
 			Fields[nameof(guiScaleValue)].OnValueModified -= OnGuiScaleModified;
 			Fields[nameof(guiScaleNameIndex)].OnValueModified -= OnGuiScaleModified;
 			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
@@ -391,6 +404,17 @@ namespace TweakScale
 		private void OnMatchNodeSizeModified(object arg1)
 		{
 			TweakScaleEditorLogic.Instance.MatchNodeSize.State = matchNodeSize;
+		}
+
+		private void OnShowStatsModified(object arg1)
+		{
+			TweakScaleEditorLogic.Instance.ShowStats = showStats;
+			UpdateStatsVisibility();
+		}
+
+		void UpdateStatsVisibility()
+		{
+			Fields[nameof(guiStatsText)].guiActiveEditor = showStats && guiStatsText.Length > 0;
 		}
 
 		/// <summary>
@@ -430,13 +454,29 @@ namespace TweakScale
 			return guiScale / guiDefaultScale;
 		}
 
+		bool UpdateLocalSetting(ref bool localSetting, bool globalSetting, BaseField field)
+		{
+			if (localSetting != globalSetting)
+			{
+				localSetting = globalSetting;
+				field?.uiControlEditor?.partActionItem?.UpdateItem();
+			}
+
+			return false;
+		}
+
 		void Update()
 		{
 			if (HighLogic.LoadedSceneIsEditor)
 			{
 				// copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
-				scaleChildren = TweakScaleEditorLogic.Instance.ScaleChildren;
-				matchNodeSize = TweakScaleEditorLogic.Instance.MatchNodeSize;
+				// maybe have the TweakScaleEditorLogic have events we can register for, that just call UpdateItem as appropriate
+				UpdateLocalSetting(ref scaleChildren, TweakScaleEditorLogic.Instance.ScaleChildren, Fields[nameof(scaleChildren)]);
+				UpdateLocalSetting(ref matchNodeSize, TweakScaleEditorLogic.Instance.MatchNodeSize, Fields[nameof(matchNodeSize)]);
+				if (UpdateLocalSetting(ref showStats, TweakScaleEditorLogic.Instance.ShowStats, Fields[nameof(showStats)]))
+				{
+					UpdateStatsVisibility();
+				}
 			}
 			else
 			{
@@ -464,6 +504,18 @@ namespace TweakScale
 			}
 		}
 
+		static StringBuilder x_infoBuilder = new StringBuilder();
+		static StringBuilder GetInfoBuilder()
+		{
+			if (HighLogic.LoadedSceneIsEditor)
+			{
+				x_infoBuilder.Clear();
+				return x_infoBuilder;
+			}
+
+			return null;
+		}
+
 		void CallHandlers(float relativeScaleFactor)
 		{
 			ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
@@ -480,7 +532,8 @@ namespace TweakScale
 
 			// First apply the exponents
 			float oldMass = part.mass;
-			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload);
+			StringBuilder infoBuilder = GetInfoBuilder();
+			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload, infoBuilder);
 			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
 
 			// send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the handler list empty for many parts
@@ -495,11 +548,47 @@ namespace TweakScale
 				{
 					try
 					{
+						// TODO: how to get string info out of this?
 						handler.OnRescale(notificationPayload);
 					}
 					catch (Exception ex)
 					{
 						Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
+					}
+				}
+			}
+
+			SetStatsLabel(infoBuilder?.ToString());
+		}
+
+		private void SetStatsLabel(string text)
+		{
+			var statsField = Fields[nameof(guiStatsText)];
+			if (text == null || text.Length == 0)
+			{
+				guiStatsText = "";
+				statsField.guiActiveEditor = false;
+			}
+			else
+			{
+				guiStatsText = text;
+				statsField.uiControlEditor?.partActionItem?.UpdateItem();
+
+				if (statsField.guiActiveEditor = showStats)
+				{
+					var tweakScaleGroup = part.PartActionWindow?.parameterGroups[guiGroupName];
+
+					if (tweakScaleGroup != null)
+					{
+						// no idea why the commmented out stuff below doesn't work :/
+						tweakScaleGroup.CollapseGroupToggle();
+						tweakScaleGroup.CollapseGroupToggle();
+
+						//tweakScaleGroup.SetUIState();
+						//LayoutRebuilder.MarkLayoutForRebuild(tweakScaleGroup.contentLayout.transform as RectTransform);
+						//Canvas.ForceUpdateCanvases();
+						//tweakScaleGroup.window.UpdateWindow();
+						//UnityEngine.UI.LayoutRebuilder.MarkLayoutForRebuild(tweakScaleGroup.transform as RectTransform);
 					}
 				}
 			}

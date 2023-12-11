@@ -13,6 +13,7 @@
 - [ ] Check KIS support
 - [ ] test with existing companion
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
+- [ ] override GetInfo to provide scaletype etc in right-click menu in parts box
 
 # Bugs
 
@@ -31,6 +32,11 @@
 - [ ] Match node size: reliant doesn't scale properly (but swivel does?)
 - [ ] Match node size: part can "jump" when rescaled and lose attachment - is there a way to offset this?
 		e.g. try to attach a fl-t400 to a 2.5m tank
+- [ ] stats: save state in config.xml
+- [ ] stats: better formatting
+- [ ] stats: show old and new values
+- [ ] stats: show mass and cost
+- [ ] stats: hide things that don't make sense (crew capacity)
 
 # Backwards Compatibilty
 
@@ -60,9 +66,8 @@
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] increase crew capacity when scaling up?
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
-- [ ] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
-	e.g. engine thrust, etc.
 - [ ] support localization
+- [ ] Show some summary info in the scale group text (current gui scale, total scale factor?)
 
 # Verification (do this last, except to generate new bugs)
 
@@ -176,6 +181,8 @@
 - [x] maybe some tool to make new items inherit scale? 
 		1. global toggle (like scale children) for "inherit scale on attachment" (maybe 3 states - off, absolute, stack (diameter))
 		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
+- [x] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
+	e.g. engine thrust, etc.
 
 ======
 

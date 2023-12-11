@@ -13,6 +13,16 @@ namespace TweakScale
 		public Hotkeyable ScaleChildren { get; private set; }
 		public Hotkeyable MatchNodeSize { get; private set; }
 
+		bool _showStats = false;
+		public bool ShowStats
+		{
+			get { return _showStats; }
+			set
+			{
+				_showStats = value;
+				// TODO: this should save the config, but it's currently owned by the HotkeyManager.  seems like maybe that class should go away and get merged with this one.
+			}
+		}
 		void Start()
 		{
 			ScaleChildren = HotkeyManager.Instance.AddHotkey("Scale chaining", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.K }, false);

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace TweakScale
@@ -168,7 +169,7 @@ namespace TweakScale
 		/// <param name="scalingMode">Information on exactly how to scale this.</param>
 		/// <param name="factor">The rescaling factor.</param>
 		/// <returns>The rescaled exponentValue.</returns>
-		static private void Rescale(MemberUpdater current, MemberUpdater baseValue, string name, ScalingMode scalingMode, ScalingFactor factor)
+		static private void Rescale(MemberUpdater current, MemberUpdater baseValue, string name, ScalingMode scalingMode, ScalingFactor factor, string parentName, StringBuilder info)
 		{
 			var exponentValue = scalingMode.Exponent;
 			var exponent = double.NaN;
@@ -189,12 +190,17 @@ namespace TweakScale
 			}
 			else if (!double.TryParse(exponentValue, out exponent))
 			{
-				Tools.LogWarning("Invalid exponent {0} for field {1}", exponentValue, name);
+				Tools.LogWarning("Invalid exponent {0} for field {1}", parentName, exponentValue, name);
 			}
 
 			double multiplyBy = 1;
 			if (!double.IsNaN(exponent))
 				multiplyBy = Math.Pow(scalingMode.UseRelativeScaling ? factor.relative.linear : factor.absolute.linear, exponent);
+
+			if (info != null && multiplyBy != 1)
+			{
+				info.AppendFormat("\n{0}.{1}: {2}x", parentName, name, multiplyBy);
+			}
 
 			if (current.MemberType.GetInterface("IList") != null)
 			{
@@ -260,7 +266,7 @@ namespace TweakScale
 		/// <param name="baseObj">The corresponding object in the prefab.</param>
 		/// <param name="factor">The new scale.</param>
 		/// <param name="part">The part the object is on.</param>
-		private void UpdateFields(object obj, object baseObj, ScalingFactor factor, Part part)
+		private void UpdateFields(object obj, object baseObj, ScalingFactor factor, Part part, string parentName, StringBuilder info)
 		{
 			if ((object)obj == null)
 				return;
@@ -277,7 +283,7 @@ namespace TweakScale
 			var enumerable = obj as IEnumerable;
 			if (enumerable != null)
 			{
-				UpdateEnumerable(enumerable, (IEnumerable)baseObj, factor, part);
+				UpdateEnumerable(enumerable, (IEnumerable)baseObj, factor, parentName, info, part);
 				return;
 			}
 
@@ -290,7 +296,7 @@ namespace TweakScale
 				}
 
 				var baseValue = nameExponentKV.Value.UseRelativeScaling ? null : MemberUpdater.Create(baseObj, nameExponentKV.Key);
-				Rescale(value, baseValue ?? value, nameExponentKV.Key, nameExponentKV.Value, factor);
+				Rescale(value, baseValue ?? value, nameExponentKV.Key, nameExponentKV.Value, factor, parentName, info);
 			}
 
 			foreach (var child in _children)
@@ -300,7 +306,7 @@ namespace TweakScale
 				if (childObjField == null || child.Value == null)
 					continue;
 				var baseChildObjField = MemberUpdater.Create(baseObj, childName);
-				child.Value.UpdateFields(childObjField.Value, (baseChildObjField ?? childObjField).Value, factor, part);
+				child.Value.UpdateFields(childObjField.Value, (baseChildObjField ?? childObjField).Value, factor, part, childName, info);
 			}
 		}
 
@@ -311,7 +317,7 @@ namespace TweakScale
 		/// <param name="prefabObj">The corresponding list in the prefab.</param>
 		/// <param name="factor">The scaling factor.</param>
 		/// <param name="part">The part the object is on.</param>
-		private void UpdateEnumerable(IEnumerable obj, IEnumerable prefabObj, ScalingFactor factor, Part part = null)
+		private void UpdateEnumerable(IEnumerable obj, IEnumerable prefabObj, ScalingFactor factor, string parentName, StringBuilder info, Part part = null)
 		{
 			var prefabObjects = prefabObj as object[] ?? prefabObj.Cast<object>().ToArray();
 			var urrentObjects = obj as object[] ?? obj.Cast<object>().ToArray();
@@ -334,7 +340,7 @@ namespace TweakScale
 						}
 					}
 				}
-				UpdateFields(item.Current, item.Prefab, factor, part);
+				UpdateFields(item.Current, item.Prefab, factor, part, parentName, info);
 			}
 		}
 
@@ -376,11 +382,11 @@ namespace TweakScale
 			}
 		}
 
-		public static void UpdateObject(Part part, Part prefabObj, Dictionary<string, ScaleExponents> exponents, ScalingFactor factor)
+		public static void UpdateObject(Part part, Part prefabObj, Dictionary<string, ScaleExponents> exponents, ScalingFactor factor, StringBuilder info)
 		{
 			if (exponents.ContainsKey("Part"))
 			{
-				exponents["Part"].UpdateFields(part, prefabObj, factor, part);
+				exponents["Part"].UpdateFields(part, prefabObj, factor, part, "Part", info);
 			}
 
 			// TODO: this will probably break terribly if anyone messes with modules at runtime
@@ -403,9 +409,10 @@ namespace TweakScale
 				{
 					if (m.Current.GetType().IsSubclassOf(type))
 					{
-						if (e.Key != ((PartModule)m.Current).moduleName)
+						var moduleName = ((PartModule)m.Current).moduleName;
+						if (e.Key != moduleName)
 						{
-							e.Value.UpdateFields(m.Current, m.Prefab, factor, part);
+							e.Value.UpdateFields(m.Current, m.Prefab, factor, part, moduleName, info);
 						}
 					}
 				}
@@ -413,7 +420,8 @@ namespace TweakScale
 
 			foreach (var modExp in modulesAndExponents)
 			{
-				modExp.Exponents.UpdateFields(modExp.Current, modExp.Prefab, factor, part);
+				var moduleName = ((PartModule)modExp.Current).moduleName;
+				modExp.Exponents.UpdateFields(modExp.Current, modExp.Prefab, factor, part, moduleName, info);
 			}
 		}
 
