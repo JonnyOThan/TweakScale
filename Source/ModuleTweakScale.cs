@@ -7,17 +7,20 @@ namespace TweakScale
 {
 	public class TweakScale : PartModule, IPartCostModifier, IPartMassModifier
 	{
+		const string guiGroupName = "TweakScale";
+		const string guiGroupDisplayName = "TweakScale";
+
 		/// <summary>
 		/// The selected scale. Different from currentScale only for destination single update, where currentScale is set to match this.
 		/// </summary>
-		[KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", guiFormat = "0.000", guiUnits = "m")]
+		[KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName, guiFormat = "0.000", guiUnits = "m")]
 		[UI_ScaleEditNumeric(scene = UI_Scene.Editor)]
 		public float guiScaleValue = -1;
 
 		/// <summary>
 		/// Index into scale values array.
 		/// </summary>
-		[KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale")]
+		[KSPField(isPersistant = false, guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_ChooseOption(scene = UI_Scene.Editor)]
 		public int guiScaleNameIndex = -1;
 
@@ -89,7 +92,7 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public float extraMass;
 
-		[KSPField(guiActiveEditor = true, guiName = "Scale Children")]
+		[KSPField(guiActiveEditor = true, guiName = "Scale Children", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
 		public bool scaleChildren = false;
 		// this is shared between all modules, but it's a KSPField so that it shows up in the PAW.  There might be a better way to do that.

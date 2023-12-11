@@ -59,7 +59,7 @@
 - [ ] maybe some tool to make new items inherit scale? 
 		1. global toggle (like scale children) for "inherit scale on attachment" (maybe 3 states - off, absolute, stack (diameter))
 		2. when hovering a new part, it will rescale itself based on what it's hovering over.  So if you try to attach a fl-t400 to a rockomax, it magically becomes 2.5m
-- [ ] put scale stuff in a PAW group?
+- [ ] support localization
 
 # Verification (do this last, except to generate new bugs)
 
@@ -168,6 +168,7 @@
 - [x] Check RealFuels support (tanks and engines)
 - [x] investigate modular fuel tanks
 	mass seems off (realfuels too)
+- [x] put scale stuff in a PAW group?
 
 ======
 
