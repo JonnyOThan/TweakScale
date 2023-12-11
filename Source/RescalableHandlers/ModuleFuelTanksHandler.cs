@@ -44,6 +44,8 @@ namespace TweakScale
 			_prefabTotalVolume = (double)x_totalVolume_FieldInfo.GetValue(modulePrefab) * 0.001d;
 
 			_mftModule = partModule;
+			var tsModule = _mftModule.part.FindModuleImplementing<TweakScale>();
+			tsModule.scaleMass = false;
 		}
 
 		public void OnRescale(ScalingFactor factor)

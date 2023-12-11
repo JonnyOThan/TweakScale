@@ -62,8 +62,15 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public Vector3 defaultTransformScale = new Vector3(0f, 0f, 0f);
 
-		// TODO: these are not being used anymore, need to check the mods that they are related to and see if they're still necessary
+		// TODO: this is not being used anymore, need to check the mods (FSFuelSwitch) that they are related to and see if they're still necessary
 		public bool ignoreResourcesForCost = false;
+		
+		// This is used by ModuleFuelTanks (RealFuels / ModularFuelTanks).  That module will subtract the prefab's mass in their GetModuleMass function:
+		// https://github.com/KSP-RO/RealFuels/blob/920e4a6986534a51f06789d9bacc2556b23e8b6c/Source/Tanks/ModuleFuelTanks.cs#L828C119-L828C130
+		// which means that the prefab mass we use as a baseline for mass scaling does not represent the actual default state of the part.
+		// There would probably be better ways to accomplish this, e.g. setting the mass exponent to 0 in the cfg.
+		// It might also make sense to run GetModuleMass on the part prefab to get the default mass state (but some mods might not expect that)
+		public bool scaleMass = true;
 
 		/// <summary>
 		/// Handlers for different PartModules.
@@ -158,12 +165,18 @@ namespace TweakScale
 			extraCost = newCost - cost;
 
 			// TODO: do we need to consider the mass of kerbals here?
-			// TODO: we no longer consider the scaleMass flag - need to figure out if we need to.  it's related to ModuleFuelTanks
-			float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
-			float massScale = Mathf.Pow(currentScaleFactor, massExponent);
-			float newMass = massScale * mass;
-			extraMass = newMass - mass;
-			part.UpdateMass();
+			if (scaleMass)
+			{
+				float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
+				float massScale = Mathf.Pow(currentScaleFactor, massExponent);
+				float newMass = massScale * mass;
+				extraMass = newMass - mass;
+				part.UpdateMass();
+			}
+			else
+			{
+				extraMass = 0;
+			}
 		}
 
 		/// <summary>
