@@ -205,7 +205,7 @@ namespace TweakScale
 			guiScaleValue = currentScaleFactor * guiDefaultScale;
 			Fields["guiScaleValue"].guiActiveEditor = false;
 			Fields["guiScaleNameIndex"].guiActiveEditor = false;
-			ScaleFactors = scaleType.ScaleFactors;
+			ScaleFactors = scaleType.GetUnlockedScaleFactors();
 			if (ScaleFactors.Length <= 0)
 				return;
 
@@ -214,7 +214,7 @@ namespace TweakScale
 				Fields["guiScaleValue"].guiActiveEditor = true;
 				var range = (UI_ScaleEdit)Fields["guiScaleValue"].uiControlEditor;
 				range.intervals = ScaleFactors;
-				range.incrementSlide = scaleType.IncrementSlide;
+				range.incrementSlide = scaleType.IncrementSlide; // TODO: does this need to be filtered by unlock?
 				range.unit = scaleType.Suffix;
 				range.sigFigs = 3;
 				Fields["guiScaleValue"].guiUnits = scaleType.Suffix;
@@ -224,7 +224,7 @@ namespace TweakScale
 				Fields["guiScaleNameIndex"].guiActiveEditor = ScaleFactors.Length > 1;
 				var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
 				ScaleNodes = scaleType.ScaleNodes;
-				options.options = scaleType.ScaleNames;
+				options.options = scaleType.GetUnlockedScaleNames();
 				guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
 				guiScaleValue = ScaleFactors[guiScaleNameIndex];
 			}

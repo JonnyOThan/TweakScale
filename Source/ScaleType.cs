@@ -44,27 +44,21 @@ namespace TweakScale
             }
         }
 
-        public float[] ScaleFactors
+        public float[] GetUnlockedScaleFactors()
         {
-            get
-            {
-                if (TechRequired.Length == 0)
-                    return _scaleFactors;
-                var result = _scaleFactors.ZipFilter(TechRequired, Tech.IsUnlocked).ToArray();
-                return result;
-            }
+            if (TechRequired.Length == 0)
+                return _scaleFactors;
+            var result = _scaleFactors.ZipFilter(TechRequired, Tech.IsUnlocked).ToArray();
+            return result;
         }
 
-        public string[] ScaleNames
+        public string[] GetUnlockedScaleNames()
         {
-            get
-            {
-                if (TechRequired.Length == 0)
-                    return _scaleNames;
+            if (TechRequired.Length == 0)
+                return _scaleNames;
 
-                var result = _scaleNames.ZipFilter(TechRequired, Tech.IsUnlocked).ToArray();
-                return result;
-            }
+            var result = _scaleNames.ZipFilter(TechRequired, Tech.IsUnlocked).ToArray();
+            return result;
         }
 
         public int[] ScaleNodes { get; private set; }
