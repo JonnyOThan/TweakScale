@@ -788,6 +788,11 @@ namespace TweakScale
 			}
 		}
 
+		public override string GetInfo()
+		{
+			return "Scale Type: " + ScaleType.Name;
+		}
+
 		float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)
 		{
 			return extraCost;
