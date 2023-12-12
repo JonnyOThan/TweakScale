@@ -199,7 +199,7 @@ namespace TweakScale
 
 			if (info != null && multiplyBy != 1)
 			{
-				info.AppendFormat("\n{0}.{1}: {2}x", parentName, name, multiplyBy);
+				info.AppendFormat("\n{0}.{1}: {2:0.00}x", parentName, name, multiplyBy);
 			}
 
 			if (current.MemberType.GetInterface("IList") != null)
