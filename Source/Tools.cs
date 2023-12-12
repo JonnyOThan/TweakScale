@@ -338,5 +338,19 @@ namespace TweakScale
 
 			return null;
 		}
+
+
+		public static float AttachNodeSizeDiameter(float attachNodeSize)
+		{
+			// TODO: what about size00?
+			if (attachNodeSize < 1)
+			{
+				return Mathf.Lerp(0.625f, 1.25f, attachNodeSize);
+			}
+			else
+			{
+				return 1.25f * attachNodeSize;
+			}
+		}
 	}
 }

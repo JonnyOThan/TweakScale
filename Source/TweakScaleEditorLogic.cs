@@ -25,8 +25,8 @@ namespace TweakScale
 		}
 		void Start()
 		{
-			ScaleChildren = HotkeyManager.Instance.AddHotkey("Scale chaining", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.K }, false);
-			MatchNodeSize = HotkeyManager.Instance.AddHotkey("Match node size", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.M }, false);
+			ScaleChildren = HotkeyManager.Instance.AddHotkey("Scale Children", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.K }, false);
+			MatchNodeSize = HotkeyManager.Instance.AddHotkey("Match Node Size", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.M }, false);
 
 			GameEvents.onEditorPartEvent.Add(OnEditorPartEvent);
 		}
@@ -36,23 +36,63 @@ namespace TweakScale
 			GameEvents.onEditorPartEvent.Remove(OnEditorPartEvent);
 		}
 
+		float partPreviousScale = 1.0f;
+
 		private void OnEditorPartEvent(ConstructionEventType eventType, Part selectedPart)
 		{
-			if (eventType != ConstructionEventType.PartDragging) return;
+			var selectedTweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
+			if (selectedTweakScaleModule == null) return;
 
-			if (selectedPart.potentialParent != null && MatchNodeSize)
+			switch (eventType)
 			{
-				var selectedTweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
-				var parentTweakScaleModule = selectedPart.potentialParent.FindModuleImplementing<TweakScale>();
+				case ConstructionEventType.PartCreated:
+				case ConstructionEventType.PartPicked:
+				case ConstructionEventType.PartCopied:
+				case ConstructionEventType.PartDetached:
+					partPreviousScale = selectedTweakScaleModule.currentScaleFactor;
+					break;
+				case ConstructionEventType.PartDragging:
+					HandleMatchNodeSize(selectedTweakScaleModule);
+					break;
+			}
+		}
 
-				if (selectedTweakScaleModule == null || parentTweakScaleModule == null) return;
+		float GetAttachNodeDiameter(Part part, string attachNodeId)
+		{
+			var tweakScaleModule = part.FindModuleImplementing<TweakScale>();
 
-				// TODO: can we analyze WHICH node is being attached to figure out the right scale?  might not be possible in all cases, but would be pretty cool for stuff like adapters which clearly have at least 2 different sizes
-				float necessaryScale = parentTweakScaleModule.guiScaleValue / selectedTweakScaleModule.guiDefaultScale;
+			if (tweakScaleModule != null &&
+				tweakScaleModule.TryGetUnscaledAttachNode(attachNodeId, out var attachNodeInfo))
+			{
+				return Tools.AttachNodeSizeDiameter(attachNodeInfo.size) * tweakScaleModule.currentScaleFactor;
+			}
+			else
+			{
+				var attachNode = part.FindAttachNode(attachNodeId);
+				return Tools.AttachNodeSizeDiameter(attachNode.size);
+			}
+		}
 
-				// TODO: not totally convinced that this is the right way to set the scale on the potential part (mimicking the UI)
-				var field = selectedTweakScaleModule.Fields[nameof(TweakScale.guiScaleValue)];
-				field.SetValue(necessaryScale * selectedTweakScaleModule.guiDefaultScale, selectedTweakScaleModule);
+		void HandleMatchNodeSize(TweakScale selectedTweakScaleModule)
+		{
+			Part selectedPart = selectedTweakScaleModule.part;
+			Attachment attachment = EditorLogic.fetch.attachment;
+
+			if (MatchNodeSize && selectedPart.potentialParent != null && attachment.mode == AttachModes.STACK)
+			{
+				float parentAttachNodeDiameter = GetAttachNodeDiameter(selectedPart.potentialParent, attachment.otherPartNode.id);
+				
+				if (selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
+				{
+					float childNodeDiameter = Tools.AttachNodeSizeDiameter(selectedNode.size);
+					float necessaryScale = parentAttachNodeDiameter / childNodeDiameter;
+
+					selectedTweakScaleModule.SetScaleFactor(necessaryScale);
+				}
+			}
+			else
+			{
+				selectedTweakScaleModule.SetScaleFactor(partPreviousScale);
 			}
 		}
 	}

@@ -26,22 +26,23 @@
 
 ## Match Node Size
 
-- [ ] Match node size: scale doesn't update in selected part's PAW if you have it open
-- [ ] Match node size: need to revert to previous size if toggle is disabled mid-placement
-- [ ] match node size: analyze actual node size to better support adapter parts
-- [ ] Match node size: parent part shouldn't actually need to have tweakscale module
-- [ ] Match node size: reliant doesn't scale properly (but swivel does?)
-- [ ] Match node size: part can "jump" when rescaled and lose attachment - is there a way to offset this?
+- [ ] part can "jump" when rescaled and lose attachment - is there a way to offset this?
 		e.g. try to attach a fl-t400 to a 2.5m tank
-- [ ] Math node size: doesn't scale attachnode sizes
+- [ ] doesn't scale attachnode sizes
+- [ ] maybe shift should also be a temporary *enable* as well?  For Scale Children too?
+- [ ] make sure half-sizes work properly, might need to provide extra info in tweakscale module
 
 ## Stats
 
-- [ ] stats: save state in config.xml
-- [ ] stats: better formatting
-- [ ] stats: show old and new values
-- [ ] stats: show mass and cost
-- [ ] stats: hide things that don't make sense (crew capacity)
+- [ ] save state in config.xml
+- [ ] better formatting
+- [ ] show old and new values
+- [ ] show mass and cost
+- [ ] hide things that don't make sense (crew capacity)
+
+## GetInfo
+
+- [ ] Better stats in GetInfo text (explain how different properties will scale)
 
 # Backwards Compatibilty
 
@@ -61,6 +62,7 @@
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
+- [ ] merge HotKeyManager and TweakScaleEditorLogic
 
 # New Candy
 
@@ -74,7 +76,6 @@
 - [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [ ] support localization
 - [ ] Show some summary info in the scale group text (current gui scale, total scale factor?)
-- [ ] Better stats in GetInfo text
 
 # Verification (do this last, except to generate new bugs)
 
@@ -191,6 +192,11 @@
 - [x] is there a reasonable way to show modified stats in the PAW? Kind of like how B9PS does it
 	e.g. engine thrust, etc.
 - [x] override GetInfo to provide scaletype etc in right-click menu in parts box
+- [x] scale doesn't update in selected part's PAW if you have it open
+- [x] need to revert to previous size if toggle is disabled mid-placement
+- [x] analyze actual node size to better support adapter parts
+- [x] parent part shouldn't actually need to have tweakscale module
+- [x] reliant doesn't scale properly (but swivel does?)
 
 ======
 

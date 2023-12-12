@@ -118,10 +118,10 @@ namespace TweakScale
 		// A few different systems can alter attach nodes in the editor (ModulePartVariants, ModuleB9PartSwitch, maybe more)
 		// The lifecycle between all of these is pretty complex and tough to manage, but one thing that would make it all easier is
 		// if we could always ask "what would the state of this attachnode be in an unscaled part?"  This attemps to track that.
-		struct AttachNodeInfo
+		internal struct AttachNodeInfo
 		{
 			public Vector3 position;
-			public int size;
+			public float size;
 		}
 		Dictionary<string, AttachNodeInfo> unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>();
 
@@ -137,7 +137,26 @@ namespace TweakScale
 			unscaledAttachNodes[attachNodeId] = nodeInfo;
 		}
 
+		internal bool TryGetUnscaledAttachNode(string attachNodeId, out AttachNodeInfo attachNodeInfo)
+		{
+			return unscaledAttachNodes.TryGetValue(attachNodeId, out attachNodeInfo);
+		}
+
+		float GetUnscaledAttachNodeSize(string attachNodeId)
+		{
+			if (unscaledAttachNodes.TryGetValue(attachNodeId, out var nodeInfo))
+			{
+				return nodeInfo.size;
+			}
+			else
+			{
+				Tools.LogError("Couldn't find a stored unscaled attach node with ID {0} on part {1}", attachNodeId, part.partInfo.name);
+				return 1;
+			}
+		}
+
 		// modules that understand scaling themselves (or more generally: apply modifiers that shouldn't be scaled) should be excluded from cost/mass adjustments
+		// TODO: can we turn these into Type objects in order to better support inheritance?
 		static HashSet<string> x_modulesToExcludeForDryStats = new string[]
 		{
 			"ModuleB9PartSwitch",
@@ -594,19 +613,6 @@ namespace TweakScale
 			}
 		}
 
-		int GetUnscaledAttachNodeSize(string attachNodeId)
-		{
-			if (unscaledAttachNodes.TryGetValue(attachNodeId, out var nodeInfo))
-			{
-				return nodeInfo.size;
-			}
-			else
-			{
-				Tools.LogError("Couldn't find a stored unscaled attach node with ID {0} on part {1}", attachNodeId, part.partInfo.name);
-				return 1;
-			}
-		}
-
 		private void ScalePart(float relativeScaleFactor)
 		{
 			ScalePartTransform();
@@ -667,7 +673,7 @@ namespace TweakScale
 
 		private void ScaleAttachNodeSize(AttachNode node)
 		{
-			int originalNodeSize = GetUnscaledAttachNodeSize(node.id);
+			float originalNodeSize = GetUnscaledAttachNodeSize(node.id);
 
 			if (isFreeScale || ScaleNodes == null || ScaleNodes.Length == 0)
 			{
@@ -676,7 +682,7 @@ namespace TweakScale
 			}
 			else
 			{
-				node.size = originalNodeSize + (1 * ScaleNodes[guiScaleNameIndex]);
+				node.size = (int)(originalNodeSize + (1 * ScaleNodes[guiScaleNameIndex]));
 			}
 
 			node.size = Math.Max(0, node.size);
@@ -743,13 +749,7 @@ namespace TweakScale
 				if (Math.Abs(relativeScaleFactor - 1) <= 1e-4f)
 					continue;
 
-				b.guiScaleValue *= relativeScaleFactor;
-				if (!b.isFreeScale && (b.ScaleFactors.Length > 0))
-				{
-					b.guiScaleNameIndex = Tools.ClosestIndex(b.guiScaleValue, b.ScaleFactors);
-				}
-				b.UpdatePartActionWindow(true);
-				b.OnTweakScaleChanged(b.GetScaleFactorFromGUI());
+				b.SetScaleFactor(b.currentScaleFactor * relativeScaleFactor);
 			}
 		}
 
@@ -811,6 +811,21 @@ namespace TweakScale
 		ModifierChangeWhen IPartMassModifier.GetModuleMassChangeWhen()
 		{
 			return ModifierChangeWhen.FIXED;
+		}
+
+		internal void SetScaleFactor(float scaleFactor)
+		{
+			if (scaleFactor == currentScaleFactor) return;
+
+			guiScaleValue = scaleFactor * guiDefaultScale;
+			if (!isFreeScale && (ScaleFactors.Length > 0))
+			{
+				guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
+			}
+			// TODO: this feels a little weird; do we need to clamp to min/max scale factor?
+			// why get the value from the GUI here?
+			OnTweakScaleChanged(GetScaleFactorFromGUI());
+			UpdatePartActionWindow(true);
 		}
 	}
 }
