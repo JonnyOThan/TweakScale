@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static Targeting;
 
 namespace TweakScale
 {
@@ -11,12 +12,10 @@ namespace TweakScale
 		private readonly Dictionary<KeyCode, bool> _modifiers = new Dictionary<KeyCode, bool>();
 		private KeyCode _trigger = KeyCode.None;
 		private readonly string _name;
-		private readonly PluginConfiguration _config;
 
 		// Creates a hotkey - the last key in the collection is the trigger key, previous keys are modifiers
-		public Hotkey(string name, ICollection<KeyCode> keys)
+		public Hotkey(string name, ICollection<KeyCode> keys, PluginConfiguration config)
 		{
-			_config = HotkeyManager.Instance.Config;
 			_name = name;
 			if (keys.Count == 0)
 			{
@@ -26,26 +25,24 @@ namespace TweakScale
 			{
 				SetKeys(keys);
 			}
-			Load();
+			Load(config);
 		}
 
-		public Hotkey(string name, string defaultKey)
+		public void Load(PluginConfiguration config)
 		{
-			_config = HotkeyManager.Instance.Config;
-			_name = name;
-			SetKeys(ParseString(defaultKey));
-			Load();
-		}
-
-		public void Load()
-		{
-			_config.load();
-			var rawNames = _config.GetValue(_name, "");
-			if (!string.IsNullOrEmpty(rawNames))
+			try
 			{
-				SetKeys(ParseString(rawNames));
+				var keysAsString = GetKeysAsString();
+				keysAsString = config.GetValue(_name, keysAsString); // note that GetValue will store the value in the config if it doesn't exist
+				if (!string.IsNullOrEmpty(keysAsString))
+				{
+					SetKeys(ParseString(keysAsString));
+				}
 			}
-			Save();
+			catch (Exception ex)
+			{
+				Tools.LogException(ex);
+			}
 		}
 
 		static ICollection<KeyCode> ParseString(string s)
@@ -63,15 +60,11 @@ namespace TweakScale
 			_trigger = keys.Last();
 		}
 
-		private void Save()
+		string GetKeysAsString()
 		{
-			var result = "";
-			foreach (var kv in _modifiers)
-				if (kv.Value)
-					result += kv.Key + "+";
-
-			_config.SetValue(_name, result + _trigger);
-			_config.save();
+			var activeModifiers = _modifiers.Where(kv => kv.Value).Select(kv => kv.Key);
+			var result = string.Join("+", activeModifiers);
+			return result + "+" + _trigger;
 		}
 
 		static HashSet<KeyCode> x_modifierKeys = new HashSet<KeyCode>()

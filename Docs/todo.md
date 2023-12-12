@@ -23,6 +23,7 @@
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
+- [ ] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
 
 ## Match Node Size
 
@@ -34,7 +35,6 @@
 
 ## Stats
 
-- [ ] save state in config.xml
 - [ ] better formatting
 - [ ] show old and new values
 - [ ] show mass and cost
@@ -51,7 +51,6 @@
 	investigate craft file from StormCircuit (attachnodes on structural tubes)
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
 
-
 # Architecture
 
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones
@@ -62,7 +61,7 @@
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
-- [ ] merge HotKeyManager and TweakScaleEditorLogic
+- [ ] when chain scaling, are we scaling children twice?
 
 # New Candy
 
@@ -197,6 +196,8 @@
 - [x] analyze actual node size to better support adapter parts
 - [x] parent part shouldn't actually need to have tweakscale module
 - [x] reliant doesn't scale properly (but swivel does?)
+- [X] merge HotKeyManager and TweakScaleEditorLogic
+- [X] save state in config.xml
 
 ======
 

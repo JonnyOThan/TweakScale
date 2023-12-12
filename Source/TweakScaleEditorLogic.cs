@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KSP.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,9 @@ namespace TweakScale
 	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
 	internal class TweakScaleEditorLogic : SingletonBehavior<TweakScaleEditorLogic>
 	{
+		PluginConfiguration _config;
+		HotkeyManager _hotkeyManager;
+
 		public Hotkeyable ScaleChildren { get; private set; }
 		public Hotkeyable MatchNodeSize { get; private set; }
 
@@ -19,14 +23,35 @@ namespace TweakScale
 			get { return _showStats; }
 			set
 			{
-				_showStats = value;
-				// TODO: this should save the config, but it's currently owned by the HotkeyManager.  seems like maybe that class should go away and get merged with this one.
+				if (_showStats != value)
+				{
+					_showStats = value;
+					_config.SetValue("Show Stats", _showStats);
+					SaveConfig();
+				}
 			}
 		}
+
 		void Start()
 		{
-			ScaleChildren = HotkeyManager.Instance.AddHotkey("Scale Children", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.K }, false);
-			MatchNodeSize = HotkeyManager.Instance.AddHotkey("Match Node Size", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.M }, false);
+			_config = PluginConfiguration.CreateForType<TweakScale>();
+			try
+			{
+				_config.load();
+			}
+			catch (Exception ex)
+			{
+				Tools.LogException(ex);
+			}
+
+			_hotkeyManager = new HotkeyManager(_config);
+
+			ScaleChildren = _hotkeyManager.AddHotkey("Scale Children", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.K }, false);
+			MatchNodeSize = _hotkeyManager.AddHotkey("Match Node Size", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.M }, false);
+
+			_showStats = _config.GetValue("Show Stats", _showStats);
+
+			SaveConfig();
 
 			GameEvents.onEditorPartEvent.Add(OnEditorPartEvent);
 		}
@@ -34,6 +59,26 @@ namespace TweakScale
 		void OnDestroy()
 		{
 			GameEvents.onEditorPartEvent.Remove(OnEditorPartEvent);
+		}
+
+		void Update()
+		{
+			if (_hotkeyManager.Update())
+			{
+				SaveConfig();
+			}
+		}
+
+		void SaveConfig()
+		{
+			try
+			{
+				_config.save();
+			}
+			catch (Exception ex)
+			{
+				Tools.LogException(ex);
+			}
 		}
 
 		float partPreviousScale = 1.0f;

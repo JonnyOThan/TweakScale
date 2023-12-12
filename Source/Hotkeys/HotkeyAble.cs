@@ -24,12 +24,12 @@ namespace TweakScale
 			}
 		}
 
-		public Hotkeyable(string name, ICollection<KeyCode> tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state)
+		public Hotkeyable(string name, ICollection<KeyCode> tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state, PluginConfiguration config)
 		{
-			_config = HotkeyManager.Instance.Config;
+			_config = config;
 			_name = name;
-			_tempDisable = new Hotkey("Disable " + name, tempDisableDefault);
-			_toggle = new Hotkey("Toggle " + name, toggleDefault);
+			_tempDisable = new Hotkey("Disable " + name, tempDisableDefault, config);
+			_toggle = new Hotkey("Toggle " + name, toggleDefault, config);
 			_state = state;
 			Load();
 		}
@@ -42,17 +42,16 @@ namespace TweakScale
 			Tools.Log("Hotkey: {0} old: {1} New: {2}", _name, originalState, _state);
 
 			_config.SetValue(_name, _state);
-			_config.save();
 		}
 
-		public void Update()
+		public bool Update()
 		{
 			if (!_toggle.IsTriggered)
-				return;
+				return false;
 			_state = !_state;
 			ScreenMessages.PostScreenMessage(_name + (_state ? " enabled." : " disabled."), EditorLogic.fetch.modeMsg);
 			_config.SetValue(_name, _state);
-			_config.save();
+			return true;
 		}
 
 		public static implicit operator bool(Hotkeyable a)

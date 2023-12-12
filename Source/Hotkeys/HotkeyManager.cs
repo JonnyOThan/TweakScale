@@ -4,40 +4,32 @@ using UnityEngine;
 
 namespace TweakScale
 {
-	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
-	internal class HotkeyManager : SingletonBehavior<HotkeyManager>
+	internal class HotkeyManager
 	{
 		private readonly Dictionary<string, Hotkeyable> _hotkeys = new Dictionary<string, Hotkeyable>();
-		private /*readonly*/ PluginConfiguration _config;
+		private readonly PluginConfiguration _config;
 
-		new private void Awake()
+		public HotkeyManager(PluginConfiguration config)
 		{
-			base.Awake();
-
-			_config = PluginConfiguration.CreateForType<TweakScale>();
+			_config = config;
 		}
 
-		public PluginConfiguration Config
+		public bool Update()
 		{
-			get
-			{
-				return _config;
-			}
-		}
-
-		private void Update()
-		{
+			bool anyChanged = false;
 			foreach (var key in _hotkeys.Values)
 			{
-				key.Update();
+				anyChanged = key.Update() || anyChanged;
 			}
+
+			return anyChanged;
 		}
 
 		public Hotkeyable AddHotkey(string hotkeyName, ICollection<KeyCode> tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state)
 		{
 			if (_hotkeys.ContainsKey(hotkeyName))
 				return _hotkeys[hotkeyName];
-			return _hotkeys[hotkeyName] = new Hotkeyable(hotkeyName, tempDisableDefault, toggleDefault, state);
+			return _hotkeys[hotkeyName] = new Hotkeyable(hotkeyName, tempDisableDefault, toggleDefault, state, _config);
 		}
 	}
 }
