@@ -13,6 +13,8 @@
 	part support seems done, but not sure if everything is using exactly the same settings as TS/L
 - [ ] audit and fix mod support
 - [ ] verify tech unlocks are correct (fuel tanks, etc)
+		historically, was this a separate mod?
+		maybe implement it by default, and have a difficulty option to disable it?
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check KIS support
 - [ ] test with existing companion
@@ -31,7 +33,6 @@
 
 ## Match Node Size
 
-- [ ] doesn't scale attachnode sizes
 - [ ] maybe shift should also be a temporary *enable* as well?  For Scale Children too?
 - [ ] find a different modifier key for temp toggle/disable
 - [ ] make sure half-sizes work properly, might need to provide extra info in tweakscale module
@@ -72,7 +73,6 @@
 - [ ] create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
-- [ ] when chain scaling, are we scaling children twice?
 
 # New Candy
 
@@ -84,7 +84,7 @@
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] increase crew capacity when scaling up?
 - [ ] support localization
-- [ ] Show some summary info in the scale group text (current gui scale, total scale factor?)
+- [ ] Show some summary info in the scale PAW group text (current gui scale, total scale factor?)
 
 # Verification (do this last, except to generate new bugs)
 
@@ -211,6 +211,9 @@
 - [x] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [x] part can "jump" when rescaled and lose attachment - is there a way to offset this?
 		e.g. try to attach a fl-t400 to a 2.5m tank
+- [x] when chain scaling, are we scaling children twice?
+	they get moved twice, but that seems unavoidable and the order doesn't matter
+- [x] doesn't scale attachnode sizes
 
 ======
 

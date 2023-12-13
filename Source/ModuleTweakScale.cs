@@ -445,10 +445,10 @@ namespace TweakScale
 			// everything should be computed from the absolute scale and the prefab
 			// this might not be possible in cases where we can't access the original value from the prefab
 			// (attach nodes are a good example of this, because WHICH attachnode should be considered the "default" can change, and I had to build a whole system to solve it)
+			// resources seems like another case - other mods can change what resources are in the part, so you'd need to find some way to get the baseline amounts
 			float relativeScaleFactor = newScaleFactor / currentScaleFactor;
 			currentScaleFactor = newScaleFactor;
 
-			// TODO: would it make more sense to scale ourselves first and then the children?  Currently we might be moving each children twice
 			if (scaleChildren)
 			{
 				ChainScale(relativeScaleFactor);
@@ -686,6 +686,11 @@ namespace TweakScale
 			}
 
 			node.size = Math.Max(0, node.size);
+
+			if (node.icon != null)
+			{
+				node.icon.transform.localScale = Vector3.one * node.radius * ((node.size == 0) ? node.size + 0.5f : node.size);
+			}
 		}
 
 		// TODO: this is probably wrong; and will accumulate error if you continually scale something up and down
@@ -732,7 +737,7 @@ namespace TweakScale
 			{
 				var deltaPos = node.position - oldPosition;
 
-				// If this node connects to our parent part, then *we* need to move
+				// If this node connects to our parent part, then *we* need to move (note that potentialParent == parent if the part is *actually* attached)
 				if (attachedPart == part.potentialParent)
 				{
 					part.transform.Translate(-deltaPos, part.transform);
