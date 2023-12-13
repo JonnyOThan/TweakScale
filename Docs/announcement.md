@@ -11,20 +11,23 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
 ## User experience
 
 * Improvements to part action window in the editor
- * clicking interval buttons at the ends of the ranges works better
- * can now drag the slider smoothly
- * Toggle for scaling changes to affect the entire subtree
- * Button to apply the current part's scale to the subtree (NYI)
-* Scaling gizmo akin to offset and move (NYI)
+  * clicking interval buttons at the ends of the ranges works better
+  * can now drag the slider smoothly
+  * Toggle for scaling changes to affect the entire subtree
+  * Toggle for matching node sizes when attaching parts
+  * Numeric entry (click #) is now supported
+  * Option to display the effects of scaling on the part's stats
+* Scaling gizmo akin to offset and rotate
 * All parts are supported with reasonable defaults unless they opt-out or match certain filters to trap known issues (AllTweak will still override this and enable *everything*)
 * Reduced dependencies to only ModuleManager and Harmony
 * Optimized for better performance
- * better loading time to main menu
- * better switch-to-editor time
- * scaling a part is more responsive
- * less performance impact in flight scene
- * probably better save/load performance, but I'd have to check
+  * better loading time to main menu
+  * better switch-to-editor time
+  * scaling a part is more responsive
+  * less performance impact in flight scene
+  * probably better save/load performance, but I'd have to check
 	// TODO: maybe get some data to compare?
+* Less intrusive and more targeted validation system
 
 ## Robustness
 
@@ -60,7 +63,7 @@ Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not bee
 
 # License Info
 
-TweakScaleRescaled is licensed CC-BY-NC-SA.
+TweakScaleRescaled is licensed CC-BY-NC-SA-4.0.
 © 2023 JonnyOThan
 © 2015-2018 pellinor
 © 2014 Gaius Godspeed and Biotronic

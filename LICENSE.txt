@@ -3,6 +3,8 @@ This version of TweakScale is:
 © 2015-2018 pellinor
 © 2014 Gaius Godspeed and Biotronic
 
+Icons created by Niako
+
 Attribution-NonCommercial-ShareAlike 4.0 International
 
 =======================================================================

@@ -25,7 +25,7 @@ namespace TweakScale
 			return anyChanged;
 		}
 
-		public Hotkeyable AddHotkey(string hotkeyName, ICollection<KeyCode> tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state)
+		public Hotkeyable AddHotkey(string hotkeyName, KeyCode tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state)
 		{
 			if (_hotkeys.ContainsKey(hotkeyName))
 				return _hotkeys[hotkeyName];

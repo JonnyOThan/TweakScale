@@ -46,8 +46,8 @@ namespace TweakScale
 
 			_hotkeyManager = new HotkeyManager(_config);
 
-			ScaleChildren = _hotkeyManager.AddHotkey("Scale Children", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.K }, false);
-			MatchNodeSize = _hotkeyManager.AddHotkey("Match Node Size", new[] { KeyCode.LeftShift }, new[] { KeyCode.LeftControl, KeyCode.M }, false);
+			ScaleChildren = _hotkeyManager.AddHotkey("Scale Children", KeyCode.LeftControl, new[] { KeyCode.K }, true);
+			MatchNodeSize = _hotkeyManager.AddHotkey("Match Node Size", KeyCode.LeftControl, new[] { KeyCode.M }, true);
 
 			_showStats = _config.GetValue("Show Stats", _showStats);
 

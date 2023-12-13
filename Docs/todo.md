@@ -30,11 +30,10 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
+- [ ] Undo after using scaling gizmo seems to break things
 
 ## Match Node Size
 
-- [ ] maybe shift should also be a temporary *enable* as well?  For Scale Children too?
-- [ ] find a different modifier key for temp toggle/disable
 - [ ] make sure half-sizes work properly, might need to provide extra info in tweakscale module
 - [ ] some parts (e.g. wheesly) will flicker when matching size
 
@@ -214,6 +213,8 @@
 - [x] when chain scaling, are we scaling children twice?
 	they get moved twice, but that seems unavoidable and the order doesn't matter
 - [x] doesn't scale attachnode sizes
+- [x] maybe shift should also be a temporary *enable* as well?  For Scale Children too?
+- [x] find a different modifier key for temp toggle/disable
 
 ======
 

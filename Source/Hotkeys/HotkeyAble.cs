@@ -7,7 +7,7 @@ namespace TweakScale
 	class Hotkeyable
 	{
 		private readonly string _name;
-		private readonly Hotkey _tempDisable;
+		private readonly KeyCode _tempToggle;
 		private readonly Hotkey _toggle;
 		private bool _state;
 		private readonly PluginConfiguration _config;
@@ -16,7 +16,7 @@ namespace TweakScale
 		{
 			get
 			{
-				return _state && !_tempDisable.IsHeld();
+				return _state ^ Input.GetKey(_tempToggle);
 			}
 			set
 			{
@@ -24,24 +24,13 @@ namespace TweakScale
 			}
 		}
 
-		public Hotkeyable(string name, ICollection<KeyCode> tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state, PluginConfiguration config)
+		public Hotkeyable(string name, KeyCode tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state, PluginConfiguration config)
 		{
 			_config = config;
 			_name = name;
-			_tempDisable = new Hotkey("Disable " + name, tempDisableDefault, config);
+			_tempToggle = config.GetValue("ToggleTemp " + name, tempDisableDefault);
 			_toggle = new Hotkey("Toggle " + name, toggleDefault, config);
-			_state = state;
-			Load();
-		}
-
-		private void Load()
-		{
-			bool originalState = _state;
-			_state = _config.GetValue(_name, _state);
-			
-			Tools.Log("Hotkey: {0} old: {1} New: {2}", _name, originalState, _state);
-
-			_config.SetValue(_name, _state);
+			_state = config.GetValue(name, state);
 		}
 
 		public bool Update()

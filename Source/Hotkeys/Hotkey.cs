@@ -64,7 +64,7 @@ namespace TweakScale
 		{
 			var activeModifiers = _modifiers.Where(kv => kv.Value).Select(kv => kv.Key);
 			var result = string.Join("+", activeModifiers);
-			return result + "+" + _trigger;
+			return result == "" ? _trigger.ToString() : result + "+" + _trigger;
 		}
 
 		static HashSet<KeyCode> x_modifierKeys = new HashSet<KeyCode>()
