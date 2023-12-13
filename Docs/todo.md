@@ -1,5 +1,8 @@
 # priority stuff
 
+- match node size bugs
+- stats bugs
+- getinfo
 - check if DryCost and MassScale errors are important
 - engine exhaust (can we get rid of IUpdateable?
 
@@ -44,6 +47,13 @@
 
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
 
+## Scale Gizmo
+
+- [ ] clamp min/max sizes
+- [ ] use angle snap and shift to control snapping to step intervals
+- [ ] on-screen message showing current scale (like fairings)
+- [ ] support arrow keys
+
 # Backwards Compatibilty
 
 - [ ] make sure we can load crafts saved with TS/L
@@ -72,7 +82,6 @@
 - [ ] realplume support?
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] increase crew capacity when scaling up?
-- [ ] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 - [ ] support localization
 - [ ] Show some summary info in the scale group text (current gui scale, total scale factor?)
 
@@ -198,6 +207,7 @@
 - [x] reliant doesn't scale properly (but swivel does?)
 - [X] merge HotKeyManager and TweakScaleEditorLogic
 - [X] save state in config.xml
+- [x] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
 
 ======
 

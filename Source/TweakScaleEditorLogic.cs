@@ -54,6 +54,8 @@ namespace TweakScale
 			SaveConfig();
 
 			GameEvents.onEditorPartEvent.Add(OnEditorPartEvent);
+
+			EditorLogic.fetch.toolsUI.gameObject.AddComponent<ConstructionModeScale>();
 		}
 
 		void OnDestroy()

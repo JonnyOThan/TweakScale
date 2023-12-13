@@ -62,6 +62,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ConfigurationDumper.cs" />
+    <Compile Include="ConstructionModeScale.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="HarmonyPatching.cs" />
     <Compile Include="Hotkeys\Hotkey.cs" />
@@ -108,6 +109,9 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="$(ManagedPath)\UnityEngine.InputLegacyModule.dll">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="$(ManagedPath)\UnityEngine.AudioModule.dll">
       <Private>false</Private>
     </Reference>
     <Reference Include="$(ReferencePath)GameData\000_Harmony\0Harmony.dll">
