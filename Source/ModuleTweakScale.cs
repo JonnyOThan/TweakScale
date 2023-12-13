@@ -707,6 +707,17 @@ namespace TweakScale
 			part.DragCubes.ForceUpdate(true, true);
 		}
 
+		Part GetAttachedPart(AttachNode node)
+		{
+			if (node.attachedPart != null) return node.attachedPart;
+			var editorAttachment = EditorLogic.fetch?.attachment;
+			if (editorAttachment != null && editorAttachment.callerPartNode == node)
+			{
+				return editorAttachment.potentialParent;
+			}
+			return null;
+		}
+
 		internal void MoveNode(AttachNode node)
 		{
 			var oldPosition = node.position;
@@ -715,19 +726,21 @@ namespace TweakScale
 
 			node.originalPosition = node.position = unscaledNodeInfo.position * currentScaleFactor;
 
-			if (node.attachedPart != null)
+			Part attachedPart = GetAttachedPart(node);
+
+			if (attachedPart != null)
 			{
 				var deltaPos = node.position - oldPosition;
 
 				// If this node connects to our parent part, then *we* need to move
-				if (node.attachedPart == part.parent)
+				if (attachedPart == part.potentialParent)
 				{
 					part.transform.Translate(-deltaPos, part.transform);
 				}
 				// otherwise the child object needs to move
 				else
 				{
-					node.attachedPart.transform.Translate(deltaPos, part.transform);
+					attachedPart.transform.Translate(deltaPos, part.transform);
 				}
 			}
 			ScaleAttachNodeSize(node);

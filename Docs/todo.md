@@ -3,6 +3,7 @@
 - match node size bugs
 - stats bugs
 - getinfo
+- gizmo stuff
 - check if DryCost and MassScale errors are important
 - engine exhaust (can we get rid of IUpdateable?
 
@@ -30,11 +31,11 @@
 
 ## Match Node Size
 
-- [ ] part can "jump" when rescaled and lose attachment - is there a way to offset this?
-		e.g. try to attach a fl-t400 to a 2.5m tank
 - [ ] doesn't scale attachnode sizes
 - [ ] maybe shift should also be a temporary *enable* as well?  For Scale Children too?
+- [ ] find a different modifier key for temp toggle/disable
 - [ ] make sure half-sizes work properly, might need to provide extra info in tweakscale module
+- [ ] some parts (e.g. wheesly) will flicker when matching size
 
 ## Stats
 
@@ -208,6 +209,8 @@
 - [X] merge HotKeyManager and TweakScaleEditorLogic
 - [X] save state in config.xml
 - [x] scale gizmo in editors (hit 5 or a new button next to re-root, create scale gizmo on part)
+- [x] part can "jump" when rescaled and lose attachment - is there a way to offset this?
+		e.g. try to attach a fl-t400 to a 2.5m tank
 
 ======
 

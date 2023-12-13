@@ -84,6 +84,8 @@ namespace TweakScale
 		}
 
 		float partPreviousScale = 1.0f;
+		Vector3 selGrabOffset = Vector3.zero;
+		bool doneAttach = false;
 
 		private void OnEditorPartEvent(ConstructionEventType eventType, Part selectedPart)
 		{
@@ -97,6 +99,7 @@ namespace TweakScale
 				case ConstructionEventType.PartCopied:
 				case ConstructionEventType.PartDetached:
 					partPreviousScale = selectedTweakScaleModule.currentScaleFactor;
+					doneAttach = false;
 					break;
 				case ConstructionEventType.PartDragging:
 					HandleMatchNodeSize(selectedTweakScaleModule);
@@ -129,17 +132,25 @@ namespace TweakScale
 			{
 				float parentAttachNodeDiameter = GetAttachNodeDiameter(selectedPart.potentialParent, attachment.otherPartNode.id);
 				
-				if (selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
+				if (!doneAttach && selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
 				{
 					float childNodeDiameter = Tools.AttachNodeSizeDiameter(selectedNode.size);
 					float necessaryScale = parentAttachNodeDiameter / childNodeDiameter;
 
+					Vector3 oldNodePosition = attachment.callerPartNode.position;
 					selectedTweakScaleModule.SetScaleFactor(necessaryScale);
+
+					selGrabOffset = attachment.callerPartNode.position - oldNodePosition;
+					EditorLogic.fetch.selPartGrabOffset += selGrabOffset;
+					doneAttach = true;
 				}
 			}
-			else
+			else if (doneAttach)
 			{
 				selectedTweakScaleModule.SetScaleFactor(partPreviousScale);
+				EditorLogic.fetch.selPartGrabOffset -= selGrabOffset;
+				selGrabOffset = Vector3.zero;
+				doneAttach = false;
 			}
 		}
 	}
