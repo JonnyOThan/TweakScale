@@ -50,7 +50,6 @@
 
 ## Scale Gizmo
 
-- [ ] clamp min/max sizes
 - [ ] use angle snap and shift to control snapping to step intervals
 - [ ] on-screen message showing current scale (like fairings)
 - [ ] support arrow keys
@@ -216,6 +215,7 @@
 - [x] maybe shift should also be a temporary *enable* as well?  For Scale Children too?
 - [x] find a different modifier key for temp toggle/disable
 - [x] make sure half-sizes work properly, might need to provide extra info in tweakscale module
+- [x] gizmo: clamp min/max sizes
 
 ======
 

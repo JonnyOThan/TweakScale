@@ -864,15 +864,24 @@ namespace TweakScale
 
 		internal void SetScaleFactor(float scaleFactor)
 		{
-			if (scaleFactor == currentScaleFactor) return;
+			float newGuiScaleValue = scaleFactor * guiDefaultScale;
 
-			guiScaleValue = scaleFactor * guiDefaultScale;
-			if (!isFreeScale && (ScaleFactors.Length > 0))
+			if (ScaleFactors.Length > 0)
 			{
-				guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
+				if (isFreeScale)
+				{
+					newGuiScaleValue = Mathf.Clamp(newGuiScaleValue, ScaleFactors.First(), ScaleFactors.Last());
+				}
+				else
+				{
+					guiScaleNameIndex = Tools.ClosestIndex(newGuiScaleValue, ScaleFactors);
+					newGuiScaleValue = ScaleFactors[guiScaleNameIndex];
+				}
 			}
-			// TODO: this feels a little weird; do we need to clamp to min/max scale factor?
-			// why get the value from the GUI here?
+
+			if (newGuiScaleValue == guiScaleValue) return;
+
+			guiScaleValue = newGuiScaleValue;
 			OnTweakScaleChanged(GetScaleFactorFromGUI());
 			UpdatePartActionWindow(true);
 		}

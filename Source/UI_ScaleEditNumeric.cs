@@ -81,7 +81,7 @@ namespace TweakScale
 			// Don't call UpdateSlider because it will clamp to the step
 			slider.minValue = scaleControl.intervals[intervalIndex];
 			slider.maxValue = scaleControl.intervals[intervalIndex + 1];
-			slider.value = value;
+			slider.SetValueWithoutNotify(value);
 
 			UpdateDisplay(value, null);
 		}
