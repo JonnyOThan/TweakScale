@@ -267,10 +267,8 @@ namespace TweakScale
 			previousScaleFactor = tweakScaleModule.currentScaleFactor;
 		}
 
-		private void onScaleGizmoHandleDrag(GizmoOffsetHandle handle, Vector3 axis, float amount)
+		static ScaleFactorSnapMode GetScaleSnapMode()
 		{
-			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
-			float newScaleFactor = previousScaleFactor + amount;
 			ScaleFactorSnapMode snapMode = ScaleFactorSnapMode.None;
 
 			if (GameSettings.VAB_USE_ANGLE_SNAP)
@@ -278,7 +276,14 @@ namespace TweakScale
 				snapMode = GameSettings.Editor_fineTweak.GetKey() ? ScaleFactorSnapMode.FineSteps : ScaleFactorSnapMode.CoarseSteps;
 			}
 
-			tweakScaleModule.SetScaleFactor(newScaleFactor, snapMode);
+			return snapMode;
+		}
+
+		private void onScaleGizmoHandleDrag(GizmoOffsetHandle handle, Vector3 axis, float amount)
+		{
+			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
+			float newScaleFactor = previousScaleFactor + amount;
+			tweakScaleModule.SetScaleFactor(newScaleFactor, GetScaleSnapMode());
 		}
 
 		private void onScaleGizmoUpdated(Vector3 arg1)
@@ -293,6 +298,7 @@ namespace TweakScale
 
 		private void partscaleInputUpdate()
 		{
+			// hook up events if necessary
 			if (gizmoScale.useGrid)
 			{
 				foreach (var handle in gizmoScale.handles)
@@ -309,28 +315,45 @@ namespace TweakScale
 				$"Scale: {tweakScaleModule.GetScaleString()}\n" +
 				$"[{GameSettings.Editor_toggleAngleSnap.name}] Toggle Snap\n" +
 				$"[{GameSettings.Editor_fineTweak.name}] Fine control\n" +
+				$"[{TweakScaleEditorLogic.Instance.IncreaseScaleKey}/{TweakScaleEditorLogic.Instance.DecreaseScaleKey}] Inc/Dec Scale\n" +
+				$"[{TweakScaleEditorLogic.Instance.NextScaleIntervalKey}/{TweakScaleEditorLogic.Instance.PrevScaleIntervalKey}] Next/Prev Scale\n" +
 				$"[{GameSettings.Editor_resetRotation.name}] Reset";
 			ScreenMessages.PostScreenMessage(message, 0f, ScreenMessageStyle.LOWER_CENTER);
 
 			KerbalFSM fsm = EditorLogic.fetch.fsm;
 
-			// did we press the reset button?
-			if (InputLockManager.IsUnlocked(ControlTypes.EDITOR_GIZMO_TOOLS) && GameSettings.Editor_resetRotation.GetKeyDown() && selectedPart.transform == selectedPart.GetReferenceTransform())
+			if (InputLockManager.IsUnlocked(ControlTypes.EDITOR_GIZMO_TOOLS))
 			{
-				tweakScaleModule.SetScaleFactor(1.0f);
-
-				//srfAttachCursorOffset = Vector3.zero;
-				//if (symUpdateMode != 0)
-				//{
-				//	UpdateSymmetry(selectedPart, symUpdateMode, symUpdateParent, symUpdateAttachNode);
-				//}
-
-				if (fsm.CurrentState == st_scale_tweak)
+				int incrementDirection = Input.GetKeyDown(TweakScaleEditorLogic.Instance.IncreaseScaleKey).GetHashCode() - Input.GetKeyDown(TweakScaleEditorLogic.Instance.DecreaseScaleKey).GetHashCode();
+				if (incrementDirection != 0)
 				{
-					fsm.RunEvent(on_scaleReset);
+					tweakScaleModule.IncrementScaleFactor(incrementDirection, GetScaleSnapMode());
 				}
 
-				//GameEvents.onEditorPartEvent.Fire(ConstructionEventType.PartOffset, selectedPart);
+				int jumpDirection = Input.GetKeyDown(TweakScaleEditorLogic.Instance.NextScaleIntervalKey).GetHashCode() - Input.GetKeyDown(TweakScaleEditorLogic.Instance.PrevScaleIntervalKey).GetHashCode();
+				if (jumpDirection != 0)
+				{
+					tweakScaleModule.JumpScaleFactor(jumpDirection);
+				}
+
+				// did we press the reset button?
+				if (GameSettings.Editor_resetRotation.GetKeyDown() && selectedPart.transform == selectedPart.GetReferenceTransform())
+				{
+					tweakScaleModule.SetScaleFactor(1.0f);
+
+					//srfAttachCursorOffset = Vector3.zero;
+					//if (symUpdateMode != 0)
+					//{
+					//	UpdateSymmetry(selectedPart, symUpdateMode, symUpdateParent, symUpdateAttachNode);
+					//}
+
+					if (fsm.CurrentState == st_scale_tweak)
+					{
+						fsm.RunEvent(on_scaleReset);
+					}
+
+					//GameEvents.onEditorPartEvent.Fire(ConstructionEventType.PartOffset, selectedPart);
+				}
 			}
 
 			//Part part = null;

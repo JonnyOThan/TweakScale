@@ -62,14 +62,16 @@ namespace TweakScale
 			return result;
 		}
 
-		public static int FindIntervalIndex(float value, float[] intervals)
+		public static int FindIntervalIndex(float value, float[] intervals, bool preferLower)
 		{
 			for (int index = 0; index < intervals.Length - 1; ++index)
 			{
 				if (value < intervals[index + 1]) return index;
+				// if we're right on the boundary, the caller decides which interval
+				if (Mathf.Approximately(value, intervals[index + 1]) && preferLower) return index;
 			}
 
-			return intervals.Length - 1;
+			return intervals.Length - 2;
 		}
 
 		private static string BuildLogString(string format, object[] args)

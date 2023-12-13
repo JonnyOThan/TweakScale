@@ -14,6 +14,11 @@ namespace TweakScale
 		PluginConfiguration _config;
 		HotkeyManager _hotkeyManager;
 
+		public KeyCode IncreaseScaleKey { get; private set; } = KeyCode.W;
+		public KeyCode DecreaseScaleKey { get; private set; } = KeyCode.S;
+		public KeyCode NextScaleIntervalKey { get; private set; } = KeyCode.D;
+		public KeyCode PrevScaleIntervalKey { get; private set; } = KeyCode.A;
+
 		public Hotkeyable ScaleChildren { get; private set; }
 		public Hotkeyable MatchNodeSize { get; private set; }
 
@@ -45,6 +50,11 @@ namespace TweakScale
 			}
 
 			_hotkeyManager = new HotkeyManager(_config);
+
+			IncreaseScaleKey = _config.GetValue(nameof(IncreaseScaleKey), IncreaseScaleKey);
+			DecreaseScaleKey = _config.GetValue(nameof(DecreaseScaleKey), DecreaseScaleKey);
+			NextScaleIntervalKey = _config.GetValue(nameof(NextScaleIntervalKey), NextScaleIntervalKey);
+			PrevScaleIntervalKey = _config.GetValue(nameof(PrevScaleIntervalKey), PrevScaleIntervalKey);
 
 			ScaleChildren = _hotkeyManager.AddHotkey("Scale Children", KeyCode.LeftControl, new[] { KeyCode.K }, true);
 			MatchNodeSize = _hotkeyManager.AddHotkey("Match Node Size", KeyCode.LeftControl, new[] { KeyCode.M }, true);

@@ -1,6 +1,5 @@
 # priority stuff
 
-- gizmo stuff
 - undo bug
 - stats bugs
 - getinfo
@@ -49,8 +48,6 @@
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
 
 ## Scale Gizmo
-
-- [ ] support arrow keys
 
 # Backwards Compatibilty
 
@@ -216,6 +213,7 @@
 - [x] gizmo: clamp min/max sizes
 - [x] use angle snap and shift to control snapping to step intervals
 - [x] on-screen message showing current scale (like fairings)
+- [x] support arrow keys
 
 ======
 

@@ -877,6 +877,39 @@ namespace TweakScale
 			}
 		}
 
+		void GetIntervalInfo(ScaleFactorSnapMode snapMode, float scaleValue, bool preferLower, out float min, out float max, out float step)
+		{
+			int intervalIndex = Tools.FindIntervalIndex(scaleValue, ScaleFactors, preferLower);
+
+			min = ScaleFactors[intervalIndex];
+			max = ScaleFactors[intervalIndex + 1];
+			step = ScaleType.IncrementSlide[intervalIndex];
+			if (step > 0f)
+			{
+				if (snapMode == ScaleFactorSnapMode.CoarseSteps)
+				{
+					int numSteps = (int)Mathf.Round((max - min) / step);
+
+					if (numSteps % 10 == 0)
+					{
+						step = (max - min) / 10;
+					}
+					else if (numSteps % 5 == 0)
+					{
+						step = (max - min) / 5;
+					}
+					else if (numSteps % 4 == 0)
+					{
+						step = (max - min) / 4;
+					}
+					else if (numSteps % 2 == 0)
+					{
+						step = (max - min) / 2;
+					}
+				}
+			}
+		}
+
 		internal void SetScaleFactor(float scaleFactor, ScaleFactorSnapMode snapMode = ScaleFactorSnapMode.None)
 		{
 			float newGuiScaleValue = scaleFactor * guiDefaultScale;
@@ -889,36 +922,14 @@ namespace TweakScale
 
 					if (snapMode != ScaleFactorSnapMode.None && ScaleFactors.Length >= 2)
 					{
-						int intervalIndex = Tools.FindIntervalIndex(newGuiScaleValue, ScaleFactors);
+						bool decreasing = scaleFactor < currentScaleFactor;
+						GetIntervalInfo(snapMode, newGuiScaleValue, decreasing, out float min, out float max, out float step);
 
-						float min = ScaleFactors[intervalIndex];
-						float max = ScaleFactors[intervalIndex + 1];
-						float step = ScaleType.IncrementSlide[intervalIndex];
-						if (step > 0f)
+						newGuiScaleValue = min + (float)Math.Round((newGuiScaleValue - min) / step) * step;
+
+						if (Mathf.Approximately(newGuiScaleValue, max))
 						{
-							if (snapMode == ScaleFactorSnapMode.CoarseSteps)
-							{
-								int numSteps = (int)Mathf.Round((max - min) / step);
-
-								if (numSteps % 10 == 0)
-								{
-									step = (max - min) / 10;
-								}
-								else if (numSteps % 5 == 0)
-								{
-									step = (max - min) / 5;
-								}
-								else if (numSteps % 4 == 0)
-								{
-									step = (max - min) / 4;
-								}
-								else if (numSteps % 2 == 0)
-								{
-									step = (max - min) / 2;
-								}
-							}
-
-							newGuiScaleValue = min + (float)Math.Round((newGuiScaleValue - min) / step) * step;
+							newGuiScaleValue = max;
 						}
 					}
 				}
@@ -934,6 +945,42 @@ namespace TweakScale
 			guiScaleValue = newGuiScaleValue;
 			OnTweakScaleChanged(GetScaleFactorFromGUI());
 			UpdatePartActionWindow(true);
+		}
+
+		internal void IncrementScaleFactor(int incrementDirection, ScaleFactorSnapMode snapMode)
+		{
+			if (isFreeScale)
+			{
+				float incrementAmount = 0.01f * incrementDirection;
+
+				if (snapMode != ScaleFactorSnapMode.None && ScaleFactors.Length >= 2)
+				{
+					bool decreasing = incrementDirection < 0;
+					GetIntervalInfo(snapMode, guiScaleValue, decreasing, out float min, out float max, out float step);
+					incrementAmount = step * incrementDirection / guiDefaultScale;
+				}
+
+				SetScaleFactor(currentScaleFactor + incrementAmount, snapMode);
+			}
+			else
+			{
+				JumpScaleFactor(incrementDirection);
+			}
+		}
+
+		internal void JumpScaleFactor(int jumpDirection)
+		{
+			// if we're in the middle of an interval and jumpDirection is negative, we want to just go to the current interval
+			// but if it's right on the boundary, go to the previous one (which will be returned from FindIntervalIndex by passing true as preferLower)
+			int intervalIndex = Tools.FindIntervalIndex(guiScaleValue, ScaleFactors, jumpDirection < 0);
+			if (jumpDirection > 0)
+			{
+				intervalIndex++;
+			}
+
+			intervalIndex = Mathf.Clamp(intervalIndex, 0, ScaleFactors.Length - 1);
+
+			SetScaleFactor(ScaleFactors[intervalIndex] / guiDefaultScale);
 		}
 	}
 

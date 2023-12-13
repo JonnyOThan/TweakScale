@@ -18,7 +18,7 @@ csharp_new_line_before_else = true
 #require members of object initializers to be on the same line
 csharp_new_line_before_members_in_object_initializers = false
 #require braces to be on a new line for lambdas, control_blocks, types, properties, accessors, and methods (also known as "Allman" style)
-csharp_new_line_before_open_brace = lambdas, control_blocks, types, properties, accessors, methods
+csharp_new_line_before_open_brace = lambdas, control_blocks, types, accessors, methods
 
 #Formatting - organize using options
 
@@ -49,7 +49,7 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 #Formatting - wrapping options
 
 #leave code block on separate lines
-csharp_preserve_single_line_blocks = false
+csharp_preserve_single_line_blocks = true
 #leave statements and member declarations on the same line
 csharp_preserve_single_line_statements = true
 
