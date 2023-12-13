@@ -115,19 +115,46 @@ namespace TweakScale
 
 		public bool IsRescaled => Math.Abs(currentScaleFactor - 1f) > 1e-5f;
 
+#region Attach Node Stuff
+
 		// A few different systems can alter attach nodes in the editor (ModulePartVariants, ModuleB9PartSwitch, maybe more)
 		// The lifecycle between all of these is pretty complex and tough to manage, but one thing that would make it all easier is
 		// if we could always ask "what would the state of this attachnode be in an unscaled part?"  This attemps to track that.
 		internal struct AttachNodeInfo
 		{
 			public Vector3 position;
-			public float size;
+			public float size; // usually an integer, 0 = 0.625m, 1 = 1.25m, 2 = 2.5m, etc.  Can be a float though
+			public float diameter; // the actual diameter, e.g. 1.25m, 2.5m, etc.
 		}
+		[SerializeField]
 		Dictionary<string, AttachNodeInfo> unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>();
+		ConfigNode attachNodeDiameters; // only valid in loading
 
 		public void SetUnscaledAttachNode(AttachNode attachNode)
 		{
-			unscaledAttachNodes[attachNode.id] = new AttachNodeInfo { position = attachNode.position, size = attachNode.size };
+			float diameter = Tools.AttachNodeSizeDiameter(attachNode.size);
+
+			// see if there is an override in the cfg node (which is only valid during loading) or an already existing default (size must match though)
+			if (attachNodeDiameters != null)
+			{
+				attachNodeDiameters.TryGetValue(attachNode.id, ref diameter);
+			}
+			else if (unscaledAttachNodes.TryGetValue(attachNode.id, out var existingInfo) && existingInfo.size == attachNode.size)
+			{
+				diameter = existingInfo.diameter;
+			}
+
+			SetUnscaledAttachNode(attachNode, diameter);
+		}
+
+		public void SetUnscaledAttachNode(AttachNode attachNode, float diameter)
+		{
+			unscaledAttachNodes[attachNode.id] = new AttachNodeInfo
+			{ 
+				position = attachNode.position,
+				size = attachNode.size,
+				diameter = diameter
+			};
 		}
 
 		public void SetUnscaledAttachNodePosition(string attachNodeId, Vector3 position)
@@ -154,6 +181,8 @@ namespace TweakScale
 				return 1;
 			}
 		}
+
+#endregion
 
 		// modules that understand scaling themselves (or more generally: apply modifiers that shouldn't be scaled) should be excluded from cost/mass adjustments
 		// TODO: can we turn these into Type objects in order to better support inheritance?
@@ -258,6 +287,8 @@ namespace TweakScale
 				// Loading of the prefab from the part config
 				_prefabPart = part;
 				SetupFromConfig(new ScaleType(node));
+
+				attachNodeDiameters = node.GetNode("ATTACHNODEDIAMETER");
 			}
 			else
 			{

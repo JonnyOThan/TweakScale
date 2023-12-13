@@ -1,9 +1,9 @@
 # priority stuff
 
-- match node size bugs
+- gizmo stuff
+- undo bug
 - stats bugs
 - getinfo
-- gizmo stuff
 - check if DryCost and MassScale errors are important
 - engine exhaust (can we get rid of IUpdateable?
 
@@ -34,8 +34,8 @@
 
 ## Match Node Size
 
-- [ ] make sure half-sizes work properly, might need to provide extra info in tweakscale module
 - [ ] some parts (e.g. wheesly) will flicker when matching size
+- [ ] audit squadexpansion parts to make sure everything is correct (adapters etc)
 
 ## Stats
 
@@ -215,6 +215,7 @@
 - [x] doesn't scale attachnode sizes
 - [x] maybe shift should also be a temporary *enable* as well?  For Scale Children too?
 - [x] find a different modifier key for temp toggle/disable
+- [x] make sure half-sizes work properly, might need to provide extra info in tweakscale module
 
 ======
 

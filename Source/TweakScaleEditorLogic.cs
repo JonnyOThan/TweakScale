@@ -114,7 +114,7 @@ namespace TweakScale
 			if (tweakScaleModule != null &&
 				tweakScaleModule.TryGetUnscaledAttachNode(attachNodeId, out var attachNodeInfo))
 			{
-				return Tools.AttachNodeSizeDiameter(attachNodeInfo.size) * tweakScaleModule.currentScaleFactor;
+				return attachNodeInfo.diameter * tweakScaleModule.currentScaleFactor;
 			}
 			else
 			{
@@ -134,8 +134,7 @@ namespace TweakScale
 				
 				if (!doneAttach && selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
 				{
-					float childNodeDiameter = Tools.AttachNodeSizeDiameter(selectedNode.size);
-					float necessaryScale = parentAttachNodeDiameter / childNodeDiameter;
+					float necessaryScale = parentAttachNodeDiameter / selectedNode.diameter;
 
 					Vector3 oldNodePosition = attachment.callerPartNode.position;
 					selectedTweakScaleModule.SetScaleFactor(necessaryScale);
