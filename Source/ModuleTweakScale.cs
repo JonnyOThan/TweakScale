@@ -59,6 +59,7 @@ namespace TweakScale
 		/// The scale factor array. If isFreeScale is false, the part may only be one of these scales.
 		/// </summary>
 		protected float[] ScaleFactors;
+		string[] scaleNames;
 
 		/// <summary>
 		/// The node scale array. If node scales are defined the nodes will be resized to these values.
@@ -254,6 +255,7 @@ namespace TweakScale
 			Fields["guiScaleValue"].guiActiveEditor = false;
 			Fields["guiScaleNameIndex"].guiActiveEditor = false;
 			ScaleFactors = scaleType.GetUnlockedScaleFactors();
+			scaleNames = scaleType.GetUnlockedScaleNames();
 			if (ScaleFactors.Length <= 0)
 				return;
 
@@ -272,7 +274,7 @@ namespace TweakScale
 				Fields["guiScaleNameIndex"].guiActiveEditor = ScaleFactors.Length > 1;
 				var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
 				ScaleNodes = scaleType.ScaleNodes;
-				options.options = scaleType.GetUnlockedScaleNames();
+				options.options = scaleNames;
 				guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
 				guiScaleValue = ScaleFactors[guiScaleNameIndex];
 			}
@@ -862,14 +864,17 @@ namespace TweakScale
 			return ModifierChangeWhen.FIXED;
 		}
 
-		static int FindIntervalIndex(float value, float[] intervals)
+		internal string GetScaleString()
 		{
-			for (int index = 0; index < intervals.Length - 1; ++index)
+			if (isFreeScale)
 			{
-				if (value < intervals[index + 1]) return index;
+				// TODO: cache this to reduce garbage?
+				return string.Format("{0:0.000} ({1})", guiScaleValue, ScaleType.Suffix);
 			}
-
-			return intervals.Length - 1;
+			else
+			{
+				return scaleNames[guiScaleNameIndex];
+			}
 		}
 
 		internal void SetScaleFactor(float scaleFactor, ScaleFactorSnapMode snapMode = ScaleFactorSnapMode.None)
@@ -884,7 +889,7 @@ namespace TweakScale
 
 					if (snapMode != ScaleFactorSnapMode.None && ScaleFactors.Length >= 2)
 					{
-						int intervalIndex = FindIntervalIndex(newGuiScaleValue, ScaleFactors);
+						int intervalIndex = Tools.FindIntervalIndex(newGuiScaleValue, ScaleFactors);
 
 						float min = ScaleFactors[intervalIndex];
 						float max = ScaleFactors[intervalIndex + 1];

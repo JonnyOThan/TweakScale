@@ -303,12 +303,20 @@ namespace TweakScale
 				gizmoScale.useGrid = false;
 			}
 
+			// TODO: should this be cached..?
+			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
+			var message =
+				$"Scale: {tweakScaleModule.GetScaleString()}\n" +
+				$"[{GameSettings.Editor_toggleAngleSnap.name}] Toggle Snap\n" +
+				$"[{GameSettings.Editor_fineTweak.name}] Fine control\n" +
+				$"[{GameSettings.Editor_resetRotation.name}] Reset";
+			ScreenMessages.PostScreenMessage(message, 0f, ScreenMessageStyle.LOWER_CENTER);
+
 			KerbalFSM fsm = EditorLogic.fetch.fsm;
 
 			// did we press the reset button?
 			if (InputLockManager.IsUnlocked(ControlTypes.EDITOR_GIZMO_TOOLS) && GameSettings.Editor_resetRotation.GetKeyDown() && selectedPart.transform == selectedPart.GetReferenceTransform())
 			{
-				var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
 				tweakScaleModule.SetScaleFactor(1.0f);
 
 				//srfAttachCursorOffset = Vector3.zero;
