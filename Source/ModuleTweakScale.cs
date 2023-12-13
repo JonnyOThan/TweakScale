@@ -862,7 +862,17 @@ namespace TweakScale
 			return ModifierChangeWhen.FIXED;
 		}
 
-		internal void SetScaleFactor(float scaleFactor)
+		static int FindIntervalIndex(float value, float[] intervals)
+		{
+			for (int index = 0; index < intervals.Length - 1; ++index)
+			{
+				if (value < intervals[index + 1]) return index;
+			}
+
+			return intervals.Length - 1;
+		}
+
+		internal void SetScaleFactor(float scaleFactor, ScaleFactorSnapMode snapMode = ScaleFactorSnapMode.None)
 		{
 			float newGuiScaleValue = scaleFactor * guiDefaultScale;
 
@@ -871,6 +881,41 @@ namespace TweakScale
 				if (isFreeScale)
 				{
 					newGuiScaleValue = Mathf.Clamp(newGuiScaleValue, ScaleFactors.First(), ScaleFactors.Last());
+
+					if (snapMode != ScaleFactorSnapMode.None && ScaleFactors.Length >= 2)
+					{
+						int intervalIndex = FindIntervalIndex(newGuiScaleValue, ScaleFactors);
+
+						float min = ScaleFactors[intervalIndex];
+						float max = ScaleFactors[intervalIndex + 1];
+						float step = ScaleType.IncrementSlide[intervalIndex];
+						if (step > 0f)
+						{
+							if (snapMode == ScaleFactorSnapMode.CoarseSteps)
+							{
+								int numSteps = (int)Mathf.Round((max - min) / step);
+
+								if (numSteps % 10 == 0)
+								{
+									step = (max - min) / 10;
+								}
+								else if (numSteps % 5 == 0)
+								{
+									step = (max - min) / 5;
+								}
+								else if (numSteps % 4 == 0)
+								{
+									step = (max - min) / 4;
+								}
+								else if (numSteps % 2 == 0)
+								{
+									step = (max - min) / 2;
+								}
+							}
+
+							newGuiScaleValue = min + (float)Math.Round((newGuiScaleValue - min) / step) * step;
+						}
+					}
 				}
 				else
 				{
@@ -885,5 +930,12 @@ namespace TweakScale
 			OnTweakScaleChanged(GetScaleFactorFromGUI());
 			UpdatePartActionWindow(true);
 		}
+	}
+
+	internal enum ScaleFactorSnapMode
+	{
+		None,
+		FineSteps,
+		CoarseSteps,
 	}
 }

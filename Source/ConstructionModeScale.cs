@@ -261,17 +261,24 @@ namespace TweakScale
 		}
 
 		float previousScaleFactor = 1.0f;
-		private void onScaleGizmoHandleDragStart(GizmoOffsetHandle arg1, Vector3 arg2)
+		private void onScaleGizmoHandleDragStart(GizmoOffsetHandle handle, Vector3 axis)
 		{
 			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
 			previousScaleFactor = tweakScaleModule.currentScaleFactor;
 		}
 
-		private void onScaleGizmoHandleDrag(GizmoOffsetHandle arg1, Vector3 arg2, float arg3)
+		private void onScaleGizmoHandleDrag(GizmoOffsetHandle handle, Vector3 axis, float amount)
 		{
 			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
-			tweakScaleModule.SetScaleFactor(previousScaleFactor + arg3);
+			float newScaleFactor = previousScaleFactor + amount;
+			ScaleFactorSnapMode snapMode = ScaleFactorSnapMode.None;
 
+			if (GameSettings.VAB_USE_ANGLE_SNAP)
+			{
+				snapMode = GameSettings.Editor_fineTweak.GetKey() ? ScaleFactorSnapMode.FineSteps : ScaleFactorSnapMode.CoarseSteps;
+			}
+
+			tweakScaleModule.SetScaleFactor(newScaleFactor, snapMode);
 		}
 
 		private void onScaleGizmoUpdated(Vector3 arg1)
