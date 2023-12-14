@@ -123,6 +123,7 @@
     <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
     <!-- note the IncludeCompilerGeneratedMembers is only in krafs 2, so it has no effect here.  but leaving it just in case we upgrade later -->
     <DoNotPublicize Include="Assembly-CSharp:BaseField`1.OnValueModified" />
+    <Publicize Include="UnityEngine.UI"/>
   </ItemGroup>
   <PropertyGroup>
     <PublicizerClearCacheOnClean>true</PublicizerClearCacheOnClean>

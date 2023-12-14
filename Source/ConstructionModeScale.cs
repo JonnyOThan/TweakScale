@@ -57,9 +57,6 @@ namespace TweakScale
 			scaleButton.gameObject.name = "scaleButton";
 			scaleButton.GetComponent<TooltipController_Text>().SetText("Tool: Scale");
 
-			//var groupTransform = scaleButton.group.transform as RectTransform;
-			//groupTransform.sizeDelta = groupTransform.sizeDelta + new Vector2(60, 0);
-
 			Texture2D offIconTexture = GameDatabase.Instance.GetTexture("TweakScale/icons/scaleTool_off", false);
 			Texture2D onIconTexture = GameDatabase.Instance.GetTexture("TweakScale/icons/scaleTool_on", false);
 			var oldSprite = scaleButton.image.sprite;
@@ -343,28 +340,21 @@ namespace TweakScale
 				{
 					tweakScaleModule.SetScaleFactor(1.0f);
 
-					//srfAttachCursorOffset = Vector3.zero;
-					//if (symUpdateMode != 0)
-					//{
-					//	UpdateSymmetry(selectedPart, symUpdateMode, symUpdateParent, symUpdateAttachNode);
-					//}
-
 					if (fsm.CurrentState == st_scale_tweak)
 					{
 						fsm.RunEvent(on_scaleReset);
 					}
 
+					// TODO: do we need to emit a construction event?  What kind?  Where?
 					//GameEvents.onEditorPartEvent.Fire(ConstructionEventType.PartOffset, selectedPart);
 				}
 			}
 
-			//Part part = null;
-			//int i = 0;
-			//for (int count = selectedPart.symmetryCounterparts.Count; i < count; i++)
-			//{
-			//	part = selectedPart.symmetryCounterparts[i];
-			//	part.attPos = part.transform.localPosition - part.attPos0;
-			//}
+			foreach (var part in selectedPart.symmetryCounterparts)
+			{
+				var symTweakScaleModule = part.FindModuleImplementing<TweakScale>();
+				symTweakScaleModule.SetScaleFactor(tweakScaleModule.currentScaleFactor);
+			}
 		}
 
 		private void onConstructionModeChanged(ConstructionMode mode)

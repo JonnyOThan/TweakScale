@@ -78,9 +78,9 @@ namespace TweakScale
 				intervalIndex = FindInterval(value);
 			}
 
-			// Don't call UpdateSlider because it will clamp to the step
-			slider.minValue = scaleControl.intervals[intervalIndex];
-			slider.maxValue = scaleControl.intervals[intervalIndex + 1];
+			// note: direct access to private versions of these members because we don't want to call value-changed events
+			slider.m_MinValue = scaleControl.intervals[intervalIndex];
+			slider.m_MaxValue = scaleControl.intervals[intervalIndex + 1];
 			slider.SetValueWithoutNotify(value);
 
 			UpdateDisplay(value, null);
