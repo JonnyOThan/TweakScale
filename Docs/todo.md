@@ -1,7 +1,5 @@
 # priority stuff
 
-- summary info in PAW group header
-
 - stats bugs
 - getinfo
 - check if DryCost and MassScale errors are important
@@ -41,7 +39,7 @@
 - [ ] show old and new values
 - [ ] show mass and cost
 - [ ] hide things that don't make sense (crew capacity)
-- [ ] stats section didn't collapse when turning off
+- [ ] stats section didn't collapse when turning off (seems to be specific to non-default construction modes?)
 
 ## GetInfo
 
@@ -77,7 +75,6 @@
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] increase crew capacity when scaling up?
 - [ ] support localization
-- [ ] Show some summary info in the scale PAW group text (current gui scale, total scale factor?)
 
 # Verification (do this last, except to generate new bugs)
 
@@ -217,6 +214,7 @@
 - [x] Undo after using scaling gizmo seems to break things
 - [x] parts will flicker when matching size after being flipped over
 - [x] scale mode icon is slightly bigger
+- [x] Show some summary info in the scale PAW group text (current gui scale, total scale factor?)
 
 ======
 

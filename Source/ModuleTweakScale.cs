@@ -830,6 +830,13 @@ namespace TweakScale
 
 			var scaleValueItem = Fields["guiScaleValue"]._uiControlEditor.partActionItem;
 			var scaleNameIndexItem = Fields["guiScaleNameIndex"].uiControlEditor.partActionItem;
+
+			string groupTitle = guiGroupDisplayName + " " + GetScaleString();
+			if (part.PartActionWindow.parameterGroups.TryGetValue(guiGroupName, out var group))
+			{
+				group.groupHeader.text = groupTitle;
+			}
+
 			foreach (var item in part.PartActionWindow.listItems)
 			{
 				if (includeScaleControls || (item != scaleValueItem && item != scaleNameIndexItem))
