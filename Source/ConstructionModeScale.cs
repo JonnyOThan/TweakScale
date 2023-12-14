@@ -60,9 +60,9 @@ namespace TweakScale
 			Texture2D offIconTexture = GameDatabase.Instance.GetTexture("TweakScale/icons/scaleTool_off", false);
 			Texture2D onIconTexture = GameDatabase.Instance.GetTexture("TweakScale/icons/scaleTool_on", false);
 			var oldSprite = scaleButton.image.sprite;
-			scaleButton.image.sprite = Sprite.Create(offIconTexture, oldSprite.textureRect, oldSprite.pivot);
+			scaleButton.image.sprite = Sprite.Create(offIconTexture, oldSprite.rect, oldSprite.pivot);
 
-			(scaleButton.graphic as Image).sprite = Sprite.Create(onIconTexture, oldSprite.textureRect, oldSprite.pivot);
+			(scaleButton.graphic as Image).sprite = Sprite.Create(onIconTexture, oldSprite.rect, oldSprite.pivot);
 
 			scaleButton.onValueChanged.AddListener(onScaleButtonInput);
 		}

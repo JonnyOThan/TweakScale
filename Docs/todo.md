@@ -1,7 +1,6 @@
 # priority stuff
 
 - summary info in PAW group header
-- scale mode icon
 
 - stats bugs
 - getinfo
@@ -31,7 +30,6 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
-- [ ] scale mode icon is slightly bigger
 
 ## Match Node Size
 
@@ -43,6 +41,7 @@
 - [ ] show old and new values
 - [ ] show mass and cost
 - [ ] hide things that don't make sense (crew capacity)
+- [ ] stats section didn't collapse when turning off
 
 ## GetInfo
 
@@ -217,6 +216,7 @@
 - [x] support arrow keys
 - [x] Undo after using scaling gizmo seems to break things
 - [x] parts will flicker when matching size after being flipped over
+- [x] scale mode icon is slightly bigger
 
 ======
 
