@@ -1,6 +1,5 @@
 # priority stuff
 
-- match node size flickering
 - summary info in PAW group header
 - scale mode icon
 
@@ -36,7 +35,6 @@
 
 ## Match Node Size
 
-- [ ] parts will flicker when matching size after being flipped over
 - [ ] audit squadexpansion parts to make sure everything is correct (adapters etc)
 
 ## Stats
@@ -218,6 +216,7 @@
 - [x] on-screen message showing current scale (like fairings)
 - [x] support arrow keys
 - [x] Undo after using scaling gizmo seems to break things
+- [x] parts will flicker when matching size after being flipped over
 
 ======
 

@@ -148,10 +148,11 @@ namespace TweakScale
 				{
 					float necessaryScale = parentAttachNodeDiameter / selectedNode.diameter;
 
-					Vector3 oldNodePosition = attachment.callerPartNode.position;
+					Vector3 oldNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
 					selectedTweakScaleModule.SetScaleFactor(necessaryScale);
+					Vector3 newNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
 
-					selGrabOffset = attachment.callerPartNode.position - oldNodePosition;
+					selGrabOffset = newNodeWorldPosition - oldNodeWorldPosition;
 					EditorLogic.fetch.selPartGrabOffset += selGrabOffset;
 					doneAttach = true;
 				}
