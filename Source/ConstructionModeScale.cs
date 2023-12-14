@@ -18,7 +18,7 @@ namespace TweakScale
 	internal class ConstructionModeScale : MonoBehaviour
 	{
 		Toggle scaleButton;
-		KeyBinding keyBinding = new KeyBinding(KeyCode.Alpha5, ControlTypes.EDITOR_GIZMO_TOOLS | ControlTypes.KEYBOARDINPUT); // TODD: read from config?
+		KeyBinding keyBinding;
 		EditorToolsUI editorToolsUI;
 
 		KFSMEvent on_goToModeScale;
@@ -34,6 +34,8 @@ namespace TweakScale
 		void Start()
 		{
 			editorToolsUI = GetComponent<EditorToolsUI>();
+
+			keyBinding = new KeyBinding(TweakScaleEditorLogic.Instance.ScaleModeKey, ControlTypes.EDITOR_GIZMO_TOOLS | ControlTypes.KEYBOARDINPUT);
 
 			CreateToolButton();
 
