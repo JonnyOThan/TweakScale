@@ -245,6 +245,14 @@ namespace TweakScale
 			};
 			fsm.AddEvent(on_scaleReset, st_scale_tweak);
 
+			EditorLogic.fetch.on_undoRedo.OnEvent += delegate
+			{
+				if (fsm.currentState == st_scale_tweak)
+				{
+					EditorLogic.fetch.on_undoRedo.GoToStateOnEvent = st_scale_select;
+				}
+			};
+
 			// add existing events to our new states
 			fsm.AddEvent(EditorLogic.fetch.on_partDeleted, st_scale_tweak);
 			fsm.AddEvent(EditorLogic.fetch.on_goToModeRotate, st_scale_select, st_scale_tweak);
@@ -297,8 +305,9 @@ namespace TweakScale
 
 		private void partscaleInputUpdate()
 		{
-			// hook up events if necessary
-			if (gizmoScale.useGrid)
+			// hook up events if necessary - super hacky!
+			// GizmoOffset doesn't set up its handle events until Start, so we need to wait until after that to overwrite them
+			if (gizmoScale.useGrid && gizmoScale.handles[0].onDrag != null)
 			{
 				foreach (var handle in gizmoScale.handles)
 				{

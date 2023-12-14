@@ -1,6 +1,9 @@
 # priority stuff
 
-- undo bug
+- match node size flickering
+- summary info in PAW group header
+- scale mode icon
+
 - stats bugs
 - getinfo
 - check if DryCost and MassScale errors are important
@@ -29,11 +32,11 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
-- [ ] Undo after using scaling gizmo seems to break things
+- [ ] scale mode icon is slightly bigger
 
 ## Match Node Size
 
-- [ ] some parts (e.g. wheesly) will flicker when matching size
+- [ ] parts will flicker when matching size after being flipped over
 - [ ] audit squadexpansion parts to make sure everything is correct (adapters etc)
 
 ## Stats
@@ -214,6 +217,7 @@
 - [x] use angle snap and shift to control snapping to step intervals
 - [x] on-screen message showing current scale (like fairings)
 - [x] support arrow keys
+- [x] Undo after using scaling gizmo seems to break things
 
 ======
 
