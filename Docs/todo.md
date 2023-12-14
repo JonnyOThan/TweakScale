@@ -215,6 +215,7 @@
 - [x] parts will flicker when matching size after being flipped over
 - [x] scale mode icon is slightly bigger
 - [x] Show some summary info in the scale PAW group text (current gui scale, total scale factor?)
+- [x] put hotkeys for child scale / match node size in PAW
 
 ======
 

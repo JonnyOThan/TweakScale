@@ -401,9 +401,11 @@ namespace TweakScale
 
 				scaleChildren = TweakScaleEditorLogic.Instance.ScaleChildren;
 				Fields[nameof(scaleChildren)].OnValueModified += OnScaleChildrenModified;
+				Fields[nameof(scaleChildren)].guiName = $"[{TweakScaleEditorLogic.Instance.ScaleChildren.GetToggleKey()}] Scale Children";
 
 				matchNodeSize = TweakScaleEditorLogic.Instance.MatchNodeSize;
 				Fields[nameof(matchNodeSize)].OnValueModified += OnMatchNodeSizeModified;
+				Fields[nameof(matchNodeSize)].guiName = $"[{TweakScaleEditorLogic.Instance.MatchNodeSize.GetToggleKey()}] Match Node Size";
 
 				showStats = TweakScaleEditorLogic.Instance.ShowStats;
 				Fields[nameof(showStats)].OnValueModified += OnShowStatsModified;

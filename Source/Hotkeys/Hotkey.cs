@@ -60,7 +60,7 @@ namespace TweakScale
 			_trigger = keys.Last();
 		}
 
-		string GetKeysAsString()
+		public string GetKeysAsString()
 		{
 			var activeModifiers = _modifiers.Where(kv => kv.Value).Select(kv => kv.Key);
 			var result = string.Join("+", activeModifiers);

@@ -43,6 +43,11 @@ namespace TweakScale
 			return true;
 		}
 
+		public string GetToggleKey()
+		{
+			return _toggle.GetKeysAsString();
+		}
+
 		public static implicit operator bool(Hotkeyable a)
 		{
 			return a.State;
