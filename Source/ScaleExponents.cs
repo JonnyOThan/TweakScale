@@ -11,14 +11,32 @@ namespace TweakScale
 	{
 		public struct ScalingMode
 		{
-			public readonly string Exponent;
+			// if ValueList is non-null, it is the list of values to use for a non-free-scale part (and ExponentValue should be 0)
+			// If ValueList is null, then linearScale^ExponentValue is the multiplier that should be used
+			public readonly double[] ValueList;
+			public readonly double ExponentValue;
+			public readonly string Name;
 			public bool UseRelativeScaling;
 
-			public ScalingMode(string exponent, bool useRelativeScaling)
-				: this()
+			public ScalingMode(string name, string valueString, bool useRelativeScaling)
 			{
-				Exponent = exponent;
+				Name = name;
 				UseRelativeScaling = useRelativeScaling;
+
+				ExponentValue = double.NaN;
+				if (valueString.Contains(','))
+				{
+					ValueList = Tools.ConvertString(valueString, (double[])null);
+					ExponentValue = 0;
+				}
+				else
+				{
+					ValueList = null;
+					if (!double.TryParse(valueString, out ExponentValue))
+					{
+						Tools.LogWarning("Invalid exponent {0} for field {1}", valueString, name);
+					}
+				}
 			}
 		}
 
@@ -101,17 +119,15 @@ namespace TweakScale
 
 			foreach (var value in node.values.OfType<ConfigNode.Value>().Where(a => a.name != "name"))
 			{
-				if (value.name.StartsWith("!"))
-				{
-					_exponents[value.name.Substring(1)] = new ScalingMode(value.value, true);
-				}
-				else if (value.name.Equals("-ignore"))
+				if (value.name.Equals("-ignore"))
 				{
 					_ignores.Add(value.value);
 				}
 				else
 				{
-					_exponents[value.name] = new ScalingMode(value.value, false);
+					bool useRelativeScaling = value.name.StartsWith("!");
+					string name = useRelativeScaling ? value.name.Substring(1) : value.name;
+					_exponents[name] = new ScalingMode(name, value.value, useRelativeScaling);
 				}
 			}
 
@@ -169,88 +185,76 @@ namespace TweakScale
 		/// <param name="scalingMode">Information on exactly how to scale this.</param>
 		/// <param name="factor">The rescaling factor.</param>
 		/// <returns>The rescaled exponentValue.</returns>
-		static private void Rescale(MemberUpdater current, MemberUpdater baseValue, string name, ScalingMode scalingMode, ScalingFactor factor, string parentName, StringBuilder info)
+		static private void Rescale(MemberUpdater current, MemberUpdater baseValue, ScalingMode scalingMode, ScalingFactor factor, string parentName, StringBuilder info)
 		{
-			var exponentValue = scalingMode.Exponent;
-			var exponent = double.NaN;
-			double[] values = null;
-			if (exponentValue.Contains(','))
+			// value-list scaling
+			if (scalingMode.ValueList != null)
 			{
 				if (factor.index == -1)
 				{
-					Tools.LogWarning("Value list used for freescale part exponent field {0}: {1}", name, exponentValue);
+					Tools.LogWarning("Value list used for freescale part exponent field {0}.{1}", parentName, scalingMode.Name);
 					return;
 				}
-				values = Tools.ConvertString(exponentValue, new double[] { });
-				if (values.Length <= factor.index)
+				if (scalingMode.ValueList.Length <= factor.index)
 				{
-					Tools.LogWarning("Too few values given for {0}. Expected at least {1}, got {2}: {3}", name, factor.index + 1, values.Length, exponentValue);
-					return;
-				}
-			}
-			else if (!double.TryParse(exponentValue, out exponent))
-			{
-				Tools.LogWarning("Invalid exponent {0} for field {1}", parentName, exponentValue, name);
-			}
-
-			double multiplyBy = 1;
-			if (!double.IsNaN(exponent))
-				multiplyBy = Math.Pow(scalingMode.UseRelativeScaling ? factor.relative.linear : factor.absolute.linear, exponent);
-
-			if (info != null && multiplyBy != 1)
-			{
-				info.AppendFormat("\n{0}.{1}: {2:0.00}x", parentName, name, multiplyBy);
-			}
-
-			if (current.MemberType.GetInterface("IList") != null)
-			{
-				var v = (IList)current.Value;
-				var v2 = (IList)baseValue.Value;
-				if (v == null)
-				{
-					Tools.LogWarning("current.Value == null!");
+					Tools.LogWarning("Too few values given for {0}.{1}. Expected at least {2}, got {3}", parentName, scalingMode.Name, factor.index + 1, scalingMode.ValueList.Length);
 					return;
 				}
 
-				for (var i = 0; i < v.Count && i < v2.Count; ++i)
+				double newValue = scalingMode.ValueList[factor.index];
+
+				// if the field itself is a list, we set all the elements
+				if (current.Value is IList currentValues)
 				{
-					if (values != null)
+					for (int i = 0; i < currentValues.Count; ++i)
 					{
-						v[i] = values[factor.index];
+						currentValues[i] = newValue;
 					}
-					else if (!double.IsNaN(exponent) && (exponent != 0))
+				}
+				else
+				{
+					current.Set(newValue);
+				}
+
+				if (info != null)
+				{
+					info.AppendFormat("\n{0}.{1}: {2:0.00}", parentName, scalingMode.Name, newValue);
+				}
+			}
+			// polynomial scaling
+			else if (scalingMode.ExponentValue != 0)
+			{
+				double multiplyBy = Math.Pow(scalingMode.UseRelativeScaling ? factor.relative.linear : factor.absolute.linear, scalingMode.ExponentValue);
+
+				// field is a list - multiply each value
+				if (current.Value is IList currentValues && baseValue.Value is IList baseValues)
+				{
+					for (int i = 0; i < currentValues.Count && i < baseValues.Count; ++i)
 					{
-						if (v[i] is float)
+						if (currentValues[i] is float)
 						{
-							v[i] = (float)v2[i] * multiplyBy;
+							currentValues[i] = (float)baseValues[i] * multiplyBy;
 						}
-						else if (v[i] is double)
+						else if (currentValues[i] is double)
 						{
-							v[i] = (double)v2[i] * multiplyBy;
+							currentValues[i] = (double)baseValues[i] * multiplyBy;
 						}
-						else if (v[i] is Vector3)
+						else if (currentValues[i] is Vector3)
 						{
-							v[i] = (Vector3)v2[i] * (float)multiplyBy;
+							currentValues[i] = (Vector3)baseValues[i] * (float)multiplyBy;
 						}
 					}
 				}
-			}
-
-			if (values != null)
-			{
-				if (current.MemberType == typeof(float))
+				// single field
+				else
 				{
-					current.Set((float)values[factor.index]);
-				}
-				else if (current.MemberType == typeof(float))
-				{
-					current.Set(values[factor.index]);
+					current.Scale(multiplyBy, baseValue);
 				}
 
-			}
-			else if (!double.IsNaN(exponent) && (exponent != 0))
-			{
-				current.Scale(multiplyBy, baseValue);
+				if (info != null && multiplyBy != 1)
+				{
+					info.AppendFormat("\n{0}.{1}: {2:0.00}x", parentName, scalingMode.Name, multiplyBy);
+				}
 			}
 		}
 
@@ -271,12 +275,6 @@ namespace TweakScale
 			if ((object)obj == null)
 				return;
 
-			/*if (obj is PartModule && obj.GetType().Name != _id)
-            {
-                Tools.LogWf("This ScaleExponent is intended for {0}, not {1}", _id, obj.GetType().Name);
-                return;
-            }*/
-
 			if (ShouldIgnore(part))
 				return;
 
@@ -296,7 +294,7 @@ namespace TweakScale
 				}
 
 				var baseValue = nameExponentKV.Value.UseRelativeScaling ? null : MemberUpdater.Create(baseObj, nameExponentKV.Key);
-				Rescale(value, baseValue ?? value, nameExponentKV.Key, nameExponentKV.Value, factor, parentName, info);
+				Rescale(value, baseValue ?? value, nameExponentKV.Value, factor, parentName, info);
 			}
 
 			foreach (var child in _children)
@@ -448,17 +446,13 @@ namespace TweakScale
 			{
 				if (partExponents._exponents.TryGetValue("mass", out var massExponent))
 				{
-					if (massExponent.Exponent.Contains(','))
+					if (massExponent.ValueList != null)
 					{
 						Tools.LogWarning("getMassExponent not yet implemented for this kind of config");
 						return 0;
 					}
-					if (!float.TryParse(massExponent.Exponent, out var exponent))
-					{
-						Tools.LogWarning("parsing error for mass exponent");
-						return 0;
-					}
-					return exponent;
+
+					return (float)massExponent.ExponentValue;
 				}
 			}
 
@@ -471,18 +465,12 @@ namespace TweakScale
 			{
 				if (moduleExponents._exponents.TryGetValue("DryCost", out var costExponent))
 				{
-					if (costExponent.Exponent.Contains(','))
+					if (costExponent.ValueList != null)
 					{
 						Tools.LogWarning("getCostExponent not yet implemented for this kind of config");
 						return 0;
 					}
-					if (!float.TryParse(costExponent.Exponent, out var exponent))
-					{
-						Tools.LogWarning("parsing error for cost exponent");
-						return 0;
-					}
-
-					return exponent;
+					return (float)costExponent.ExponentValue;
 				}
 			}
 
@@ -499,7 +487,7 @@ namespace TweakScale
 			if (!Exponents["Part"]._exponents.ContainsKey("mass"))
 				return;
 
-			string massExponent = Exponents["Part"]._exponents["mass"].Exponent;
+			string massExponent = Exponents["Part"]._exponents["mass"].ExponentValue.ToString();
 			if (!Exponents.ContainsKey("TweakScale"))
 			{
 				ConfigNode node = new ConfigNode();
@@ -520,14 +508,14 @@ namespace TweakScale
 				}
 				else
 				{
-					Exponents["TweakScale"]._exponents.Add("DryCost", new ScalingMode(massExponent, true));
+					Exponents["TweakScale"]._exponents.Add("DryCost", new ScalingMode("DryCost", massExponent, true));
 				}
 
 				// move mass exponent into TweakScale module
 				if (Exponents["TweakScale"]._exponents.ContainsKey("MassScale"))
 					Tools.LogWarning("treatMassAndCost: TweakScale/MassScale exponent already exists!");
 				else
-					Exponents["TweakScale"]._exponents.Add("MassScale", new ScalingMode(massExponent, false));
+					Exponents["TweakScale"]._exponents.Add("MassScale", new ScalingMode("MassScale", massExponent, false));
 			}
 			//Exponents["Part"]._exponents.Remove("mass");
 		}
