@@ -36,9 +36,8 @@
 ## Stats
 
 - [ ] better formatting
-- [ ] show old and new values
+- [ ] show resource names (and maybe just max amount?)
 - [ ] show mass and cost
-- [ ] hide things that don't make sense (crew capacity)
 - [ ] stats section didn't collapse when turning off (seems to be specific to non-default construction modes?)
 
 ## GetInfo
@@ -221,6 +220,8 @@
 - [x] Show some summary info in the scale PAW group text (current gui scale, total scale factor?)
 - [x] put hotkeys for child scale / match node size in PAW
 - [x] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
+- [x] stats: show old and new values
+- [x] stats: hide things that don't make sense (crew capacity)
 
 ======
 

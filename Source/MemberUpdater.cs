@@ -232,10 +232,14 @@ namespace TweakScale
 			_floatRange.stepIncrement *= factor;
 		}
 
-		public string Name
+		public string DisplayName
 		{
 			get
 			{
+				if (_floatRange != null)
+				{
+					return _floatRange.field.guiName;
+				}
 				if (_field != null)
 				{
 					return _field.Name;

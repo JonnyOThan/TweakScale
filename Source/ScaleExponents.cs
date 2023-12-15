@@ -210,13 +210,14 @@ namespace TweakScale
 
 				if (info != null)
 				{
-					info.AppendFormat("\n{0}.{1}: {2:0.00}", parentName, scalingMode.Name, newValue);
+					info.AppendFormat("\n{0}.{1}: {2:0.00}", parentName, current.DisplayName, newValue);
 				}
 			}
 			// polynomial scaling
 			else if (scalingMode.ExponentValue != 0)
 			{
-				double multiplyBy = Math.Pow(scalingMode.UseRelativeScaling ? factor.relative.linear : factor.absolute.linear, scalingMode.ExponentValue);
+				double absoluteScalar = Math.Pow(factor.absolute.linear, scalingMode.ExponentValue);
+				double multiplyBy = scalingMode.UseRelativeScaling ? Math.Pow(factor.relative.linear, scalingMode.ExponentValue) : absoluteScalar;
 
 				// field is a list - multiply each value
 				if (current.Value is IList currentValues && baseValue.Value is IList baseValues)
@@ -240,12 +241,34 @@ namespace TweakScale
 				// single field
 				else
 				{
-					current.Scale(multiplyBy, baseValue);
-				}
+					// build info line
+					if (info != null && factor.absolute.linear != 1)
+					{
+						double unscaledValue;
 
-				if (info != null && multiplyBy != 1)
-				{
-					info.AppendFormat("\n{0}.{1}: {2:0.00}x", parentName, scalingMode.Name, multiplyBy);
+						if (scalingMode.UseRelativeScaling)
+						{
+							// relative = absolute / current
+							// current = absolute / relative
+							double oldScaleFactor = factor.absolute.linear / factor.relative.linear;
+							double oldMultiplier = Math.Pow(oldScaleFactor, scalingMode.ExponentValue);
+							unscaledValue = Convert.ToDouble(baseValue.Value) / oldMultiplier;
+						}
+						else
+						{
+							unscaledValue = Convert.ToDouble(baseValue.Value);
+						}
+
+						if (unscaledValue != 0)
+						{
+							// TODO: don't show decimal places on the original value if it was an integer (e.g. resource amounts)
+							// and don't show decimal places on the output if the field is an integer (e.g. crew capacity)
+							// Should this get moved into the MemberUpdate.Scale method?
+							info.AppendFormat("\n{0}.{1}: {2:0.00} x {3:0.00} = {4:0.00}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
+						}
+					}
+
+					current.Scale(multiplyBy, baseValue);
 				}
 			}
 		}
