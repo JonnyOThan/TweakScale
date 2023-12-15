@@ -62,11 +62,6 @@ namespace TweakScale
 		string[] scaleNames;
 
 		/// <summary>
-		/// The node scale array. If node scales are defined the nodes will be resized to these values.
-		///</summary>
-		protected int[] ScaleNodes;
-
-		/// <summary>
 		/// The unmodified prefab part. From this, default values are found.
 		/// </summary>
 		private Part _prefabPart;
@@ -273,7 +268,6 @@ namespace TweakScale
 			{
 				Fields["guiScaleNameIndex"].guiActiveEditor = ScaleFactors.Length > 1;
 				var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
-				ScaleNodes = scaleType.ScaleNodes;
 				options.options = scaleNames;
 				guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
 				guiScaleValue = ScaleFactors[guiScaleNameIndex];
@@ -710,16 +704,8 @@ namespace TweakScale
 		{
 			float originalNodeSize = GetUnscaledAttachNodeSize(node.id);
 
-			if (isFreeScale || ScaleNodes == null || ScaleNodes.Length == 0)
-			{
-				float tmpNodeSize = Mathf.Max(originalNodeSize, 0.5f);
-				node.size = (int)(tmpNodeSize * guiScaleValue / guiDefaultScale + 0.49);
-			}
-			else
-			{
-				node.size = (int)(originalNodeSize + (1 * ScaleNodes[guiScaleNameIndex]));
-			}
-
+			float tmpNodeSize = Mathf.Max(originalNodeSize, 0.5f);
+			node.size = (int)(tmpNodeSize * guiScaleValue / guiDefaultScale + 0.49);
 			node.size = Math.Max(0, node.size);
 
 			if (node.icon != null)

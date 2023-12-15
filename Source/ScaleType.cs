@@ -34,7 +34,6 @@ namespace TweakScale
 		public float[] IncrementSlide = { };
 		public string Suffix = null;
 		public readonly string Name = null;
-		public readonly string Description = null;
 
 		public float[] AllScaleFactors
 		{
@@ -61,53 +60,48 @@ namespace TweakScale
 			return result;
 		}
 
-		public int[] ScaleNodes
+		// config is a TweakScale module config OR SCALETYPE
+		public ScaleType(ConfigNode scaleConfig)
 		{
-			get; private set;
-		}
-
-		// config is a module config
-		public ScaleType(ConfigNode moduleConfig)
-		{
-			ConfigNode scaleConfig = null;
-			if ((object)moduleConfig != null)
+			if (scaleConfig != null)
 			{
-				Name = Tools.ConfigValue(moduleConfig, "type", Name);
-				ScaleExponents.LoadGlobalExponents();
+				Name = scaleConfig.GetValue("type");
 
+				// copy values from global scale type
 				if (Name != null)
 				{
-					var tmp = GameDatabase.Instance.GetConfigs("SCALETYPE").FirstOrDefault(a => a.name == Name);
-					if (tmp != null) scaleConfig = tmp.config;
-					if (scaleConfig != null)
+					if (globalScaleTypes.TryGetValue(Name, out ScaleType scaleType))
 					{
 						// search scaletype for values
-						IsFreeScale = Tools.ConfigValue(scaleConfig, "freeScale", IsFreeScale);
-						DefaultScale = Tools.ConfigValue(scaleConfig, "defaultScale", DefaultScale);
-						Suffix = Tools.ConfigValue(scaleConfig, "suffix", Suffix);
-						_scaleFactors = Tools.ConfigValue(scaleConfig, "scaleFactors", _scaleFactors);
-						ScaleNodes = Tools.ConfigValue(scaleConfig, "scaleNodes", ScaleNodes);         // currently not used!
-						_scaleNames = Tools.ConfigValue(scaleConfig, "scaleNames", _scaleNames).Select(a => a.Trim()).ToArray();
-						TechRequired = Tools.ConfigValue(scaleConfig, "techRequired", TechRequired).Select(a => a.Trim()).ToArray();
-						//AttachNodes   = GetNodeFactors(scaleConfig.GetNode("ATTACHNODES"), AttachNodes);  // currently not used!
+						IsFreeScale = scaleType.IsFreeScale;
+						DefaultScale = scaleType.DefaultScale;
+						Suffix = scaleType.Suffix;
+						_scaleFactors = scaleType._scaleFactors;
+						_scaleNames = scaleType._scaleNames;
+						TechRequired = scaleType.TechRequired;
 
-						Exponents = ScaleExponents.CreateExponentsForModule(scaleConfig, Exponents);
+						Exponents = scaleType.Exponents;
 					}
 				}
+				// if we're loading the global scale types
+				else if (globalScaleTypes == null)
+				{
+					Name = scaleConfig.GetValue("name");
+				}
 				else
+				{
 					Name = "";
+				}
 
-				// search module config for overrides
-				IsFreeScale = Tools.ConfigValue(moduleConfig, "freeScale", IsFreeScale);
-				DefaultScale = Tools.ConfigValue(moduleConfig, "defaultScale", DefaultScale);
-				Suffix = Tools.ConfigValue(moduleConfig, "suffix", Suffix);
-				_scaleFactors = Tools.ConfigValue(moduleConfig, "scaleFactors", _scaleFactors);
-				ScaleNodes = Tools.ConfigValue(moduleConfig, "scaleNodes", ScaleNodes);
-				_scaleNames = Tools.ConfigValue(moduleConfig, "scaleNames", _scaleNames).Select(a => a.Trim()).ToArray();
-				TechRequired = Tools.ConfigValue(moduleConfig, "techRequired", TechRequired).Select(a => a.Trim()).ToArray();
-				//AttachNodes   = GetNodeFactors(moduleConfig.GetNode("ATTACHNODES"), AttachNodes);
+				// search config for overrides
+				IsFreeScale = Tools.ConfigValue(scaleConfig, "freeScale", IsFreeScale);
+				DefaultScale = Tools.ConfigValue(scaleConfig, "defaultScale", DefaultScale);
+				Suffix = Tools.ConfigValue(scaleConfig, "suffix", Suffix);
+				_scaleFactors = Tools.ConfigValue(scaleConfig, "scaleFactors", _scaleFactors);
+				_scaleNames = Tools.ConfigValue(scaleConfig, "scaleNames", _scaleNames).Select(a => a.Trim()).ToArray();
+				TechRequired = Tools.ConfigValue(scaleConfig, "techRequired", TechRequired).Select(a => a.Trim()).ToArray();
 
-				Exponents = ScaleExponents.CreateExponentsForModule(moduleConfig, Exponents);
+				Exponents = ScaleExponents.CreateExponentsForModule(scaleConfig, Exponents);
 				ScaleExponents.treatMassAndCost(Exponents);
 			}
 
@@ -127,7 +121,7 @@ namespace TweakScale
 
 			// fill in missing values
 			if ((DefaultScale <= 0) || (_scaleFactors.Length == 0))
-				RepairScaletype(scaleConfig, moduleConfig);
+				RepairScaletype(scaleConfig);
 
 			if (!IsFreeScale && (_scaleFactors.Length != _scaleNames.Length))
 			{
@@ -164,7 +158,7 @@ namespace TweakScale
 			}
 		}
 
-		private void RepairScaletype(ConfigNode scaleConfig, ConfigNode partConfig)
+		private void RepairScaletype(ConfigNode scaleConfig)
 		{
 			if ((DefaultScale <= 0) && (_scaleFactors.Length == 0))
 			{
@@ -192,11 +186,7 @@ namespace TweakScale
 					minScale = Tools.ConfigValue(scaleConfig, "minScale", minScale);    // deprecated!
 					maxScale = Tools.ConfigValue(scaleConfig, "maxScale", maxScale);    // deprecated!
 				}
-				if (partConfig != null)
-				{
-					minScale = Tools.ConfigValue(partConfig, "minScale", minScale);
-					maxScale = Tools.ConfigValue(partConfig, "maxScale", maxScale);
-				}
+
 				if ((minScale > 0) && (maxScale > 0))
 				{
 					if (minScale > 0 && maxScale > 0)
@@ -234,35 +224,14 @@ namespace TweakScale
 			return result + "\n}";
 		}
 
-		public override bool Equals(object obj)
-		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj.GetType() == GetType() && Equals((ScaleType)obj);
-		}
+		static Dictionary<string, ScaleType> globalScaleTypes;
 
-		public static bool operator ==(ScaleType a, ScaleType b)
+		public static void ModuleManagerPostLoad()
 		{
-			if ((object)a == null)
-				return (object)b == null;
-			if ((object)b == null)
-				return false;
-			return a.Name == b.Name;
-		}
-
-		public static bool operator !=(ScaleType a, ScaleType b)
-		{
-			return !(a == b);
-		}
-
-		protected bool Equals(ScaleType other)
-		{
-			return string.Equals(Name, other.Name);
-		}
-
-		public override int GetHashCode()
-		{
-			return (Name != null ? Name.GetHashCode() : 0);
+			globalScaleTypes = null;
+			var scaleTypeUrlConfigs = GameDatabase.Instance.root.GetConfigs("SCALETYPE");
+			var scaleTypes = scaleTypeUrlConfigs.Select(urlConfig => new ScaleType(urlConfig.config));
+			globalScaleTypes = scaleTypes.ToDictionary(scaleType => scaleType.Name);
 		}
 	}
 }

@@ -47,7 +47,6 @@ namespace TweakScale
 		private readonly Dictionary<string, ScaleExponents> _children;
 
 		private static Dictionary<string, ScaleExponents> _globalList;
-		private static bool _globalListLoaded;
 
 		private const string ExponentConfigName = "TWEAKSCALEEXPONENTS";
 
@@ -56,23 +55,16 @@ namespace TweakScale
 			return node.name == ExponentConfigName || node.name == "MODULE";
 		}
 
-		/// <summary>
-		/// Load all TWEAKSCALEEXPONENTS that are globally defined.
-		/// </summary>
-		public static void LoadGlobalExponents()
+		public static void ModuleManagerPostLoad()
 		{
-			// TODO: this should probably use the ModuleManager database callback, so that it handles reloads better
-			if (_globalListLoaded)
-				return;
-
-			var tmp = GameDatabase.Instance.GetConfigs(ExponentConfigName)
+			// Load all TWEAKSCALEEXPONENTS that are globally defined.
+			var tmp = GameDatabase.Instance.root.GetConfigs(ExponentConfigName)
 				.Select(a => new ScaleExponents(a.config));
 
 			_globalList = tmp
 				.GroupBy(a => a._id)
 				.Select(a => a.Aggregate(Merge))
 				.ToDictionary(a => a._id, a => a);
-			_globalListLoaded = true;
 		}
 
 		/// <summary>
@@ -272,14 +264,13 @@ namespace TweakScale
 		/// <param name="part">The part the object is on.</param>
 		private void UpdateFields(object obj, object baseObj, ScalingFactor factor, Part part, string parentName, StringBuilder info)
 		{
-			if ((object)obj == null)
+			if (obj == null)
 				return;
 
 			if (ShouldIgnore(part))
 				return;
 
-			var enumerable = obj as IEnumerable;
-			if (enumerable != null)
+			if (obj is IEnumerable enumerable)
 			{
 				UpdateEnumerable(enumerable, (IEnumerable)baseObj, factor, parentName, info, part);
 				return;

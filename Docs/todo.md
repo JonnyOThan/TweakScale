@@ -27,6 +27,7 @@
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
+- [ ] command pod inventory stopped working - reduced to 0 slots and then it would not increase again
 
 ## Match Node Size
 
@@ -75,6 +76,7 @@
 - [ ] increase crew capacity when scaling up?
 - [ ] support localization
 - [ ] pressing space on held part when orientation is already default should reset scale and/or allow scale gizmo to be used on unattached parts
+- [ ] add display format to scale type (alongside suffix) so that we don't get 3 digits of precision on percentage scalars
 
 # Verification (do this last, except to generate new bugs)
 
