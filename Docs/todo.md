@@ -27,7 +27,6 @@
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
-- [ ] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
 
 ## Match Node Size
 
@@ -75,6 +74,7 @@
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] increase crew capacity when scaling up?
 - [ ] support localization
+- [ ] pressing space on held part when orientation is already default should reset scale and/or allow scale gizmo to be used on unattached parts
 
 # Verification (do this last, except to generate new bugs)
 
@@ -93,6 +93,8 @@
 		pretty sure this is mostly going to work, just need to test loading things that aren't IsFreeScale
 - [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
 - [ ] check undo after scaling
+- [ ] check scale mode on non-supported parts
+- [ ] check scaling with struts and fuel lines connected to affected parts
 
 # won't do
 
@@ -216,6 +218,7 @@
 - [x] scale mode icon is slightly bigger
 - [x] Show some summary info in the scale PAW group text (current gui scale, total scale factor?)
 - [x] put hotkeys for child scale / match node size in PAW
+- [x] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
 
 ======
 
