@@ -332,13 +332,13 @@ namespace TweakScale
 
 			if (InputLockManager.IsUnlocked(ControlTypes.EDITOR_GIZMO_TOOLS))
 			{
-				int incrementDirection = Input.GetKeyDown(TweakScaleEditorLogic.Instance.IncreaseScaleKey).GetHashCode() - Input.GetKeyDown(TweakScaleEditorLogic.Instance.DecreaseScaleKey).GetHashCode();
+				int incrementDirection = Input.GetKeyDown(TweakScaleEditorLogic.Instance.IncreaseScaleKey).ToInt() - Input.GetKeyDown(TweakScaleEditorLogic.Instance.DecreaseScaleKey).ToInt();
 				if (incrementDirection != 0)
 				{
 					tweakScaleModule.IncrementScaleFactor(incrementDirection, GetScaleSnapMode());
 				}
 
-				int jumpDirection = Input.GetKeyDown(TweakScaleEditorLogic.Instance.NextScaleIntervalKey).GetHashCode() - Input.GetKeyDown(TweakScaleEditorLogic.Instance.PrevScaleIntervalKey).GetHashCode();
+				int jumpDirection = Input.GetKeyDown(TweakScaleEditorLogic.Instance.NextScaleIntervalKey).ToInt() - Input.GetKeyDown(TweakScaleEditorLogic.Instance.PrevScaleIntervalKey).ToInt();
 				if (jumpDirection != 0)
 				{
 					tweakScaleModule.JumpScaleFactor(jumpDirection);

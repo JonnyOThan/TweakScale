@@ -364,5 +364,10 @@ namespace TweakScale
 				return 1.25f * attachNodeSize;
 			}
 		}
+
+		public unsafe static int ToInt(this bool b)
+		{
+			return *(byte*)(&b);
+		}
 	}
 }
