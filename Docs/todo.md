@@ -28,6 +28,7 @@
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] command pod inventory stopped working - reduced to 0 slots and then it would not increase again
+- [ ] make sure K and M keybinds respect input locks / text fields
 
 ## Match Node Size
 
@@ -36,7 +37,6 @@
 ## Stats
 
 - [ ] better formatting
-- [ ] show resource names (and maybe just max amount?)
 - [ ] show mass and cost
 - [ ] stats section didn't collapse when turning off (seems to be specific to non-default construction modes?)
 
@@ -75,7 +75,10 @@
 - [ ] increase crew capacity when scaling up?
 - [ ] support localization
 - [ ] pressing space on held part when orientation is already default should reset scale and/or allow scale gizmo to be used on unattached parts
+		maybe also add a screen message?
 - [ ] add display format to scale type (alongside suffix) so that we don't get 3 digits of precision on percentage scalars
+- [ ] TSSafetyNet needs to actually populate the load failure reason
+- [ ] add a screen message for match node size
 
 # Verification (do this last, except to generate new bugs)
 
@@ -222,6 +225,7 @@
 - [x] reliant is free-scale because it only have 6 terms in the node_stack_top field.  see if we can provide a good default there (&node_stack_top[6] = 1 maybe?)
 - [x] stats: show old and new values
 - [x] stats: hide things that don't make sense (crew capacity)
+- [x] show resource names (and maybe just max amount?)
 
 ======
 

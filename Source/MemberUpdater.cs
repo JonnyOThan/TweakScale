@@ -133,6 +133,8 @@ namespace TweakScale
 			}
 		}
 
+		public Type ObjectType => _object.GetType();
+
 		public void Set(object value)
 		{
 			if (value.GetType() != MemberType && MemberType.GetInterface("IConvertible") != null &&
@@ -194,13 +196,7 @@ namespace TweakScale
 			else if (MemberType == typeof(List<ResourceRatio>))
 			{
 				var l = (newValue as List<ResourceRatio>);
-				//List<ResourceRatio> l2 = new List<ResourceRatio>();
-				for (int i = 0; i < l.Count; i++)
-				{
-					var tmp = l[i];
-					tmp.Ratio *= scale;
-					(Value as List<ResourceRatio>)[i] = tmp;
-				}
+				ScaleResourceList(l, scale);
 			}
 			else if (MemberType == typeof(ConversionRecipe))
 			{
@@ -232,14 +228,10 @@ namespace TweakScale
 			_floatRange.stepIncrement *= factor;
 		}
 
-		public string DisplayName
+		public string Name
 		{
 			get
 			{
-				if (_floatRange != null)
-				{
-					return _floatRange.field.guiName;
-				}
 				if (_field != null)
 				{
 					return _field.Name;
@@ -248,7 +240,24 @@ namespace TweakScale
 				{
 					return _property.Name;
 				}
-				return null;
+				return "";
+			}
+		}
+
+		public string DisplayName
+		{
+			get
+			{
+				if (_floatRange != null)
+				{
+					return _floatRange.field.guiName;
+				}
+				if (_object is PartResource partResource)
+				{
+					return partResource.info.displayName;
+				}
+				
+				return Name;
 			}
 		}
 	}

@@ -241,35 +241,38 @@ namespace TweakScale
 				// single field
 				else
 				{
-					// build info line
-					if (info != null && factor.absolute.linear != 1)
-					{
-						double unscaledValue;
-
-						if (scalingMode.UseRelativeScaling)
-						{
-							// relative = absolute / current
-							// current = absolute / relative
-							double oldScaleFactor = factor.absolute.linear / factor.relative.linear;
-							double oldMultiplier = Math.Pow(oldScaleFactor, scalingMode.ExponentValue);
-							unscaledValue = Convert.ToDouble(baseValue.Value) / oldMultiplier;
-						}
-						else
-						{
-							unscaledValue = Convert.ToDouble(baseValue.Value);
-						}
-
-						if (unscaledValue != 0)
-						{
-							// TODO: don't show decimal places on the original value if it was an integer (e.g. resource amounts)
-							// and don't show decimal places on the output if the field is an integer (e.g. crew capacity)
-							// Should this get moved into the MemberUpdate.Scale method?
-							info.AppendFormat("\n{0}.{1}: {2:0.00} x {3:0.00} = {4:0.00}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
-						}
-					}
+					BuildInfoLine(current, baseValue, scalingMode, factor, parentName, info, absoluteScalar);
 
 					current.Scale(multiplyBy, baseValue);
 				}
+			}
+		}
+
+		private static void BuildInfoLine(MemberUpdater current, MemberUpdater baseValue, ScalingMode scalingMode, ScalingFactor factor, string parentName, StringBuilder info, double absoluteScalar)
+		{
+			if (info == null || factor.absolute.linear == 1) return;
+
+			if (current.ObjectType == typeof(PartResource) && current.Name != "maxAmount") return; // TODO: more general way to exclude certain fields?
+
+			double unscaledValue;
+
+			if (scalingMode.UseRelativeScaling)
+			{
+				// relative = absolute / current
+				// current = absolute / relative
+				double oldScaleFactor = factor.absolute.linear / factor.relative.linear;
+				double oldMultiplier = Math.Pow(oldScaleFactor, scalingMode.ExponentValue);
+				unscaledValue = Convert.ToDouble(baseValue.Value) / oldMultiplier;
+			}
+			else
+			{
+				unscaledValue = Convert.ToDouble(baseValue.Value);
+			}
+
+			if (unscaledValue != 0)
+			{
+				// Should this get moved into the MemberUpdate.Scale method?
+				info.AppendFormat("\n{0}.{1}: {2:0.##} x {3:0.##} = {4:0.##}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
 			}
 		}
 
@@ -307,8 +310,8 @@ namespace TweakScale
 					continue;
 				}
 
-				var baseValue = nameExponentKV.Value.UseRelativeScaling ? null : MemberUpdater.Create(baseObj, nameExponentKV.Key);
-				Rescale(value, baseValue ?? value, nameExponentKV.Value, factor, parentName, info);
+				var baseValue = nameExponentKV.Value.UseRelativeScaling ? value : MemberUpdater.Create(baseObj, nameExponentKV.Key);
+				Rescale(value, baseValue, nameExponentKV.Value, factor, parentName, info);
 			}
 
 			foreach (var child in _children)
