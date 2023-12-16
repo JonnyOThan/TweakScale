@@ -319,14 +319,18 @@ namespace TweakScale
 
 			// TODO: should this be cached..?
 			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
-			var message =
-				$"Scale: {tweakScaleModule.GetScaleString()}\n" +
+			var centerMessage = $"Scale: {tweakScaleModule.GetScaleString()}";
+
+			var keybindMessage = 
 				$"[{GameSettings.Editor_toggleAngleSnap.name}] Toggle Snap\n" +
 				$"[{GameSettings.Editor_fineTweak.name}] Fine control\n" +
 				$"[{TweakScaleEditorLogic.Instance.IncreaseScaleKey}/{TweakScaleEditorLogic.Instance.DecreaseScaleKey}] Inc/Dec Scale\n" +
 				$"[{TweakScaleEditorLogic.Instance.NextScaleIntervalKey}/{TweakScaleEditorLogic.Instance.PrevScaleIntervalKey}] Next/Prev Scale\n" +
-				$"[{GameSettings.Editor_resetRotation.name}] Reset";
-			ScreenMessages.PostScreenMessage(message, 0f, ScreenMessageStyle.LOWER_CENTER);
+				$"[{GameSettings.Editor_resetRotation.name}] Reset Scale\n" +
+				  TweakScaleEditorLogic.Instance.ScaleChildren.GetKeybindPrompt();
+
+			ScreenMessages.PostScreenMessage(centerMessage, 0f, ScreenMessageStyle.LOWER_CENTER);
+			ScreenMessages.PostScreenMessage(keybindMessage, 0f, ScreenMessageStyle.UPPER_CENTER);
 
 			KerbalFSM fsm = EditorLogic.fetch.fsm;
 

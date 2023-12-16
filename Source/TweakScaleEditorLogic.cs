@@ -149,18 +149,26 @@ namespace TweakScale
 			if (MatchNodeSize && selectedPart.potentialParent != null && attachment.mode == AttachModes.STACK)
 			{
 				float parentAttachNodeDiameter = GetAttachNodeDiameter(selectedPart.potentialParent, attachment.otherPartNode.id);
-				
-				if (!doneAttach && selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
+
+				if (selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
 				{
-					float necessaryScale = parentAttachNodeDiameter / selectedNode.diameter;
+					if (!doneAttach)
+					{
+						float necessaryScale = parentAttachNodeDiameter / selectedNode.diameter;
 
-					Vector3 oldNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
-					selectedTweakScaleModule.SetScaleFactor(necessaryScale);
-					Vector3 newNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
+						Vector3 oldNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
+						selectedTweakScaleModule.SetScaleFactor(necessaryScale);
+						Vector3 newNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
 
-					selGrabOffset = newNodeWorldPosition - oldNodeWorldPosition;
-					EditorLogic.fetch.selPartGrabOffset += selGrabOffset;
-					doneAttach = true;
+						selGrabOffset = newNodeWorldPosition - oldNodeWorldPosition;
+						EditorLogic.fetch.selPartGrabOffset += selGrabOffset;
+						doneAttach = true;
+					}
+
+					var message = $"Node Size: {parentAttachNodeDiameter.ToString("0.0##")}m\n" +
+						MatchNodeSize.GetKeybindPrompt();
+
+					ScreenMessages.PostScreenMessage(message, 0f, ScreenMessageStyle.LOWER_CENTER);
 				}
 			}
 			else if (doneAttach)

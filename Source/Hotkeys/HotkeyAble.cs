@@ -48,6 +48,11 @@ namespace TweakScale
 			return _toggle.GetKeysAsString();
 		}
 
+		public string GetKeybindPrompt()
+		{
+			return $"[{GetToggleKey()}/{_tempToggle}] {(State ? "Disable" : "Enable")} {_name}";
+		}
+
 		public static implicit operator bool(Hotkeyable a)
 		{
 			return a.State;
