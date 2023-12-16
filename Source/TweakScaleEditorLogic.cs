@@ -1,4 +1,5 @@
-﻿using KSP.IO;
+﻿using Expansions.Serenity;
+using KSP.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,6 +78,11 @@ namespace TweakScale
 
 		void Update()
 		{
+			if (EditorLogic.fetch.AnyTextFieldHasFocus() || DeltaVApp.AnyTextFieldHasFocus() || RoboticControllerManager.AnyWindowTextFieldHasFocus())
+			{
+				return;
+			}
+
 			if (_hotkeyManager.Update())
 			{
 				SaveConfig();
