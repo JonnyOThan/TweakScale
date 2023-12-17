@@ -210,7 +210,7 @@ namespace TweakScale
 
 				if (info != null)
 				{
-					info.AppendFormat("\n{0}.{1}: {2:0.00}", parentName, current.DisplayName, newValue);
+					info.AppendFormat("\n{1}: {2:0.##}", parentName, current.DisplayName, newValue);
 				}
 			}
 			// polynomial scaling

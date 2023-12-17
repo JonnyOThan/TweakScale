@@ -14,7 +14,7 @@ namespace TweakScale
 		/// <summary>
 		/// The selected scale. Different from currentScale only for destination single update, where currentScale is set to match this.
 		/// </summary>
-		[KSPField(guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName, guiFormat = "0.000", guiUnits = "m")]
+		[KSPField(guiActiveEditor = true, guiName = "Scale", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName, guiFormat = "0.###", guiUnits = "m")]
 		[UI_ScaleEditNumeric(scene = UI_Scene.Editor)]
 		public float guiScaleValue = -1;
 
@@ -261,7 +261,7 @@ namespace TweakScale
 				range.intervals = ScaleFactors;
 				range.incrementSlide = scaleType.IncrementSlide; // TODO: does this need to be filtered by unlock?
 				range.unit = scaleType.Suffix;
-				range.sigFigs = 3;
+				range.sigFigs = scaleType.Suffix == "%" ? 0 : 3;
 				Fields["guiScaleValue"].guiUnits = scaleType.Suffix;
 			}
 			else
@@ -864,7 +864,7 @@ namespace TweakScale
 			if (isFreeScale)
 			{
 				// TODO: cache this to reduce garbage?
-				return string.Format("{0:0.000} ({1})", guiScaleValue, ScaleType.Suffix);
+				return string.Format("{0:0.###}{1}", guiScaleValue, ScaleType.Suffix);
 			}
 			else
 			{
