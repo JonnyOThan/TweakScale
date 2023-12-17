@@ -261,12 +261,11 @@ namespace TweakScale
 			{
 				return;
 			}
-			else if (tt.IsArray)
+			else if (obj is IList list)
 			{
-				Array arr = obj as Array;
-				for (int i = 0; i < arr.Length; ++i)
+				for (int i = 0; i < list.Count; ++i)
 				{
-					VisitRecursive(i.ToString(), arr.GetValue(i), callback, maxDepth, flags, currentDepth + 1);
+					VisitRecursive(i.ToString(), list[i], callback, maxDepth, flags, currentDepth + 1);
 				}
 			}
 			else if (obj is IDictionary dict)
@@ -274,13 +273,6 @@ namespace TweakScale
 				foreach (DictionaryEntry pair in dict)
 				{
 					VisitRecursive(pair.Key.ToString(), pair.Value, callback, maxDepth, flags, currentDepth + 1);
-				}
-			}
-			else if (obj is IList list)
-			{
-				for (int i = 0; i < list.Count; ++i)
-				{
-					VisitRecursive(i.ToString(), list[i], callback, maxDepth, flags, currentDepth + 1);
 				}
 			}
 			// TODO: probably other collection types?
