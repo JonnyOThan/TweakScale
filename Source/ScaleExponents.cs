@@ -272,7 +272,7 @@ namespace TweakScale
 			if (unscaledValue != 0)
 			{
 				// Should this get moved into the MemberUpdate.Scale method?
-				info.AppendFormat("\n{0}.{1}: {2:0.##} x {3:0.##} = {4:0.##}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
+				info.AppendFormat("\n{1}: {2:0.##} x {3:0.##} = {4:0.##}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
 			}
 		}
 
