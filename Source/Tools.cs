@@ -97,8 +97,11 @@ namespace TweakScale
 
 		internal static void LogWarning(string format, params object[] args)
 		{
-			// TODO: depending on call volume we might want to limit the stack output to debug only? it can be expensive to generate
+#if DEBUG
 			Debug.LogWarning(BuildLogStringWithStack(format, args));
+#else
+			Debug.LogWarning(BuildLogString(format, args));
+#endif
 		}
 
 		internal static void LogError(string format, params object[] args)
