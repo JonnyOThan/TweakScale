@@ -1,41 +1,18 @@
-# priority stuff
-
-- stats bugs
-- getinfo
-- check if DryCost and MassScale errors are important
-- engine exhaust (can we get rid of IUpdateable?
-
-# Feature Parity
-
-- [ ] audit and implement all stock parts
-	part support seems done, but not sure if everything is using exactly the same settings as TS/L
-- [ ] audit and fix mod support
-- [ ] verify tech unlocks are correct (fuel tanks, etc)
-		historically, was this a separate mod?
-		maybe implement it by default, and have a difficulty option to disable it?
-- [ ] Check FSFuelSwitch interaction
-- [ ] Check KIS support
-- [ ] test with existing companion
-- [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
+13 items remain
 
 # Bugs
 
 - [ ] investigate part cost scaling on HECS2
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
-- [ ] scaled engines have a weird inverse scale to their plumes, even when we're not trying to scale anything
-		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
-		different types of particle systems are being scaled differently.
-		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] command pod inventory stopped working - reduced to 0 slots and then it would not increase again
-
-## Match Node Size
-
-- [ ] audit squadexpansion parts to make sure everything is correct (adapters etc)
+- [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
+- [ ] Errors due to removing fields from TweakScale module:
+		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
+		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
 
 ## Stats
 
-- [ ] better formatting - group by section?
 - [ ] show mass and cost
 - [ ] stats section didn't collapse when turning off (seems to be specific to non-default construction modes?)
 
@@ -43,36 +20,20 @@
 
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
 
-## Scale Gizmo
-
-# Backwards Compatibilty
-
-- [ ] make sure we can load crafts saved with TS/L
-	done some limited testing here, it's looking good
-	investigate craft file from StormCircuit (attachnodes on structural tubes)
-- [ ] make sure we can load *saves* with vessels in flight that used TS/L
-
-# Architecture
-
-- [ ] remove explicit setups for stock parts that could be handled by automatic ones
-	maybe? would other things break if these aren't set up early enough?
-- [ ] Errors due to removing fields from TweakScale module:
-		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
-		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
-- [ ] create a IRescalable attribute with virtual functions to customize registration and construction
-	For example the CrewManifest handler
-	Maybe this isn't a big deal..there aren't that many handlers
-
-# New Candy
+## Plumes
 
 - [ ] handle stock exhaust particles
 		seems like there's already some code to do this, but doesn't work on some engines?
 		or the flame particles work, but not smoke
+		scaled engines have a weird inverse scale to their plumes, even when we're not trying to scale anything
+		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
+		different types of particle systems are being scaled differently.
+		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
 - [ ] implement waterfall support
 - [ ] realplume support?
-- [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
-- [ ] increase crew capacity when scaling up?
-- [ ] support localization
+
+# New Candy
+
 - [ ] pressing space on held part when orientation is already default should reset scale and/or allow scale gizmo to be used on unattached parts
 		maybe also add a screen message?
 - [ ] add display format to scale type (alongside suffix) so that we don't get 3 digits of precision on percentage scalars
@@ -97,6 +58,33 @@
 - [ ] check undo after scaling
 - [ ] check scale mode on non-supported parts
 - [ ] check scaling with struts and fuel lines connected to affected parts
+- [ ] audit squadexpansion parts to make sure node sizes are correct (adapters etc)
+- [ ] make sure we can load crafts saved with TS/L
+	done some limited testing here, it's looking good
+- [ ] make sure we can load *saves* with vessels in flight that used TS/L
+- [ ] audit and implement all stock parts
+	part support seems done, but not sure if everything is using exactly the same settings as TS/L
+- [ ] audit and fix mod support
+- [ ] verify tech unlocks are correct (fuel tanks, etc)
+		historically, was this a separate mod?
+		maybe implement it by default, and have a difficulty option to disable it?
+- [ ] Check FSFuelSwitch interaction
+- [ ] Check KIS support
+- [ ] test with existing companion
+- [ ] should breakingforce and breakingtorque actually be scaled?
+
+# Stretch
+
+- [ ] better stats formatting - group by section?
+- [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
+- [ ] increase crew capacity when scaling up?
+- [ ] support localization
+- [ ] remove explicit setups for stock parts that could be handled by automatic ones
+	maybe? would other things break if these aren't set up early enough?
+- [ ] create a IRescalable attribute with virtual functions to customize registration and construction
+	For example the CrewManifest handler
+	Maybe this isn't a big deal..there aren't that many handlers
+- [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
 
 # won't do
 
