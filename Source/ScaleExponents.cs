@@ -254,26 +254,45 @@ namespace TweakScale
 
 			if (current.ObjectType == typeof(PartResource) && current.Name != "maxAmount") return; // TODO: more general way to exclude certain fields?
 
-			double unscaledValue;
-
-			if (scalingMode.UseRelativeScaling)
-			{
-				// relative = absolute / current
-				// current = absolute / relative
-				double oldScaleFactor = factor.absolute.linear / factor.relative.linear;
-				double oldMultiplier = Math.Pow(oldScaleFactor, scalingMode.ExponentValue);
-				unscaledValue = Convert.ToDouble(baseValue.Value) / oldMultiplier;
-			}
-			else
-			{
-				unscaledValue = Convert.ToDouble(baseValue.Value);
-			}
-
-			if (unscaledValue != 0)
+			if (TryGetUnscaledValue(baseValue, scalingMode, factor, out double unscaledValue))
 			{
 				// Should this get moved into the MemberUpdate.Scale method?
 				info.AppendFormat("\n{1}: {2:0.##} x {3:0.##} = {4:0.##}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
 			}
+			else
+			{
+				info.AppendFormat("\n{0}: x {1.0##}", current.DisplayName, absoluteScalar);
+			}
+		}
+
+		private static bool TryGetUnscaledValue(MemberUpdater baseValue, ScalingMode scalingMode, ScalingFactor factor, out double unscaledValue)
+		{
+			unscaledValue = 0;
+			try
+			{
+				if (scalingMode.UseRelativeScaling)
+				{
+					// relative = absolute / current
+					// current = absolute / relative
+					double oldScaleFactor = factor.absolute.linear / factor.relative.linear;
+					double oldMultiplier = Math.Pow(oldScaleFactor, scalingMode.ExponentValue);
+					unscaledValue = Convert.ToDouble(baseValue.Value) / oldMultiplier;
+				}
+				else
+				{
+					unscaledValue = Convert.ToDouble(baseValue.Value);
+				}
+			}
+			catch(FormatException)
+			{
+				return false;
+			}
+			catch(InvalidCastException)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		private bool ShouldIgnore(Part part)

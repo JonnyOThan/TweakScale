@@ -1,5 +1,3 @@
-13 items remain
-
 # Bugs
 
 - [ ] investigate part cost scaling on HECS2
@@ -10,7 +8,6 @@
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
-- [ ] exception thrown when building stat string scaling up solar panels (field is a floatcurve)
 
 ## Stats
 
@@ -38,6 +35,7 @@
 - [ ] pressing space on held part when orientation is already default should reset scale and/or allow scale gizmo to be used on unattached parts
 		maybe also add a screen message?
 - [ ] TSSafetyNet needs to actually populate the load failure reason
+- [ ] increase crew capacity when scaling up?
 
 # Verification (do this last, except to generate new bugs)
 
@@ -71,13 +69,12 @@
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check KIS support
 - [ ] test with existing companion
-- [ ] should breakingforce and breakingtorque actually be scaled?
+- [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled?
 
 # Stretch
 
 - [ ] better stats formatting - group by section?
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
-- [ ] increase crew capacity when scaling up?
 - [ ] support localization
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones
 	maybe? would other things break if these aren't set up early enough?
@@ -216,6 +213,7 @@
 - [x] add a screen message for match node size
 - [x] add scale children keybind to scaling mode screenmessage
 - [x] add display format to scale type (alongside suffix) so that we don't get 3 digits of precision on percentage scalars
+- [x] exception thrown when building stat string scaling up solar panels (field is a floatcurve)
 
 ======
 
