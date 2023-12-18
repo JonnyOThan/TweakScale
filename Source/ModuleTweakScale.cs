@@ -370,25 +370,6 @@ namespace TweakScale
 
 			_handlers = TweakScaleHandlerDatabase.CreateHandlers(part);
 
-			if (IsRescaled)
-			{
-				// Note that if we fall in here, this part was LOADED from a craft file or vessel in flight.  newly created parts in the editor aren't rescaled.
-				ScalePartTransform();
-				CallHandlers(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
-									// TODO: do we need to worry about drag cubes or anything else?
-				foreach (var attachNode in part.attachNodes)
-				{
-					ScaleAttachNodeSize(attachNode);
-				}
-				ScaleAttachNodeSize(part.srfAttachNode); // does the size of the srfAttachNode even matter?
-			}
-			else
-			{
-				SetStatsLabel("");
-				if (part.Modules.Contains("FSfuelSwitch"))
-					ignoreResourcesForCost = true;
-			}
-
 			if (HighLogic.LoadedSceneIsEditor)
 			{
 				if (_prefabPart.CrewCapacity > 0)
@@ -417,6 +398,25 @@ namespace TweakScale
 			{
 				enabled = false;
 				isEnabled = false;
+			}
+
+			if (IsRescaled)
+			{
+				// Note that if we fall in here, this part was LOADED from a craft file or vessel in flight.  newly created parts in the editor aren't rescaled.
+				ScalePartTransform();
+				CallHandlers(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
+									// TODO: do we need to worry about drag cubes or anything else?
+				foreach (var attachNode in part.attachNodes)
+				{
+					ScaleAttachNodeSize(attachNode);
+				}
+				ScaleAttachNodeSize(part.srfAttachNode); // does the size of the srfAttachNode even matter?
+			}
+			else
+			{
+				SetStatsLabel("");
+				if (part.Modules.Contains("FSfuelSwitch"))
+					ignoreResourcesForCost = true;
 			}
 
 			// scale IVA overlay
@@ -515,6 +515,7 @@ namespace TweakScale
 			{
 				localSetting = globalSetting;
 				field?.uiControlEditor?.partActionItem?.UpdateItem();
+				return true;
 			}
 
 			return false;
@@ -619,33 +620,44 @@ namespace TweakScale
 
 		private void SetStatsLabel(string text)
 		{
-			var statsField = Fields[nameof(guiStatsText)];
 			if (text == null || text.Length == 0)
 			{
 				guiStatsText = "";
-				statsField.guiActiveEditor = false;
 			}
 			else
 			{
 				guiStatsText = text;
-				statsField.uiControlEditor?.partActionItem?.UpdateItem();
+			}
 
-				if (statsField.guiActiveEditor = showStats)
+			UpdateStatsVisibility();
+		}
+
+		void UpdateStatsVisibility()
+		{
+			var statsField = Fields[nameof(guiStatsText)];
+			Fields[nameof(guiStatsText)].guiActiveEditor = showStats && guiStatsText.Length > 0;
+
+			statsField.uiControlEditor?.partActionItem?.UpdateItem();
+
+			if (part.PartActionWindow != null && !part.PartActionWindow.isActiveAndEnabled)
+			{
+				part.PartActionWindow.displayDirty = true;
+			}
+			else
+			{
+				// make sure the group updates size as well
+				var tweakScaleGroup = part.PartActionWindow?.parameterGroups[guiGroupName];
+				if (tweakScaleGroup != null)
 				{
-					var tweakScaleGroup = part.PartActionWindow?.parameterGroups[guiGroupName];
+					// no idea why the commmented out stuff below doesn't work :/
+					tweakScaleGroup.CollapseGroupToggle();
+					tweakScaleGroup.CollapseGroupToggle();
 
-					if (tweakScaleGroup != null)
-					{
-						// no idea why the commmented out stuff below doesn't work :/
-						tweakScaleGroup.CollapseGroupToggle();
-						tweakScaleGroup.CollapseGroupToggle();
-
-						//tweakScaleGroup.SetUIState();
-						//LayoutRebuilder.MarkLayoutForRebuild(tweakScaleGroup.contentLayout.transform as RectTransform);
-						//Canvas.ForceUpdateCanvases();
-						//tweakScaleGroup.window.UpdateWindow();
-						//UnityEngine.UI.LayoutRebuilder.MarkLayoutForRebuild(tweakScaleGroup.transform as RectTransform);
-					}
+					//tweakScaleGroup.SetUIState();
+					//LayoutRebuilder.MarkLayoutForRebuild(tweakScaleGroup.contentLayout.transform as RectTransform);
+					//Canvas.ForceUpdateCanvases();
+					//tweakScaleGroup.window.UpdateWindow();
+					//UnityEngine.UI.LayoutRebuilder.MarkLayoutForRebuild(tweakScaleGroup.transform as RectTransform);
 				}
 			}
 		}

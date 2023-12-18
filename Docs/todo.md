@@ -4,6 +4,7 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] command pod inventory stopped working - reduced to 0 slots and then it would not increase again
+		part action window just doesn't seem to respond correctly to changes in slots or volume
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
 - [ ] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
@@ -12,7 +13,6 @@
 ## Stats
 
 - [ ] show mass and cost
-- [ ] stats section didn't collapse when turning off (seems to be specific to non-default construction modes?)
 
 ## GetInfo
 
@@ -214,6 +214,7 @@
 - [x] exception thrown when building stat string scaling up solar panels (field is a floatcurve)
 - [x] pressing space on held part when orientation is already default should reset scale and/or allow scale gizmo to be used on unattached parts
 - [x] Option for disabling keybind messages
+- [x] stats section didn't collapse when turning off (seems to be specific to non-default construction modes?)
 
 ======
 
