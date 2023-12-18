@@ -25,7 +25,6 @@
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
-- [ ] implement waterfall support
 - [ ] realplume support?
 
 # New Candy
@@ -33,6 +32,7 @@
 - [ ] TSSafetyNet needs to actually populate the load failure reason
 - [ ] increase crew capacity when scaling up?
 - [ ] can the "show keybinding" option be moved to the main settings or something?
+- [ ] Devise a way to share version info across assemblies
 
 # Verification (do this last, except to generate new bugs)
 
@@ -216,6 +216,7 @@
 - [x] stats section didn't collapse when turning off (seems to be specific to non-default construction modes?)
 - [x] command pod inventory stopped working - reduced to 0 slots and then it would not increase again
 		part action window just doesn't seem to respond correctly to changes in slots or volume
+- [x] implement waterfall support
 
 ======
 
