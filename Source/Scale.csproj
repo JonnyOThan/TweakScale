@@ -69,6 +69,7 @@
     <Compile Include="Hotkeys\HotkeyAble.cs" />
     <Compile Include="Hotkeys\HotkeyManager.cs" />
     <Compile Include="MemberUpdater.cs" />
+    <Compile Include="RescalableHandlers\ModuleInventoryPartHandler.cs" />
     <Compile Include="ScaleExponents.cs" />
     <Compile Include="SingletonBehavior.cs" />
     <Compile Include="RescalableHandlers\CrewManifestHandler.cs" />
@@ -123,7 +124,7 @@
     <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
     <!-- note the IncludeCompilerGeneratedMembers is only in krafs 2, so it has no effect here.  but leaving it just in case we upgrade later -->
     <DoNotPublicize Include="Assembly-CSharp:BaseField`1.OnValueModified" />
-    <Publicize Include="UnityEngine.UI"/>
+    <Publicize Include="UnityEngine.UI" />
   </ItemGroup>
   <PropertyGroup>
     <PublicizerClearCacheOnClean>true</PublicizerClearCacheOnClean>

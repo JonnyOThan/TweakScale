@@ -16,7 +16,7 @@ namespace TweakScale
 	/// This class must have a constructor that takes an instance of T (i.e. the PartModule).  The OnRescale function will be called when the part's scale is changed.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public interface IRescalable<T> : IRescalable
+	public interface IRescalable<T> : IRescalable where T : PartModule
 	{
 	}
 
