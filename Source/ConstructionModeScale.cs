@@ -253,6 +253,9 @@ namespace TweakScale
 				}
 			};
 
+			EditorLogic.fetch.st_place.OnUpdate -= EditorLogic.fetch.partRotationInputUpdate;
+			EditorLogic.fetch.st_place.OnUpdate += st_place_OnUpdate;
+
 			// add existing events to our new states
 			fsm.AddEvent(EditorLogic.fetch.on_partDeleted, st_scale_tweak);
 			fsm.AddEvent(EditorLogic.fetch.on_goToModeRotate, st_scale_select, st_scale_tweak);
@@ -265,6 +268,29 @@ namespace TweakScale
 			fsm.AddEvent(EditorLogic.fetch.on_partOverInventoryPAW, st_scale_select, st_scale_tweak);
 			fsm.AddEvent(EditorLogic.fetch.on_newShip, st_scale_select, st_scale_tweak);
 			fsm.AddEvent(EditorLogic.fetch.on_shipLoaded, st_scale_select, st_scale_tweak);
+		}
+
+		private void st_place_OnUpdate()
+		{
+			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
+
+			bool spaceWillResetOrientation = EditorLogic.fetch.fsm.CurrentState == EditorLogic.fetch.st_rotate_tweak || selectedPart.attRotation != Quaternion.identity;
+			bool spaceWillResetScale = tweakScaleModule != null && tweakScaleModule.currentScaleFactor != 1.0f;
+
+			if (InputLockManager.IsUnlocked(ControlTypes.EDITOR_GIZMO_TOOLS) && (spaceWillResetOrientation || spaceWillResetScale))
+			{
+				var message = $"[{GameSettings.Editor_resetRotation.name}] Reset {(spaceWillResetOrientation ? "Orientation" : "Scale")}";
+
+				ScreenMessages.PostScreenMessage(message, 0, ScreenMessageStyle.LOWER_CENTER);
+
+				if (spaceWillResetScale && !spaceWillResetOrientation && GameSettings.Editor_resetRotation.GetKeyDown())
+				{
+					tweakScaleModule.SetScaleFactor(1.0f);
+					return;
+				}
+			}
+
+			EditorLogic.fetch.partRotationInputUpdate();
 		}
 
 		float previousScaleFactor = 1.0f;
