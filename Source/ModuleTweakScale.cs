@@ -41,6 +41,9 @@ namespace TweakScale
 		[KSPField(guiActiveEditor = true, guiName = "Match Node Size", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
 		public bool matchNodeSize = false;
+		[KSPField(guiActiveEditor = true, guiName = "Show KeyBindings", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
+		public bool showKeyBindings = false;
 		[KSPField(guiActiveEditor = true, guiName = "Show Stats", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
 		public bool showStats = false;
@@ -404,6 +407,9 @@ namespace TweakScale
 				showStats = TweakScaleEditorLogic.Instance.ShowStats;
 				Fields[nameof(showStats)].OnValueModified += OnShowStatsModified;
 
+				showKeyBindings = TweakScaleEditorLogic.Instance.ShowKeyBinds;
+				Fields[nameof(showKeyBindings)].OnValueModified += OnShowKeyBindingsModified;
+
 				Fields[nameof(guiScaleValue)].OnValueModified += OnGuiScaleModified;
 				Fields[nameof(guiScaleNameIndex)].OnValueModified += OnGuiScaleModified;
 			}
@@ -426,6 +432,7 @@ namespace TweakScale
 			Fields[nameof(scaleChildren)].OnValueModified -= OnScaleChildrenModified;
 			Fields[nameof(matchNodeSize)].OnValueModified -= OnMatchNodeSizeModified;
 			Fields[nameof(showStats)].OnValueModified -= OnShowStatsModified;
+			Fields[nameof(showKeyBindings)].OnValueModified-= OnShowKeyBindingsModified;
 			Fields[nameof(guiScaleValue)].OnValueModified -= OnGuiScaleModified;
 			Fields[nameof(guiScaleNameIndex)].OnValueModified -= OnGuiScaleModified;
 			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
@@ -460,9 +467,9 @@ namespace TweakScale
 			UpdateStatsVisibility();
 		}
 
-		void UpdateStatsVisibility()
+		private void OnShowKeyBindingsModified(object arg1)
 		{
-			Fields[nameof(guiStatsText)].guiActiveEditor = showStats && guiStatsText.Length > 0;
+			TweakScaleEditorLogic.Instance.ShowKeyBinds = showKeyBindings;
 		}
 
 		/// <summary>
@@ -521,6 +528,7 @@ namespace TweakScale
 				// maybe have the TweakScaleEditorLogic have events we can register for, that just call UpdateItem as appropriate
 				UpdateLocalSetting(ref scaleChildren, TweakScaleEditorLogic.Instance.ScaleChildren, Fields[nameof(scaleChildren)]);
 				UpdateLocalSetting(ref matchNodeSize, TweakScaleEditorLogic.Instance.MatchNodeSize, Fields[nameof(matchNodeSize)]);
+				UpdateLocalSetting(ref showKeyBindings, TweakScaleEditorLogic.Instance.ShowKeyBinds, Fields[nameof(showKeyBindings)]);
 				if (UpdateLocalSetting(ref showStats, TweakScaleEditorLogic.Instance.ShowStats, Fields[nameof(showStats)]))
 				{
 					UpdateStatsVisibility();

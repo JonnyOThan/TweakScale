@@ -34,7 +34,6 @@
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
 - [ ] increase crew capacity when scaling up?
-- [ ] Option for disabling keybind messages
 
 # Verification (do this last, except to generate new bugs)
 
@@ -214,6 +213,7 @@
 - [x] add display format to scale type (alongside suffix) so that we don't get 3 digits of precision on percentage scalars
 - [x] exception thrown when building stat string scaling up solar panels (field is a floatcurve)
 - [x] pressing space on held part when orientation is already default should reset scale and/or allow scale gizmo to be used on unattached parts
+- [x] Option for disabling keybind messages
 
 ======
 

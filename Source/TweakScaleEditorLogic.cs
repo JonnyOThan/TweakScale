@@ -9,6 +9,33 @@ using UnityEngine;
 
 namespace TweakScale
 {
+	class ToggleOption
+	{
+		bool _value;
+		PluginConfiguration _config;
+		string _name;
+
+		public ToggleOption(string name, bool defaultValue, PluginConfiguration config)
+		{
+			_name = name;
+			_config = config;
+			_value = config.GetValue(name, defaultValue);
+		}
+
+		public static implicit operator bool(ToggleOption opt) => opt._value;
+
+		public bool Set(bool newValue)
+		{
+			if (_value != newValue)
+			{
+				_value = newValue;
+				_config.SetValue(_name, _value);
+				return true;
+			}
+			return false;
+		}
+	}
+
 	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
 	internal class TweakScaleEditorLogic : SingletonBehavior<TweakScaleEditorLogic>
 	{
@@ -24,19 +51,18 @@ namespace TweakScale
 		public Hotkeyable ScaleChildren { get; private set; }
 		public Hotkeyable MatchNodeSize { get; private set; }
 
-		bool _showStats = false;
+		ToggleOption _showStats;
 		public bool ShowStats
 		{
-			get { return _showStats; }
-			set
-			{
-				if (_showStats != value)
-				{
-					_showStats = value;
-					_config.SetValue("Show Stats", _showStats);
-					SaveConfig();
-				}
-			}
+			get => _showStats;
+			set => SetToggleOption(_showStats, value);
+		}
+
+		ToggleOption _showKeyBinds;
+		public bool ShowKeyBinds
+		{
+			get => _showKeyBinds;
+			set => SetToggleOption(_showKeyBinds, value);
 		}
 
 		void Start()
@@ -62,7 +88,8 @@ namespace TweakScale
 			ScaleChildren = _hotkeyManager.AddHotkey("Scale Children", KeyCode.LeftControl, new[] { KeyCode.K }, true);
 			MatchNodeSize = _hotkeyManager.AddHotkey("Match Node Size", KeyCode.LeftControl, new[] { KeyCode.M }, true);
 
-			_showStats = _config.GetValue("Show Stats", _showStats);
+			_showStats = new ToggleOption("Show Stats", false, _config);
+			_showKeyBinds = new ToggleOption("Show KeyBinds", true, _config);
 
 			SaveConfig();
 
@@ -98,6 +125,14 @@ namespace TweakScale
 			catch (Exception ex)
 			{
 				Tools.LogException(ex);
+			}
+		}
+
+		void SetToggleOption(ToggleOption option, bool value)
+		{
+			if (option.Set(value))
+			{
+				SaveConfig();
 			}
 		}
 
@@ -165,8 +200,12 @@ namespace TweakScale
 						doneAttach = true;
 					}
 
-					var message = $"Node Size: {parentAttachNodeDiameter.ToString("0.0##")}m\n" +
-						MatchNodeSize.GetKeybindPrompt();
+					var message = $"Node Size: {parentAttachNodeDiameter.ToString("0.0##")}m";
+
+					if (TweakScaleEditorLogic.Instance.ShowKeyBinds)
+					{
+						message += "\n" + MatchNodeSize.GetKeybindPrompt();
+					}
 
 					ScreenMessages.PostScreenMessage(message, 0f, ScreenMessageStyle.LOWER_CENTER);
 				}

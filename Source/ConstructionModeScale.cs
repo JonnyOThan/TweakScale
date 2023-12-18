@@ -279,9 +279,11 @@ namespace TweakScale
 
 			if (InputLockManager.IsUnlocked(ControlTypes.EDITOR_GIZMO_TOOLS) && (spaceWillResetOrientation || spaceWillResetScale))
 			{
-				var message = $"[{GameSettings.Editor_resetRotation.name}] Reset {(spaceWillResetOrientation ? "Orientation" : "Scale")}";
-
-				ScreenMessages.PostScreenMessage(message, 0, ScreenMessageStyle.LOWER_CENTER);
+				if (TweakScaleEditorLogic.Instance.ShowKeyBinds)
+				{
+					var message = $"[{GameSettings.Editor_resetRotation.name}] Reset {(spaceWillResetOrientation ? "Orientation" : "Scale")}";
+					ScreenMessages.PostScreenMessage(message, 0, ScreenMessageStyle.LOWER_CENTER);
+				}
 
 				if (spaceWillResetScale && !spaceWillResetOrientation && GameSettings.Editor_resetRotation.GetKeyDown())
 				{
@@ -347,16 +349,19 @@ namespace TweakScale
 			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
 			var centerMessage = $"Scale: {tweakScaleModule.GetScaleString()}";
 
-			var keybindMessage = 
-				$"[{GameSettings.Editor_toggleAngleSnap.name}] Toggle Snap\n" +
-				$"[{GameSettings.Editor_fineTweak.name}] Fine control\n" +
-				$"[{TweakScaleEditorLogic.Instance.IncreaseScaleKey}/{TweakScaleEditorLogic.Instance.DecreaseScaleKey}] Inc/Dec Scale\n" +
-				$"[{TweakScaleEditorLogic.Instance.NextScaleIntervalKey}/{TweakScaleEditorLogic.Instance.PrevScaleIntervalKey}] Next/Prev Scale\n" +
-				$"[{GameSettings.Editor_resetRotation.name}] Reset Scale\n" +
-				  TweakScaleEditorLogic.Instance.ScaleChildren.GetKeybindPrompt();
-
 			ScreenMessages.PostScreenMessage(centerMessage, 0f, ScreenMessageStyle.LOWER_CENTER);
-			ScreenMessages.PostScreenMessage(keybindMessage, 0f, ScreenMessageStyle.UPPER_CENTER);
+
+			if (TweakScaleEditorLogic.Instance.ShowKeyBinds)
+			{
+				var keybindMessage =
+					$"[{GameSettings.Editor_toggleAngleSnap.name}] Toggle Snap\n" +
+					$"[{GameSettings.Editor_fineTweak.name}] Fine control\n" +
+					$"[{TweakScaleEditorLogic.Instance.IncreaseScaleKey}/{TweakScaleEditorLogic.Instance.DecreaseScaleKey}] Inc/Dec Scale\n" +
+					$"[{TweakScaleEditorLogic.Instance.NextScaleIntervalKey}/{TweakScaleEditorLogic.Instance.PrevScaleIntervalKey}] Next/Prev Scale\n" +
+					$"[{GameSettings.Editor_resetRotation.name}] Reset Scale\n" +
+					  TweakScaleEditorLogic.Instance.ScaleChildren.GetKeybindPrompt();
+				ScreenMessages.PostScreenMessage(keybindMessage, 0f, ScreenMessageStyle.UPPER_CENTER);
+			}
 
 			KerbalFSM fsm = EditorLogic.fetch.fsm;
 
