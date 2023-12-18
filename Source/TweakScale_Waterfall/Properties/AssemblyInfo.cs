@@ -32,9 +32,15 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.0.5")]
-[assembly: AssemblyFileVersion("3.0.5")]
 
-[assembly: KSPAssembly("TweakScale_Waterfall", 3, 0)]
-[assembly: KSPAssemblyDependencyEqualMajor("Scale_Redist", 3, 0, 4)]
+[assembly: KSPAssemblyDependencyEqualMajor("Scale_Redist", TweakScale.VersionInfo.MAJOR, TweakScale.VersionInfo.MINOR, TweakScale.VersionInfo.REVISION)]
 [assembly: KSPAssemblyDependency("Waterfall", 0, 0)]
+[assembly: KSPAssemblyDependency("HarmonyKSP", 1, 0)]
+
+namespace TweakScale
+{
+	static partial class VersionInfo
+	{
+		public const string ASSEMBLY = "TweakScale_Waterfall";
+	}
+}

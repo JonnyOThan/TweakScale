@@ -32,7 +32,6 @@
 - [ ] TSSafetyNet needs to actually populate the load failure reason
 - [ ] increase crew capacity when scaling up?
 - [ ] can the "show keybinding" option be moved to the main settings or something?
-- [ ] Devise a way to share version info across assemblies
 
 # Verification (do this last, except to generate new bugs)
 
@@ -217,6 +216,7 @@
 - [x] command pod inventory stopped working - reduced to 0 slots and then it would not increase again
 		part action window just doesn't seem to respond correctly to changes in slots or volume
 - [x] implement waterfall support
+- [x] Devise a way to share version info across assemblies
 
 ======
 

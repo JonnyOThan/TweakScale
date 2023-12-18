@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.33027.164
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale", "Source\Scale.csproj", "{70D38878-43DB-4F6E-8002-45ADA5391AF7}"
 EndProject
@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{2E6A7FC2-2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScaleSafetyNet", "Source\TweakScaleSafetyNet\TweakScaleSafetyNet.csproj", "{68D4513A-C4F9-456D-84AC-B318684716C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScale_Waterfall", "Source\TweakScale_Waterfall\TweakScale_Waterfall.csproj", "{B3F3175A-C048-4FB7-AC5E-44D5935D3348}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{68D4513A-C4F9-456D-84AC-B318684716C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68D4513A-C4F9-456D-84AC-B318684716C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68D4513A-C4F9-456D-84AC-B318684716C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F3175A-C048-4FB7-AC5E-44D5935D3348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F3175A-C048-4FB7-AC5E-44D5935D3348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F3175A-C048-4FB7-AC5E-44D5935D3348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F3175A-C048-4FB7-AC5E-44D5935D3348}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -71,6 +71,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Properties\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="HarmonyPatching.cs" />
     <Compile Include="ModuleWaterfallFXHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

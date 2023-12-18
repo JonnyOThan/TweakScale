@@ -30,7 +30,11 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 
-[assembly: AssemblyVersion("3.0.4")]
-[assembly: AssemblyFileVersion("3.0.4")]
 
-[assembly: KSPAssembly("Scale_Redist", 3, 0, 4)] 
+namespace TweakScale
+{
+	static partial class VersionInfo
+	{
+		public const string ASSEMBLY = "Scale_Redist";
+	}
+}

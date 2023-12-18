@@ -77,6 +77,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Properties\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CraftChecker.cs" />
     <Compile Include="SaveChecker.cs" />
     <Compile Include="SafetyNetAddon.cs" />

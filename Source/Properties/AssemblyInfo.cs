@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -31,9 +32,14 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.0.4")]
-[assembly: AssemblyFileVersion("3.0.4")]
 
-[assembly: KSPAssembly("Scale", 3, 0, 4)]
-[assembly: KSPAssemblyDependencyEqualMajor("Scale_Redist", 3, 0, 4)]
+[assembly: KSPAssemblyDependencyEqualMajor("Scale_Redist", TweakScale.VersionInfo.MAJOR, TweakScale.VersionInfo.MINOR, TweakScale.VersionInfo.REVISION)]
 [assembly: KSPAssemblyDependency("HarmonyKSP", 1, 0)]
+
+namespace TweakScale
+{
+	static partial class VersionInfo
+	{
+		public const string ASSEMBLY = "Scale";
+	}
+}
