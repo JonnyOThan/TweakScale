@@ -272,6 +272,8 @@ namespace TweakScale
 
 		private void st_place_OnUpdate()
 		{
+			if (selectedPart == null) return;
+
 			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
 
 			bool spaceWillResetOrientation = EditorLogic.fetch.fsm.CurrentState == EditorLogic.fetch.st_rotate_tweak || selectedPart.attRotation != Quaternion.identity;
