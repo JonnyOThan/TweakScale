@@ -518,8 +518,8 @@ namespace TweakScale
 		{
 			if (IsRescaled && infoBuilder != null)
 			{
-				infoBuilder.AppendFormat("\nCost: {0:+0}", extraCost);
-				infoBuilder.AppendFormat("\nMass: {0:+0.0##}", extraMass);
+				infoBuilder.AppendFormat("\nCost: {0:+0;-#}", extraCost);
+				infoBuilder.AppendFormat("\nMass: {0:+0.0##;-0.0##}", extraMass);
 
 				SetStatsLabel(infoBuilder.ToString());
 			}
