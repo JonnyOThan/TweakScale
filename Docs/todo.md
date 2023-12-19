@@ -4,11 +4,7 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
-
-## GetInfo
-
-- [ ] Better stats in GetInfo text (explain how different properties will scale)
-
+- [ ] TD-25 decoupler shows "1.25" at default scale
 ## Plumes
 
 - [ ] handle stock exhaust particles
@@ -70,6 +66,7 @@
 	Maybe this isn't a big deal..there aren't that many handlers
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
 - [ ] increase crew capacity when scaling up?
+- [ ] Better stats in GetInfo text (explain how different properties will scale)
 
 # won't do
 

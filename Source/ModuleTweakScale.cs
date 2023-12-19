@@ -888,6 +888,30 @@ namespace TweakScale
 		public override string GetInfo()
 		{
 			return "Scale Type: " + ScaleType.Name;
+
+			// TODO: the rest of this is kinda useful for debugging, but not very well polished for general users
+#if false
+			x_infoBuilder.Clear();
+			x_infoBuilder.AppendFormat("Scale Type: {0}\n", ScaleType.Name);
+
+			foreach (var exponentSet in ScaleType.Exponents)
+			{
+				// TODO: this won't handle module inheritance correctly
+				if (exponentSet.Key == "Part" || part.modules.Contains(exponentSet.Key))
+				{
+					x_infoBuilder.AppendFormat("{0}:\n", exponentSet.Key);
+
+					foreach (var child in exponentSet.Value._exponents)
+					{
+						x_infoBuilder.AppendFormat("{0}: {1}\n", child.Key, child.Value.ExponentValue);
+					}
+
+					// TODO: nested exponents?
+				}
+			}
+
+			return x_infoBuilder.ToString();
+#endif
 		}
 
 		float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)
