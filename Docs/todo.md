@@ -4,7 +4,7 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
-- [ ] TD-25 decoupler shows "1.25" at default scale
+
 ## Plumes
 
 - [ ] handle stock exhaust particles
@@ -212,6 +212,7 @@
 - [x] show mass and cost in stats
 - [x] realplume support?
 - [x] move testflight to a separate handler dll?  maybe allow for rescalables to provide their own create function that could return null?
+- [x] TD-25 decoupler shows "1.25" at default scale
 
 ======
 
