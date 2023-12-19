@@ -5,10 +5,6 @@
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
 
-## Stats
-
-- [ ] show mass and cost
-
 ## GetInfo
 
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
@@ -27,8 +23,6 @@
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
-- [ ] increase crew capacity when scaling up?
-- [ ] can the "show keybinding" option be moved to the main settings or something?
 
 # Verification (do this last, except to generate new bugs)
 
@@ -66,6 +60,7 @@
 
 # Stretch
 
+- [ ] can the "show keybinding" option be moved to the main settings or something?
 - [ ] better stats formatting - group by section?
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] support localization
@@ -75,6 +70,7 @@
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
+- [ ] increase crew capacity when scaling up?
 
 # won't do
 
@@ -217,6 +213,7 @@
 - [x] Errors due to removing fields from TweakScale module:
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
+- [x] show mass and cost in stats
 
 ======
 

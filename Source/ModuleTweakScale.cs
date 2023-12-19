@@ -414,21 +414,24 @@ namespace TweakScale
 			if (IsRescaled)
 			{
 				// Note that if we fall in here, this part was LOADED from a craft file or vessel in flight.  newly created parts in the editor aren't rescaled.
+				StringBuilder infoBuilder = GetInfoBuilder();
 				ScalePartTransform();
-				CallHandlers(1.0f); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
+				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
 									// TODO: do we need to worry about drag cubes or anything else?
 				foreach (var attachNode in part.attachNodes)
 				{
 					ScaleAttachNodeSize(attachNode);
 				}
 				ScaleAttachNodeSize(part.srfAttachNode); // does the size of the srfAttachNode even matter?
+				FinalizeStats(infoBuilder);
 			}
 			else
 			{
 				SetStatsLabel("");
-				if (part.Modules.Contains("FSfuelSwitch"))
-					ignoreResourcesForCost = true;
 			}
+
+			if (part.Modules.Contains("FSfuelSwitch"))
+				ignoreResourcesForCost = true;
 
 			// scale IVA overlay
 			if (HighLogic.LoadedSceneIsFlight && enabled && (part.internalModel != null))
@@ -496,14 +499,32 @@ namespace TweakScale
 			float relativeScaleFactor = newScaleFactor / currentScaleFactor;
 			currentScaleFactor = newScaleFactor;
 
-			if (scaleChildren)
+			if (scaleChildren && relativeScaleFactor != 1)
 			{
 				ChainScale(relativeScaleFactor);
 			}
 
+			StringBuilder infoBuilder = GetInfoBuilder();
+
 			ScalePart(relativeScaleFactor);
-			CallHandlers(relativeScaleFactor);
+			CallHandlers(relativeScaleFactor, infoBuilder);
 			CalculateCostAndMass();
+			FinalizeStats(infoBuilder);
+		}
+
+		void FinalizeStats(StringBuilder infoBuilder)
+		{
+			if (IsRescaled && infoBuilder != null)
+			{
+				infoBuilder.AppendFormat("\nCost: {0:+0}", extraCost);
+				infoBuilder.AppendFormat("\nMass: {0:+0.0##}", extraMass);
+
+				SetStatsLabel(infoBuilder.ToString());
+			}
+			else
+			{
+				SetStatsLabel("");
+			}
 		}
 
 		void OnEditorShipModified(ShipConstruct ship)
@@ -584,7 +605,7 @@ namespace TweakScale
 			return null;
 		}
 
-		void CallHandlers(float relativeScaleFactor)
+		void CallHandlers(float relativeScaleFactor, StringBuilder infoBuilder)
 		{
 			ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
 
@@ -600,7 +621,6 @@ namespace TweakScale
 
 			// First apply the exponents
 			float oldMass = part.mass;
-			StringBuilder infoBuilder = GetInfoBuilder();
 			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload, infoBuilder);
 			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
 
@@ -625,8 +645,6 @@ namespace TweakScale
 					}
 				}
 			}
-
-			SetStatsLabel(infoBuilder?.ToString());
 		}
 
 		private void SetStatsLabel(string text)
