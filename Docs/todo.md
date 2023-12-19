@@ -4,9 +4,6 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
-- [ ] Errors due to removing fields from TweakScale module:
-		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
-		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
 
 ## Stats
 
@@ -217,6 +214,9 @@
 		part action window just doesn't seem to respond correctly to changes in slots or volume
 - [x] implement waterfall support
 - [x] Devise a way to share version info across assemblies
+- [x] Errors due to removing fields from TweakScale module:
+		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
+		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
 
 ======
 

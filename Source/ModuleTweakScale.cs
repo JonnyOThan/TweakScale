@@ -120,6 +120,11 @@ namespace TweakScale
 
 		public bool IsRescaled => Math.Abs(currentScaleFactor - 1f) > 1e-5f;
 
+		// These are not used, but only included here to silence warnings when applying scaling exponents to this module
+		// TODO: someday should find a way to avoid this hackery.
+		private float DryCost = 0;
+		private float MassScale = 0;
+
 #region Attach Node Stuff
 
 		// A few different systems can alter attach nodes in the editor (ModulePartVariants, ModuleB9PartSwitch, maybe more)
