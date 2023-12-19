@@ -1,3 +1,12 @@
+
+How to handle nodes changing positions?
+
+Basic approach: we need to know what the unscaled position and size of each attach node should be.  Then we can directly calculate the scaled versions using absolute scaling.
+
+The TweakScale partmodule maintains a dictionary mapping attachnode id to position and size.  There are harmony patches in the stock and b9ps code that updates this dictionary as the variants are changed
+
+
+
 1. place a fuel tank
 2. attach planetside base node on the bottom of the fuel tank (using the base node's top attach node)
 3. increase scale to 200%

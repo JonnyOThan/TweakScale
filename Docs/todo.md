@@ -7,13 +7,7 @@
 
 ## Plumes
 
-- [ ] handle stock exhaust particles
-		seems like there's already some code to do this, but doesn't work on some engines?
-		or the flame particles work, but not smoke
-		scaled engines have a weird inverse scale to their plumes, even when we're not trying to scale anything
-		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
-		different types of particle systems are being scaled differently.
-		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
+- [ ] handle ModuleEnginesFX
 
 # New Candy
 
@@ -61,9 +55,6 @@
 - [ ] support localization
 - [ ] remove explicit setups for stock parts that could be handled by automatic ones
 	maybe? would other things break if these aren't set up early enough?
-- [ ] create a IRescalable attribute with virtual functions to customize registration and construction
-	For example the CrewManifest handler
-	Maybe this isn't a big deal..there aren't that many handlers
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
 - [ ] increase crew capacity when scaling up?
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
@@ -81,6 +72,10 @@
 - copy/paste scale values?  
 		could be hotkeys for this stuff when in scale tool mode.  
 		And a button in the PAW.  For stack sizes, maybe have both "copy absolute scale" and "copy stack size" - possibly swap when alt is held?
+- create a IRescalable attribute with virtual functions to customize registration and construction
+	For example the CrewManifest handler
+	Maybe this isn't a big deal..there aren't that many handlers
+	this is probably moot now that you can have a Create method
 
 # Done
 
@@ -213,11 +208,4 @@
 - [x] realplume support?
 - [x] move testflight to a separate handler dll?  maybe allow for rescalables to provide their own create function that could return null?
 - [x] TD-25 decoupler shows "1.25" at default scale
-
-======
-
-How to handle nodes changing positions?
-
-Basic approach: we need to know what the unscaled position and size of each attach node should be.  Then we can directly calculate the scaled versions using absolute scaling.
-
-The TweakScale partmodule maintains a dictionary mapping attachnode id to position and size.  There are harmony patches in the stock and b9ps code that updates this dictionary as the variants are changed
+- [x] Handle ModuleEngines exhaust

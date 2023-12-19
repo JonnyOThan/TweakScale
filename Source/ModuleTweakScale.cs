@@ -443,6 +443,23 @@ namespace TweakScale
 			}
 		}
 
+		public override void OnStartFinished(StartState state)
+		{
+			base.OnStartFinished(state);
+
+			float scale = currentScaleFactor;
+
+			foreach (var fxGroup in part.fxGroups)
+			{
+				for (int i = 0; i < fxGroup.fxEmittersNewSystem.Count; i++)
+				{
+					fxGroup.initSizeValuesNewSystem[i] *= scale;
+					fxGroup.initSizeValuesNewSystemVariation[i] *= scale;
+					// TODO: modify lifetimes? lights?
+				}
+			}
+		}
+
 		void OnDestroy()
 		{
 			Fields[nameof(scaleChildren)].OnValueModified -= OnScaleChildrenModified;
