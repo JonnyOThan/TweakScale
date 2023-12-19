@@ -43,16 +43,25 @@ namespace TweakScale
 
 		static void RegisterPartModuleHandler(Type handlerType, Type partModuleType, RescalableSceneFilter sceneFilter)
 		{
+			var createMethod = handlerType.GetMethod("Create", BindingFlags.Static | BindingFlags.Public, null, new Type[] { partModuleType }, null);
 			var constructor = handlerType.GetConstructor(new[] { partModuleType });
+			Func<PartModule, IRescalable> creator = null;
 
-			if (constructor == null)
+			if (createMethod != null)
 			{
-				Tools.LogError("handler {0} for PartModule type {1} doesn't have an appropriate constructor", handlerType, partModuleType);
+				// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
+				creator = partModule => (IRescalable)createMethod.Invoke(null, new object[] { partModule });
+			}
+			else if (constructor != null)
+			{
+				// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
+				creator = partModule => (IRescalable)constructor.Invoke(new object[] { partModule });
+			}
+			else
+			{
+				Tools.LogError("handler {0} for PartModule type {1} doesn't have an appropriate constructor or Create method", handlerType, partModuleType);
 				return;
 			}
-
-			// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
-			Func<PartModule, IRescalable> creator = partModule => (IRescalable)constructor.Invoke(new object[] { partModule });
 
 			Tools.Log("Found a handler {0} for PartModule type {1}: sceneFilter: {2}", handlerType, partModuleType, sceneFilter);
 			TweakScaleHandlerDatabase.RegisterPartModuleHandler(partModuleType, creator, sceneFilter);
@@ -104,16 +113,25 @@ namespace TweakScale
 			// part rescaler (IRescalablePart)
 			else if (typeof(IRescalablePart).IsAssignableFrom(rescalableInterfaceType))
 			{
+				var createMethod = handlerType.GetMethod("Create", BindingFlags.Static | BindingFlags.Public, null, RescalablePartConstructorArgumentTypes, null);
 				var constructor = handlerType.GetConstructor(RescalablePartConstructorArgumentTypes);
+				Func<Part, IRescalable> creator = null;
 
-				if (constructor == null)
+				if (createMethod != null)
 				{
-					Tools.LogError("Part handler {0} doesn't have an appropriate constructor", handlerType);
+					// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
+					creator = part => (IRescalable)createMethod.Invoke(null, new object[] { part });
+				}
+				else if (constructor != null)
+				{
+					// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
+					creator = part => (IRescalable)constructor.Invoke(new object[] { part });
+				}
+				else
+				{
+					Tools.LogError("Part handler {0} doesn't have an appropriate constructor or Create method", handlerType);
 					return;
 				}
-
-				// TODO: can we use a bound delegate here to reduce allocation and reflection overhead?
-				Func<Part, IRescalable> creator = part => (IRescalable)constructor.Invoke(new object[] { part });
 
 				Tools.Log("Found a handler {0} for Parts: sceneFilter: {1}", handlerType, sceneFilter);
 				TweakScaleHandlerDatabase.RegisterPartHandler(creator, sceneFilter);

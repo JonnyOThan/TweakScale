@@ -82,7 +82,11 @@ namespace TweakScale
 						try
 						{
 							var handler = creator(module);
-							if (handler != null) handlers.Add(handler);
+							if (handler != null)
+							{
+								handlers.Add(handler);
+								Tools.LogDebug("Added handler {0} for part {1}", handler.GetType(), part.partInfo.name);
+							}
 						}
 						catch (Exception ex)
 						{

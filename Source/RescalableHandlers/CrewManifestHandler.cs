@@ -9,9 +9,15 @@ namespace TweakScale
 	[RescalableSceneFilter(RescalableSceneFilter.EditorOnly)]
 	internal class CrewManifestHandler : IRescalablePart
 	{
-		public CrewManifestHandler(Part part)
+		public static CrewManifestHandler Create(Part part)
 		{
-			// TODO: find a way to not create this for parts that don't have crew capacity (potentially tricky since some parts can dynnamically change it)
+			// TOD: this is potentially tricky since some parts can dynamically change their crew capacity
+			if (part.partInfo.partPrefab.CrewCapacity == 0) return null;
+			return new CrewManifestHandler(part);
+		}
+
+		private CrewManifestHandler(Part part)
+		{
 			_part = part;
 		}
 

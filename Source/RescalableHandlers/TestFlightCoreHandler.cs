@@ -36,7 +36,13 @@ namespace TweakScale
 
 		#endregion
 
-		public TestFlightCoreHandler(Part part)
+		public static TestFlightCoreHandler Create(Part part)
+		{
+			if (addInteropValue_MethodInfo == null) return null;
+			return new TestFlightCoreHandler(part);
+		}
+
+		private TestFlightCoreHandler(Part part)
 		{
 			_part = part;
 		}
@@ -46,7 +52,7 @@ namespace TweakScale
 			// TODO: implement a way to avoid creating this when TestFlightCore isn't installed
 			if (addInteropValue_MethodInfo == null) return;
 
-				string name = "scale";
+			string name = "scale";
 			string value = factor.absolute.ToString();
 			string owner = "TweakScale";
 
