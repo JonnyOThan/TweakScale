@@ -20,7 +20,7 @@ namespace TweakScale.Waterfall
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 		}
 
-		// ----- ModulePartVariants
+		// ----- ModuleWaterfallFX
 
 		[HarmonyPatch(typeof(ModuleWaterfallFX), "Initialize")]
 		class ModuleWaterfallFX_Initialize
@@ -28,7 +28,10 @@ namespace TweakScale.Waterfall
 			public static void Postfix(ModuleWaterfallFX __instance)
 			{
 				var tweakScaleModule = __instance.part.FindModuleImplementing<TweakScale>();
-				tweakScaleModule.FindHandlerOfType<ModuleWaterfallFXHandler>().EffectsInitialized();
+				if (tweakScaleModule != null)
+				{
+					tweakScaleModule.FindHandlerOfType<ModuleWaterfallFXHandler>().EffectsInitialized();
+				}
 			}
 		}
 	}

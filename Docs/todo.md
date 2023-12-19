@@ -18,7 +18,7 @@
 		could this be coming from the power curve?  maybe out of range or something? - doesn't seem to be
 		different types of particle systems are being scaled differently.
 		Could be a bug in unity where it's inverse-scaling something when it shouldn't, because particle systems can be set to not inherit their parents scales
-- [ ] realplume support?
+- [ ] move testflight to a separate handler dll?  maybe allow for rescalables to provide their own create function that could return null?
 
 # New Candy
 
@@ -214,6 +214,7 @@
 		[WRN 18:23:24.910] [TweakScale] No valid member found for DryCost in TweakScale
 		[WRN 18:23:24.911] [TweakScale] No valid member found for MassScale in TweakScale
 - [x] show mass and cost in stats
+- [x] realplume support?
 
 ======
 

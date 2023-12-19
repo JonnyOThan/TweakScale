@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScaleSafetyNet", "Sour
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScale_Waterfall", "Source\TweakScale_Waterfall\TweakScale_Waterfall.csproj", "{B3F3175A-C048-4FB7-AC5E-44D5935D3348}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScale_SmokeScreen", "Source\TweakScale_SmokeScreen\TweakScale_SmokeScreen.csproj", "{056F3869-A28B-4F4F-A7EB-FCB7F95D39A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{B3F3175A-C048-4FB7-AC5E-44D5935D3348}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3F3175A-C048-4FB7-AC5E-44D5935D3348}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3F3175A-C048-4FB7-AC5E-44D5935D3348}.Release|Any CPU.Build.0 = Release|Any CPU
+		{056F3869-A28B-4F4F-A7EB-FCB7F95D39A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{056F3869-A28B-4F4F-A7EB-FCB7F95D39A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{056F3869-A28B-4F4F-A7EB-FCB7F95D39A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{056F3869-A28B-4F4F-A7EB-FCB7F95D39A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
