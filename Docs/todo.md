@@ -1,7 +1,5 @@
 # Bugs
 
-- [ ] structural tubes broke again
-
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
@@ -39,6 +37,7 @@
 - [ ] test with existing companion
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled?
 - [ ] do we need to respect min/max mass and cost?
+- [ ] test engine plate nodes
 
 # Stretch
 
@@ -211,6 +210,7 @@
 - [x] Drag cubes revert after launching the craft
 - [x] investigate craft file from StormCircuit (attachnodes on structural tubes)
 - [x] Loading TS/L craft has wrong mass and cost
+- [x] structural tubes broke again
 
 # Finished Verification
 

@@ -113,6 +113,8 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public float extraMass;
 
+		private bool needsCostAndMassUpdate = false;
+
 		/// <summary>
 		/// The ScaleType for this part.
 		/// </summary>
@@ -208,50 +210,63 @@ namespace TweakScale
 			"ModuleFuelTanks",
 		}.ToHashSet();
 
-		internal void CalculateCostAndMass()
+		internal bool CalculateCostAndMass()
 		{
-			float cost = part.partInfo.cost;
-			float mass = part.partInfo.partPrefab.mass;
+			float oldExtraCost = extraCost;
+			float oldExtraMass = extraMass;
 
-			foreach (var module in part.modules.modules)
+			if (IsRescaled)
 			{
-				if (x_modulesToExcludeForDryStats.Contains(module.ClassName)) continue;
+				float cost = part.partInfo.cost;
+				float mass = part.partInfo.partPrefab.mass;
 
-				if (module is IPartCostModifier costModifier)
+				foreach (var module in part.modules.modules)
 				{
-					cost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
+					if (x_modulesToExcludeForDryStats.Contains(module.ClassName)) continue;
+
+					if (module is IPartCostModifier costModifier)
+					{
+						cost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
+					}
+					if (module is IPartMassModifier massModifier)
+					{
+						mass += massModifier.GetModuleMass(part.partInfo.partPrefab.mass, ModifierStagingSituation.CURRENT);
+					}
 				}
-				if (module is IPartMassModifier massModifier)
+
+				// the cost from the prefab includes the price of resources
+				foreach (var partResource in _prefabPart.Resources)
 				{
-					mass += massModifier.GetModuleMass(part.partInfo.partPrefab.mass, ModifierStagingSituation.CURRENT);
+					cost -= (float)partResource.maxAmount * partResource.info.unitCost;
 				}
-			}
 
-			// the cost from the prefab includes the price of resources
-			foreach (var partResource in _prefabPart.Resources)
-			{
-				cost -= (float)partResource.maxAmount * partResource.info.unitCost;
-			}
+				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
+				float costScale = Mathf.Pow(currentScaleFactor, costExponent);
+				float newCost = costScale * cost;
 
-			float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
-			float costScale = Mathf.Pow(currentScaleFactor, costExponent);
-			float newCost = costScale * cost;
+				extraCost = newCost - cost;
 
-			extraCost = newCost - cost;
-
-			// TODO: do we need to consider the mass of kerbals here?
-			if (scaleMass)
-			{
-				float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
-				float massScale = Mathf.Pow(currentScaleFactor, massExponent);
-				float newMass = massScale * mass;
-				extraMass = newMass - mass;
-				part.UpdateMass();
+				// TODO: do we need to consider the mass of kerbals here?
+				if (scaleMass)
+				{
+					float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
+					float massScale = Mathf.Pow(currentScaleFactor, massExponent);
+					float newMass = massScale * mass;
+					extraMass = newMass - mass;
+					part.UpdateMass();
+				}
+				else
+				{
+					extraMass = 0;
+				}
 			}
 			else
 			{
+				extraCost = 0;
 				extraMass = 0;
 			}
+
+			return oldExtraCost != extraCost || oldExtraMass != extraMass;
 		}
 
 		/// <summary>
@@ -424,6 +439,8 @@ namespace TweakScale
 
 				Fields[nameof(guiScaleValue)].OnValueModified += OnGuiScaleModified;
 				Fields[nameof(guiScaleNameIndex)].OnValueModified += OnGuiScaleModified;
+
+				needsCostAndMassUpdate = part.modules.modules.Any(module => (module is IPartCostModifier || module is IPartMassModifier) && !x_modulesToExcludeForDryStats.Contains(module.ClassName));
 			}
 			else if (!IsRescaled)
 			{
@@ -637,6 +654,24 @@ namespace TweakScale
 				if (UpdateLocalSetting(ref showStats, TweakScaleEditorLogic.Instance.ShowStats, Fields[nameof(showStats)]))
 				{
 					UpdateStatsVisibility();
+				}
+
+				if (needsCostAndMassUpdate && CalculateCostAndMass())
+				{
+					GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+
+					// horrible hack to refresh the cost and mass fields in the stats...would anything else in here ever need to change maybe?  Should we just rebuild the whole thing?
+					if (IsRescaled)
+					{
+						StringBuilder infoBuilder = GetInfoBuilder();
+						infoBuilder.Append(guiStatsText);
+						int cutoffIndex = guiStatsText.LastIndexOf("\nCost:");
+						if (cutoffIndex >= 0)
+						{
+							infoBuilder.Length = cutoffIndex;
+						}
+						FinalizeStats(infoBuilder);
+					}
 				}
 			}
 			else
