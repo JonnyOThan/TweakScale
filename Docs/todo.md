@@ -4,6 +4,7 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
+- [ ] error spew about attach nodes when starting flight mode
 
 # New Candy
 

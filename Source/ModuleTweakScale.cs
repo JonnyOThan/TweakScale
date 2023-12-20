@@ -447,16 +447,22 @@ namespace TweakScale
 		{
 			base.OnStartFinished(state);
 
+			if (!HighLogic.LoadedSceneIsFlight) return;
+
 			float scale = currentScaleFactor;
 
 			foreach (var fxGroup in part.fxGroups)
 			{
 				for (int i = 0; i < fxGroup.fxEmittersNewSystem.Count; i++)
 				{
-					fxGroup.initSizeValuesNewSystem[i] *= scale;
-					fxGroup.initSizeValuesNewSystemVariation[i] *= scale;
-					// TODO: modify lifetimes? lights?
+					var particleSystem = fxGroup.fxEmittersNewSystem[i];
+
+					if (particleSystem.main.scalingMode == ParticleSystemScalingMode.Local)
+					{
+						particleSystem.transform.localScale *= scale;
+					}
 				}
+				// TODO: lights?
 			}
 
 			foreach (var effectList in part.effects.effectList.Values)
