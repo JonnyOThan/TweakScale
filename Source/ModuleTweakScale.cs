@@ -138,7 +138,7 @@ namespace TweakScale
 			public float size; // usually an integer, 0 = 0.625m, 1 = 1.25m, 2 = 2.5m, etc.  Can be a float though
 			public float diameter; // the actual diameter, e.g. 1.25m, 2.5m, etc.
 		}
-		[SerializeField]
+
 		Dictionary<string, AttachNodeInfo> unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>();
 		ConfigNode attachNodeDiameters; // only valid in loading
 
@@ -355,11 +355,17 @@ namespace TweakScale
 		{
 			base.Awake();
 
-			if (HighLogic.LoadedSceneIsEditor)
+			// This has to be really early because other modules might try to shove data in here as they're initializing
+			if (part?.partInfo?.partPrefab != null)
 			{
-				// This has to be really early because other modules might try to shove data in here as they're initializing
 				var prefabModule = part.partInfo.partPrefab.FindModuleImplementing<TweakScale>();
 				unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>(prefabModule.unscaledAttachNodes);
+
+				// if the prefab did not have a srfAttachNode defined, then we need to add an entry for it
+				if (part.partInfo.partPrefab.srfAttachNode == null && part.srfAttachNode != null)
+				{
+					SetUnscaledAttachNode(part.srfAttachNode);
+				}
 			}
 		}
 

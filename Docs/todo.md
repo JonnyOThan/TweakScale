@@ -4,7 +4,7 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
-- [ ] error spew about attach nodes when starting flight mode
+- [ ] [WRN 20:41:19.040] [TweakScale] treatMassAndCost: TweakScale/MassScale exponent already exists!
 
 # New Candy
 
@@ -43,6 +43,7 @@
 - [ ] Check KIS support
 - [ ] test with existing companion
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled?
+- [ ] do we need to respect min/max mass and cost?
 
 # Stretch
 
@@ -207,3 +208,4 @@
 - [x] TD-25 decoupler shows "1.25" at default scale
 - [x] Handle ModuleEngines exhaust
 - [x] handle ModuleEnginesFX
+- [x] error spew about attach nodes when starting flight mode
