@@ -458,6 +458,30 @@ namespace TweakScale
 					// TODO: modify lifetimes? lights?
 				}
 			}
+
+			foreach (var effectList in part.effects.effectList.Values)
+			{
+				foreach (var effect in effectList)
+				{
+					if (effect is PrefabParticleFX particleEffect)
+					{
+						if (particleEffect.emitter.main.scalingMode == ParticleSystemScalingMode.Local)
+						{
+							particleEffect.emitter.transform.localScale = particleEffect.localScale * scale;
+						}
+					}
+					else if (effect is ModelMultiParticleFX modelMultiParticleFX)
+					{
+						foreach (var emitter in modelMultiParticleFX.emitters)
+						{
+							if (emitter.ps.main.scalingMode == ParticleSystemScalingMode.Local)
+							{
+								emitter.ps.transform.localScale = modelMultiParticleFX.localScale * scale;
+							}
+						}
+					}
+				}
+			}
 		}
 
 		void OnDestroy()
