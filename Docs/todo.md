@@ -209,3 +209,4 @@
 - [x] investigate part cost scaling on HECS2
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
+- [x] Drag cubes revert after launching the craft

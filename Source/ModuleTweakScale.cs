@@ -426,8 +426,8 @@ namespace TweakScale
 				// Note that if we fall in here, this part was LOADED from a craft file or vessel in flight.  newly created parts in the editor aren't rescaled.
 				StringBuilder infoBuilder = GetInfoBuilder();
 				ScalePartTransform();
+				ScaleDragCubes(currentScaleFactor);
 				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
-									// TODO: do we need to worry about drag cubes or anything else?
 				foreach (var attachNode in part.attachNodes)
 				{
 					ScaleAttachNodeSize(attachNode);
@@ -837,6 +837,7 @@ namespace TweakScale
 					dragCube.Depth[i] *= relativeScaleFactor;
 			}
 			part.DragCubes.ForceUpdate(true, true);
+			part.DragCubes.SetDragWeights();
 		}
 
 		Part GetAttachedPart(AttachNode node)
