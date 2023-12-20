@@ -315,6 +315,16 @@ namespace TweakScale
 					{
 						currentScaleFactor = currentScaleFromCfgNode / guiDefaultScale;
 					}
+
+					// TS/L saves the unscaled node position in the originalPosition, and *sometimes* scales the current position
+					foreach (var attachNode in part.attachNodes)
+					{
+						attachNode.position = (attachNode.originalPosition *= currentScaleFactor);
+					}
+					if (part.srfAttachNode != null)
+					{
+						part.srfAttachNode.position = (part.srfAttachNode.originalPosition *= currentScaleFactor);
+					}
 				}
 
 				guiScaleValue = currentScaleFactor * guiDefaultScale;

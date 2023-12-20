@@ -1,6 +1,6 @@
 # Bugs
 
-- [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
+- [ ] Loading TS/L craft has wrong mass and cost
 
 # New Candy
 
@@ -9,7 +9,6 @@
 # Verification (do this last, except to generate new bugs)
 
 - [ ] check stock twin boar (since it's an engine + fuel tank)
-- [ ] check parachutes
 - [ ] check part recovery costs (with kspcf)
 - [ ] check cloning part subtrees
 - [ ] check FS buoyancy module
@@ -210,3 +209,8 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [x] Drag cubes revert after launching the craft
+- [x] investigate craft file from StormCircuit (attachnodes on structural tubes)
+
+# Finished Verification
+
+- [x] check parachutes
