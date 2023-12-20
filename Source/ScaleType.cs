@@ -102,7 +102,6 @@ namespace TweakScale
 				TechRequired = Tools.ConfigValue(scaleConfig, "techRequired", TechRequired).Select(a => a.Trim()).ToArray();
 
 				Exponents = ScaleExponents.CreateExponentsForModule(scaleConfig, Exponents);
-				ScaleExponents.treatMassAndCost(Exponents);
 			}
 
 			if (IsFreeScale && (_scaleFactors.Length > 1))

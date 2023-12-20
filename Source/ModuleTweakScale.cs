@@ -122,6 +122,8 @@ namespace TweakScale
 
 		// These are not used, but only included here to silence warnings when applying scaling exponents to this module
 		// TODO: someday should find a way to avoid this hackery.
+		// These are set to 0 so that they don't show up in the PAW stats.  but it might be useful to set them to 1 and then use these
+		// instead of ScaleExponent.getDryMassExponent and getDryCostExponent
 #pragma warning disable 0414
 		private float DryCost = 0;
 		private float MassScale = 0;

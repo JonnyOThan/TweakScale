@@ -4,7 +4,6 @@
 		seems like this is being treated as "science" which becomes cheaper when it's bigger
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [ ] investigate craft file from StormCircuit (attachnodes on structural tubes)
-- [ ] [WRN 20:41:19.040] [TweakScale] treatMassAndCost: TweakScale/MassScale exponent already exists!
 
 # New Candy
 
@@ -209,3 +208,4 @@
 - [x] Handle ModuleEngines exhaust
 - [x] handle ModuleEnginesFX
 - [x] error spew about attach nodes when starting flight mode
+- [x] [WRN 20:41:19.040] [TweakScale] treatMassAndCost: TweakScale/MassScale exponent already exists!

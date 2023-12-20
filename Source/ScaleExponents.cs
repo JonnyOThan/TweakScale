@@ -481,9 +481,9 @@ namespace TweakScale
 
 		public static float getDryMassExponent(Dictionary<string, ScaleExponents> exponents)
 		{
-			if (exponents.TryGetValue("Part", out var partExponents))
+			if (exponents.TryGetValue("TweakScale", out var moduleExponents))
 			{
-				if (partExponents._exponents.TryGetValue("mass", out var massExponent))
+				if (moduleExponents._exponents.TryGetValue("MassScale", out var massExponent))
 				{
 					if (massExponent.ValueList != null)
 					{
@@ -532,31 +532,21 @@ namespace TweakScale
 				ConfigNode node = new ConfigNode();
 				node.name = "TweakScale";
 				node.id = "TweakScale";
-				node.AddValue("!DryCost", massExponent);
+				node.AddValue("DryCost", massExponent);
 				node.AddValue("MassScale", massExponent);
 				Exponents.Add("TweakScale", new ScaleExponents(node));
 			}
 			else
 			{
-				if (Exponents["TweakScale"]._exponents.ContainsKey("DryCost"))
+				if (!Exponents["TweakScale"]._exponents.ContainsKey("DryCost"))
 				{
-					// force relative scaling
-					ScalingMode tmp = Exponents["TweakScale"]._exponents["DryCost"];
-					tmp.UseRelativeScaling = true;
-					Exponents["TweakScale"]._exponents["DryCost"] = tmp;
-				}
-				else
-				{
-					Exponents["TweakScale"]._exponents.Add("DryCost", new ScalingMode("DryCost", massExponent, true));
+					Exponents["TweakScale"]._exponents.Add("DryCost", new ScalingMode("DryCost", massExponent, false));
 				}
 
 				// move mass exponent into TweakScale module
-				if (Exponents["TweakScale"]._exponents.ContainsKey("MassScale"))
-					Tools.LogWarning("treatMassAndCost: TweakScale/MassScale exponent already exists!");
-				else
-					Exponents["TweakScale"]._exponents.Add("MassScale", new ScalingMode("MassScale", massExponent, false));
+				Exponents["TweakScale"]._exponents["MassScale"] = new ScalingMode("MassScale", massExponent, false);
 			}
-			//Exponents["Part"]._exponents.Remove("mass");
+			Exponents["Part"]._exponents.Remove("mass");
 		}
 
 		public static Dictionary<string, ScaleExponents> CreateExponentsForModule(ConfigNode node, Dictionary<string, ScaleExponents> parent)
@@ -566,6 +556,8 @@ namespace TweakScale
 				.Where(IsExponentBlock)
 				.Select(a => new ScaleExponents(a))
 				.ToDictionary(a => a._id);
+
+			ScaleExponents.treatMassAndCost(local);
 
 			foreach (var pExp in parent.Values)
 			{
