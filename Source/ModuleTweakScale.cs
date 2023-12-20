@@ -434,19 +434,24 @@ namespace TweakScale
 			if (IsRescaled)
 			{
 				// Note that if we fall in here, this part was LOADED from a craft file or vessel in flight.  newly created parts in the editor aren't rescaled.
+				// this whole block is basically ScalePart except it doesn't move children - should we unify?
 				StringBuilder infoBuilder = GetInfoBuilder();
 				ScalePartTransform();
-				ScaleDragCubes(currentScaleFactor);
-				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
 				foreach (var attachNode in part.attachNodes)
 				{
 					ScaleAttachNodeSize(attachNode);
 				}
 				ScaleAttachNodeSize(part.srfAttachNode); // does the size of the srfAttachNode even matter?
+				ScaleDragCubes(currentScaleFactor);
+				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
+				// this may not be the right place to do this, because other modules might not be fully set up yet.
+				CalculateCostAndMass();
 				FinalizeStats(infoBuilder);
 			}
 			else
 			{
+				extraCost = 0;
+				extraMass = 0;
 				SetStatsLabel("");
 			}
 

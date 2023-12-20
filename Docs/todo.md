@@ -1,6 +1,6 @@
 # Bugs
 
-- [ ] Loading TS/L craft has wrong mass and cost
+- [ ] structural tubes broke again
 
 # New Candy
 
@@ -210,6 +210,7 @@
 		all of the probe cores seem to do this, which makes some sense, though the HECS2 also has a lot of battery space
 - [x] Drag cubes revert after launching the craft
 - [x] investigate craft file from StormCircuit (attachnodes on structural tubes)
+- [x] Loading TS/L craft has wrong mass and cost
 
 # Finished Verification
 
