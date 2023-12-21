@@ -64,7 +64,10 @@
     <Compile Include="ConfigurationDumper.cs" />
     <Compile Include="ConstructionModeScale.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="HarmonyPatching.cs" />
+    <Compile Include="HarmonyPatching\B9PartSwitch.cs" />
+    <Compile Include="HarmonyPatching\BDArmory.cs" />
+    <Compile Include="HarmonyPatching\HarmonyPatching.cs" />
+    <Compile Include="HarmonyPatching\SmokeScreen.cs" />
     <Compile Include="Hotkeys\Hotkey.cs" />
     <Compile Include="Hotkeys\HotkeyAble.cs" />
     <Compile Include="Hotkeys\HotkeyManager.cs" />
