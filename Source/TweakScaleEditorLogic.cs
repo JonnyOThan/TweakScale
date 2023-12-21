@@ -110,10 +110,7 @@ namespace TweakScale
 				return;
 			}
 
-			if (_hotkeyManager.Update())
-			{
-				SaveConfig();
-			}
+			_hotkeyManager.Update();
 		}
 
 		void SaveConfig()

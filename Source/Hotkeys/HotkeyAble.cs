@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using KSP.IO;
+using System;
 
 namespace TweakScale
 {
@@ -20,7 +21,19 @@ namespace TweakScale
 			}
 			set
 			{
-				_state = value;
+				if (_state != value)
+				{
+					_state = value;
+					_config.SetValue(_name, _state);
+					try
+					{
+						_config.save();
+					}
+					catch (Exception ex)
+					{
+						Tools.LogException(ex);
+					}
+				}
 			}
 		}
 
@@ -33,14 +46,12 @@ namespace TweakScale
 			_state = config.GetValue(name, state);
 		}
 
-		public bool Update()
+		public void Update()
 		{
 			if (!_toggle.IsTriggered)
-				return false;
-			_state = !_state;
+				return;
+			State = !_state;
 			ScreenMessages.PostScreenMessage(_name + (_state ? " enabled." : " disabled."), EditorLogic.fetch.modeMsg);
-			_config.SetValue(_name, _state);
-			return true;
 		}
 
 		public string GetToggleKey()

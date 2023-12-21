@@ -14,15 +14,12 @@ namespace TweakScale
 			_config = config;
 		}
 
-		public bool Update()
+		public void Update()
 		{
-			bool anyChanged = false;
 			foreach (var key in _hotkeys.Values)
 			{
-				anyChanged = key.Update() || anyChanged;
+				key.Update();
 			}
-
-			return anyChanged;
 		}
 
 		public Hotkeyable AddHotkey(string hotkeyName, KeyCode tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state)
