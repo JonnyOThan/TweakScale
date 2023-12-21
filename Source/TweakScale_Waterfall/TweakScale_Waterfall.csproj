@@ -82,6 +82,7 @@
     <ProjectReference Include="..\Scale.csproj">
       <Project>{70d38878-43db-4f6e-8002-45ada5391af7}</Project>
       <Name>Scale</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Scale_Redist\Scale_Redist.csproj">
       <Project>{2be63d8b-350e-4edd-959c-4b7397984364}</Project>

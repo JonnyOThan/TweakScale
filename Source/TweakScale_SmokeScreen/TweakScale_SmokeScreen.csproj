@@ -83,6 +83,7 @@
     <ProjectReference Include="..\Scale.csproj">
       <Project>{70d38878-43db-4f6e-8002-45ada5391af7}</Project>
       <Name>Scale</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>
