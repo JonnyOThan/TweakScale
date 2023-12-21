@@ -1,7 +1,5 @@
 # Bugs
 
-- [ ] remove SmokeScreen dll and just replace with a harmony patch in the main mod
-
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
@@ -216,6 +214,7 @@
 - [x] structural tubes broke again
 - [x] BDA tweakscale accessor broke
 - [x] config preferences not saved in 3.0.4 - check tsarbon's log
+- [x] remove SmokeScreen dll and just replace with a harmony patch in the main mod
 
 # Finished Verification
 
