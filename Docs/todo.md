@@ -6,10 +6,15 @@
 	- FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L1491
 	- KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
+- [ ] node size resets when selecting tube variant on scaled part
+- [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
+- [ ] holding alt to force node attachment then releasing will leave symmetry parts as scaled but not the hovered part
 
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
+- [ ] move waterfall support into main mod?
+- [ ] stats window should show base cost/mass and final
 
 # Verification (do this last, except to generate new bugs)
 
@@ -18,7 +23,6 @@
 - [ ] check cloning part subtrees
 - [ ] check FS buoyancy module
 - [ ] check parts that modify drag cubes
-- [ ] make sure save/load works
 - [ ] make sure subassemblies/merging works
 - [ ] make sure scaling command parts w/ kerbals works properly re: mass
 - [ ] find all TODOs and make sure there are issues tracked if necessary
@@ -26,14 +30,11 @@
 		tsarbon's plane wing changed from stack to free, and it worked.
 		pretty sure this is mostly going to work, just need to test loading things that aren't IsFreeScale
 - [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
-- [ ] check undo after scaling
 - [ ] check scale mode on non-supported parts
 - [ ] check scaling with struts and fuel lines connected to affected parts
-- [ ] audit squadexpansion parts to make sure node sizes are correct (adapters etc)
 - [ ] make sure we can load crafts saved with TS/L
 	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
-- [ ] audit and implement all stock parts
 	part support seems done, but not sure if everything is using exactly the same settings as TS/L
 - [ ] audit and fix mod support
 - [ ] verify tech unlocks are correct (fuel tanks, etc)
@@ -42,9 +43,9 @@
 - [ ] Check FSFuelSwitch interaction
 - [ ] Check KIS support
 - [ ] test with existing companion
-- [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled?
+- [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
 - [ ] do we need to respect min/max mass and cost?
-- [ ] test engine plate nodes
+- [ ] overheard on discord: "When you copy and paste tweakscaled tanks from FFT their volume resets to normal, but their size does not"
 
 # Stretch
 
@@ -57,6 +58,7 @@
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
 - [ ] increase crew capacity when scaling up?
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
+- [ ] Mastodon engine changes node sizes based on variant....
 
 # won't do
 
@@ -74,7 +76,7 @@
 - create a IRescalable attribute with virtual functions to customize registration and construction
 	For example the CrewManifest handler
 	Maybe this isn't a big deal..there aren't that many handlers
-	this is probably moot now that you can have a Create method
+	this is probably moot now that you can have a static Create method
 
 # Done
 
@@ -221,7 +223,16 @@
 - [x] BDA tweakscale accessor broke
 - [x] config preferences not saved in 3.0.4 - check tsarbon's log
 - [x] remove SmokeScreen dll and just replace with a harmony patch in the main mod
+- [x] ModuleAblator / ModuleHeatShield defaults?
+- [x] what happend to smallHardpoint
+- [x] check engine plate configs - stack? stack_square?
+- [x] test engine plate nodes & lengths
+- [x] stock heatshield0 has multiple configs applied
 
 # Finished Verification
 
 - [x] check parachutes
+- [x] make sure save/load works
+- [x] check undo after scaling
+- [x] audit squadexpansion parts to make sure node sizes are correct (adapters etc)
+- [x] audit and implement all stock parts

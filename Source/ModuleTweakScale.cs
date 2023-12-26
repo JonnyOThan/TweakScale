@@ -145,6 +145,7 @@ namespace TweakScale
 
 		Dictionary<string, AttachNodeInfo> unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>();
 		ConfigNode attachNodeDiameters; // only valid in loading
+		[SerializeField] float attachNodeDiameter = 0f; // if nonzero and the ATTACHNODEDIAMETER node is not used, this sets all attach nodes to this diameter
 
 		public void SetUnscaledAttachNode(AttachNode attachNode)
 		{
@@ -154,6 +155,10 @@ namespace TweakScale
 			if (attachNodeDiameters != null)
 			{
 				attachNodeDiameters.TryGetValue(attachNode.id, ref diameter);
+			}
+			else if (attachNodeDiameter != 0)
+			{
+				diameter = attachNodeDiameter;
 			}
 			else if (unscaledAttachNodes.TryGetValue(attachNode.id, out var existingInfo) && existingInfo.size == attachNode.size)
 			{
@@ -317,7 +322,16 @@ namespace TweakScale
 				_prefabPart = part;
 				SetupFromConfig(new ScaleType(node));
 
+#if DEBUG
+				var scaleTypes = node.GetValuesList("type");
+				if (scaleTypes.Count > 1)
+				{
+					Tools.LogWarning("PART {0} config has multiple scale type settings: {1}", part.name, string.Join(", ", scaleTypes));
+				}
+#endif
+
 				attachNodeDiameters = node.GetNode("ATTACHNODEDIAMETER");
+				node.TryGetValue(nameof(attachNodeDiameter), ref attachNodeDiameter);
 			}
 			else
 			{
