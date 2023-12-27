@@ -38,8 +38,7 @@ namespace TweakScale.HarmonyPatching
 					{
 						// make a copy so we don't mess with the one that's in the variant module
 						variantNode = AttachNode.Clone(variantNode);
-						variantNode.position *= tweakScaleModule.currentScaleFactor;
-						variantNode.originalPosition *= tweakScaleModule.currentScaleFactor;
+						tweakScaleModule.MoveNode(variantNode);
 					}
 				}
 			}

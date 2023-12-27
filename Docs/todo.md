@@ -6,7 +6,6 @@
 	- FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L1491
 	- KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
-- [ ] node size resets when selecting tube variant on scaled part
 - [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
 - [ ] holding alt to force node attachment then releasing will leave symmetry parts as scaled but not the hovered part
 
@@ -53,8 +52,6 @@
 - [ ] better stats formatting - group by section?
 - [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
 - [ ] support localization
-- [ ] remove explicit setups for stock parts that could be handled by automatic ones
-	maybe? would other things break if these aren't set up early enough?
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
 - [ ] increase crew capacity when scaling up?
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
@@ -228,6 +225,9 @@
 - [x] check engine plate configs - stack? stack_square?
 - [x] test engine plate nodes & lengths
 - [x] stock heatshield0 has multiple configs applied
+- [x] remove explicit setups for stock parts that could be handled by automatic ones
+	maybe? would other things break if these aren't set up early enough?
+- [x] node size resets when selecting tube variant on scaled part
 
 # Finished Verification
 
