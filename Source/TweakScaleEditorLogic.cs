@@ -173,7 +173,7 @@ namespace TweakScale
 			}
 		}
 
-		void HandleMatchNodeSize(TweakScale selectedTweakScaleModule)
+		internal void HandleMatchNodeSize(TweakScale selectedTweakScaleModule)
 		{
 			Part selectedPart = selectedTweakScaleModule.part;
 			Attachment attachment = EditorLogic.fetch.attachment;
@@ -189,7 +189,7 @@ namespace TweakScale
 						float necessaryScale = parentAttachNodeDiameter / selectedNode.diameter;
 
 						Vector3 oldNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
-						selectedTweakScaleModule.SetScaleFactor(necessaryScale);
+						SetSelectedPartScale(selectedTweakScaleModule, necessaryScale);
 						Vector3 newNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
 
 						selGrabOffset = newNodeWorldPosition - oldNodeWorldPosition;
@@ -209,10 +209,27 @@ namespace TweakScale
 			}
 			else if (doneAttach)
 			{
-				selectedTweakScaleModule.SetScaleFactor(partPreviousScale);
+				SetSelectedPartScale(selectedTweakScaleModule, partPreviousScale);
 				EditorLogic.fetch.selPartGrabOffset -= selGrabOffset;
 				selGrabOffset = Vector3.zero;
 				doneAttach = false;
+			}
+		}
+
+		public void ResetSelectedPartScale(TweakScale tweakScaleModule)
+		{
+			SetSelectedPartScale(tweakScaleModule, 1.0f);
+			partPreviousScale = 1.0f;
+		}
+
+		void SetSelectedPartScale(TweakScale tweakScaleModule, float scaleFactor)
+		{
+			tweakScaleModule.SetScaleFactor(scaleFactor);
+
+			foreach (var symmetricPart in tweakScaleModule.part.symmetryCounterparts)
+			{
+				var otherModule = symmetricPart.FindModuleImplementing<TweakScale>();
+				otherModule.SetScaleFactor(scaleFactor);
 			}
 		}
 	}

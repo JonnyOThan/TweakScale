@@ -289,7 +289,7 @@ namespace TweakScale
 
 				if (spaceWillResetScale && !spaceWillResetOrientation && GameSettings.Editor_resetRotation.GetKeyDown())
 				{
-					tweakScaleModule.SetScaleFactor(1.0f);
+					TweakScaleEditorLogic.Instance.ResetSelectedPartScale(tweakScaleModule);
 					return;
 				}
 			}

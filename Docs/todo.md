@@ -7,12 +7,10 @@
 	- KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
 - [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
-- [ ] holding alt to force node attachment then releasing will leave symmetry parts as scaled but not the hovered part
 
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
-- [ ] move waterfall support into main mod?
 - [ ] stats window should show base cost/mass and final
 
 # Verification (do this last, except to generate new bugs)
@@ -56,6 +54,7 @@
 - [ ] increase crew capacity when scaling up?
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
 - [ ] Mastodon engine changes node sizes based on variant....
+- [ ] move waterfall support into main mod?
 
 # won't do
 
@@ -228,6 +227,7 @@
 - [x] remove explicit setups for stock parts that could be handled by automatic ones
 	maybe? would other things break if these aren't set up early enough?
 - [x] node size resets when selecting tube variant on scaled part
+- [x] holding alt to force node attachment then releasing will leave symmetry parts as scaled but not the hovered part
 
 # Finished Verification
 

@@ -555,6 +555,17 @@ namespace TweakScale
 			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
 			_handlers = null; // probably not necessary, but we can help the garbage collector along maybe
 		}
+
+		public override void OnWillBeCopied(bool asSymCounterpart)
+		{
+			if (!asSymCounterpart) return;
+
+			if (EditorLogic.fetch.selectedPart == part)
+			{
+				TweakScaleEditorLogic.Instance.HandleMatchNodeSize(this);
+			}
+		}
+
 		private void OnGuiScaleModified(object arg1)
 		{
 			float newScaleFactor = GetScaleFactorFromGUI();
