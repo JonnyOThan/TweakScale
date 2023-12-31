@@ -136,16 +136,15 @@
     <PublicizeAsReferenceAssemblies>false</PublicizeAsReferenceAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="Scale_Redist\Scale_Redist.csproj">
       <Project>{2be63d8b-350e-4edd-959c-4b7397984364}</Project>
       <Name>Scale_Redist</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
