@@ -103,6 +103,15 @@ namespace TweakScale
 					}
 				}
 			}
+			// PartModule implementing IRescalable
+			// note this is higher priority than IRescalable<T> because of FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/FARPartGeometry/GeometryPartModule.cs#L56
+			else if (typeof(PartModule).IsAssignableFrom(handlerType))
+			{
+				Tools.Log("Found a PartModule {0} that implements IRescalable: sceneFilter: {1}", handlerType, sceneFilter);
+
+				Func<PartModule, IRescalable> creator = partModule => (partModule as IRescalable);
+				TweakScaleHandlerDatabase.RegisterPartModuleHandler(handlerType, creator, sceneFilter);
+			}
 			// generic partmodule handler (IRescalable<T> where T is the PartModule type)
 			else if (rescalableInterfaceType.IsGenericType && typeof(IRescalable<>).IsAssignableFrom(rescalableInterfaceType.GetGenericTypeDefinition()))
 			{
@@ -135,14 +144,6 @@ namespace TweakScale
 
 				Tools.Log("Found a handler {0} for Parts: sceneFilter: {1}", handlerType, sceneFilter);
 				TweakScaleHandlerDatabase.RegisterPartHandler(creator, sceneFilter);
-			}
-			// PartModule implementing IRescalable
-			else if (typeof(PartModule).IsAssignableFrom(handlerType))
-			{
-				Tools.Log("Found a PartModule {0} that implements IRescalable: sceneFilter: {1}", handlerType, sceneFilter);
-
-				Func<PartModule, IRescalable> creator = partModule => (partModule as IRescalable);
-				TweakScaleHandlerDatabase.RegisterPartModuleHandler(handlerType, creator, sceneFilter);
 			}
 			// someone implemented IRescalable directly?
 			else
