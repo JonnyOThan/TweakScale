@@ -354,7 +354,7 @@ namespace TweakScale
 					{
 						attachNode.position = (attachNode.originalPosition *= currentScaleFactor);
 					}
-					if (part.srfAttachNode != null)
+					if (part.srfAttachNode != null && part.srfAttachNode.originalPosition != part.srfAttachNode.position)
 					{
 						part.srfAttachNode.position = (part.srfAttachNode.originalPosition *= currentScaleFactor);
 					}

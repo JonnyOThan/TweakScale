@@ -7,9 +7,9 @@
 - [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
 - [ ] scaling parts with struts attached between them doesn't work (but offset mode does)
 	note this also happens in TS/L
-- [ ] surface-attached parts saved with TS/L don't seem to be at the right locations
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] FSBuoyancy doesn't work correctly
+- [ ] fuel tanks are triggering mass/cost updates because they use the stock variant module
 
 # New Candy
 
@@ -227,6 +227,7 @@
 	this doesn't seem to be called anywhere
 - [x] Make stack_square treat resources properly (square instead of cube)
 - [x] FSFuelSwitch doesn't handle cost scaling correctly (probably because of ignoreResourcesForCost)
+- [x] surface-attached parts saved with TS/L don't seem to be at the right locations
 
 # Finished Verification
 
