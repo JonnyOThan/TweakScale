@@ -3,8 +3,6 @@
 - [ ] search github for other direct usages of old tweakscale fields
 	- InnerLock https://github.com/whale2/InnerLock/blob/a50f3ad65f7e0231dc8098fb9144cd1eabb56649/InnerLock/LockMechanism.cs#L410
 	- IR surface sampler: (never seems to be released?) https://github.com/DMagic1/IR-Surface-Sampler/blob/1565748adfe424b6a24d989550757326fa590550/ModuleIRSurfaceSampler.cs#L276
-	- FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L1491
-	- KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
 - [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
 
@@ -228,6 +226,9 @@
 	maybe? would other things break if these aren't set up early enough?
 - [x] node size resets when selecting tube variant on scaled part
 - [x] holding alt to force node attachment then releasing will leave symmetry parts as scaled but not the hovered part
+- [x] FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L1491
+- [x] KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
+	this doesn't seem to be called anywhere
 
 # Finished Verification
 

@@ -66,6 +66,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="HarmonyPatching\B9PartSwitch.cs" />
     <Compile Include="HarmonyPatching\BDArmory.cs" />
+    <Compile Include="HarmonyPatching\FerramAerospaceResearch.cs" />
     <Compile Include="HarmonyPatching\HarmonyPatching.cs" />
     <Compile Include="HarmonyPatching\SmokeScreen.cs" />
     <Compile Include="Hotkeys\Hotkey.cs" />

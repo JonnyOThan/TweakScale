@@ -254,9 +254,8 @@ namespace TweakScale
 				// TODO: do we need to consider the mass of kerbals here?
 				if (scaleMass)
 				{
-					float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
-					float massScale = Mathf.Pow(currentScaleFactor, massExponent);
-					float newMass = massScale * mass;
+					float dryMassScale = GetDryMassScale();
+					float newMass = dryMassScale * mass;
 					extraMass = newMass - mass;
 					part.UpdateMass();
 				}
@@ -1043,6 +1042,12 @@ namespace TweakScale
 
 			return x_infoBuilder.ToString();
 #endif
+		}
+
+		public float GetDryMassScale()
+		{
+			float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
+			return Mathf.Pow(currentScaleFactor, massExponent);
 		}
 
 		float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)
