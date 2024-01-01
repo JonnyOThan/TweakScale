@@ -25,17 +25,16 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
   * better switch-to-editor time
   * scaling a part is more responsive
   * less performance impact in flight scene
-  * probably better save/load performance, but I'd have to check
-	// TODO: maybe get some data to compare?
+  * better save/load performance
 * Less intrusive and more targeted validation system
 
 ## Robustness
 
 * fixed part attachments when variants or B9PartSwitch are involved
-* scaling engine effects works correctly (NYI)
-* scaling docking ports works as expected (NYI)
+* scaling engine effects works correctly
 * Craft files and saved games no longer break from changes in TweakScale configs
 * More resilient to problems caused by missing dependencies, problems with other mods, and incorrect installations
+* Copying part subtrees, subassemblies, load-merging all work properly
 // TODO: more here
 * Made it easier to add or customize TweakScale support for other mods
 

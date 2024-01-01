@@ -5,6 +5,12 @@
 	- IR surface sampler: (never seems to be released?) https://github.com/DMagic1/IR-Surface-Sampler/blob/1565748adfe424b6a24d989550757326fa590550/ModuleIRSurfaceSampler.cs#L276
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
 - [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
+- [ ] scaling parts with struts attached between them doesn't work (but offset mode does)
+	note this also happens in TS/L
+- [ ] surface-attached parts saved with TS/L don't seem to be at the right locations
+- [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
+- [ ] FSBuoyancy doesn't work correctly
+- [ ] Make stack_square treat resources properly (square instead of cube)
 
 # New Candy
 
@@ -15,17 +21,11 @@
 
 - [ ] check stock twin boar (since it's an engine + fuel tank)
 - [ ] check part recovery costs (with kspcf)
-- [ ] check cloning part subtrees
-- [ ] check FS buoyancy module
 - [ ] check parts that modify drag cubes
-- [ ] make sure subassemblies/merging works
-- [ ] make sure scaling command parts w/ kerbals works properly re: mass
 - [ ] find all TODOs and make sure there are issues tracked if necessary
 - [ ] Make sure switching a part's scale type doesn't break it
 		tsarbon's plane wing changed from stack to free, and it worked.
 		pretty sure this is mostly going to work, just need to test loading things that aren't IsFreeScale
-- [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
-- [ ] check scaling with struts and fuel lines connected to affected parts
 - [ ] make sure we can load crafts saved with TS/L
 	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
@@ -34,12 +34,10 @@
 - [ ] verify tech unlocks are correct (fuel tanks, etc)
 		historically, was this a separate mod?
 		maybe implement it by default, and have a difficulty option to disable it?
-- [ ] Check FSFuelSwitch interaction
 - [ ] Check KIS support
 - [ ] test with existing companion
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
 - [ ] do we need to respect min/max mass and cost?
-- [ ] overheard on discord: "When you copy and paste tweakscaled tanks from FFT their volume resets to normal, but their size does not"
 
 # Stretch
 
@@ -228,7 +226,6 @@
 - [x] FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L1491
 - [x] KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	this doesn't seem to be called anywhere
-- [x] check scale mode on non-supported parts
 
 # Finished Verification
 
@@ -237,3 +234,13 @@
 - [x] check undo after scaling
 - [x] audit squadexpansion parts to make sure node sizes are correct (adapters etc)
 - [x] audit and implement all stock parts
+- [x] check FS buoyancy module
+- [x] check scale mode on non-supported parts
+- [x] make sure subassemblies/merging works
+- [x] make sure scaling command parts w/ kerbals works properly re: mass
+- [x] check scaling with struts and fuel lines connected to affected parts
+- [x] overheard on discord: "When you copy and paste tweakscaled tanks from FFT their volume resets to normal, but their size does not"
+- [x] Check FSFuelSwitch interaction
+- [x] check cloning part subtrees
+- [x] how exactly does stack_square work with resources?  do they get squared or cubed?
+	they seem to get cubed - this is probably bad.
