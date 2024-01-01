@@ -10,7 +10,6 @@
 - [ ] surface-attached parts saved with TS/L don't seem to be at the right locations
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] FSBuoyancy doesn't work correctly
-- [ ] Make stack_square treat resources properly (square instead of cube)
 
 # New Candy
 
@@ -226,6 +225,7 @@
 - [x] FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L1491
 - [x] KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	this doesn't seem to be called anywhere
+- [x] Make stack_square treat resources properly (square instead of cube)
 
 # Finished Verification
 
