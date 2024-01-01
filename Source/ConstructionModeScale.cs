@@ -188,12 +188,19 @@ namespace TweakScale
 					if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
 					{
 						selectedPart = EditorLogic.fetch.pickPart(layerMask, Input.GetKey(KeyCode.LeftShift), pickRootIfFrozen: false);
-						if (EditorLogic.fetch.selectedPart != null)
+						if (selectedPart != null)
 						{
 							if (!EditorLogic.fetch.ship.Contains(selectedPart))
 							{
 								on_scaleSelect.GoToStateOnEvent = EditorLogic.fetch.st_place;
 								EditorLogic.fetch.on_partPicked.OnEvent();
+								return false;
+							}
+
+							if (!selectedPart.HasModuleImplementing<TweakScale>())
+							{
+								ScreenMessages.PostScreenMessage("Part does not support scaling", 1, ScreenMessageStyle.LOWER_CENTER);
+								selectedPart = null;
 								return false;
 							}
 

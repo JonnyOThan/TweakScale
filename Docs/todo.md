@@ -25,7 +25,6 @@
 		tsarbon's plane wing changed from stack to free, and it worked.
 		pretty sure this is mostly going to work, just need to test loading things that aren't IsFreeScale
 - [ ] how exactly does stack_square work with resources?  do they get squared or cubed?
-- [ ] check scale mode on non-supported parts
 - [ ] check scaling with struts and fuel lines connected to affected parts
 - [ ] make sure we can load crafts saved with TS/L
 	done some limited testing here, it's looking good
@@ -229,6 +228,7 @@
 - [x] FAR: https://github.com/ferram4/Ferram-Aerospace-Research/blob/787a30bc9deab0bde87591f0cc973ec3b0dd2de9/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L1491
 - [x] KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	this doesn't seem to be called anywhere
+- [x] check scale mode on non-supported parts
 
 # Finished Verification
 
