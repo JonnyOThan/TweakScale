@@ -80,8 +80,10 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public Vector3 defaultTransformScale = new Vector3(0f, 0f, 0f);
 
-		// TODO: this is not being used anymore, need to check the mods (FSFuelSwitch) that they are related to and see if they're still necessary
-		public bool ignoreResourcesForCost = false;
+		// The FSFuelSwitch module doesn't really handle the normal convention that a part prefab's cost *includes* the cost of any RESOURCEs in the part
+		// Some of the default Firespitter parts have RESOURCEs which effectively get ignored *except* that the stock game and everyone else assumes the prefab's cost includes their cost
+		// this terrible hack tells our dry cost scaling code to NOT subtract the prefab's RESOURCE costs, because FSFuelSwitch treats the prefab cost as the dry cost
+		public bool prefabCostIsDryCost = false;
 		
 		// This is used by ModuleFuelTanks (RealFuels / ModularFuelTanks).  That module will subtract the prefab's mass in their GetModuleMass function:
 		// https://github.com/KSP-RO/RealFuels/blob/920e4a6986534a51f06789d9bacc2556b23e8b6c/Source/Tanks/ModuleFuelTanks.cs#L828C119-L828C130
@@ -213,6 +215,7 @@ namespace TweakScale
 			"TweakScale",
 			"ModuleInventoryPart",
 			"ModuleFuelTanks",
+			"FSfuelSwitch", // the exponents config handles cost scales properly
 		}.ToHashSet();
 
 		internal bool CalculateCostAndMass()
@@ -240,9 +243,12 @@ namespace TweakScale
 				}
 
 				// the cost from the prefab includes the price of resources
-				foreach (var partResource in _prefabPart.Resources)
+				if (!prefabCostIsDryCost)
 				{
-					cost -= (float)partResource.maxAmount * partResource.info.unitCost;
+					foreach (var partResource in _prefabPart.Resources)
+					{
+						cost -= (float)partResource.maxAmount * partResource.info.unitCost;
+					}
 				}
 
 				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
@@ -251,7 +257,6 @@ namespace TweakScale
 
 				extraCost = newCost - cost;
 
-				// TODO: do we need to consider the mass of kerbals here?
 				if (scaleMass)
 				{
 					float dryMassScale = GetDryMassScale();
@@ -486,7 +491,9 @@ namespace TweakScale
 			}
 
 			if (part.Modules.Contains("FSfuelSwitch"))
-				ignoreResourcesForCost = true;
+			{
+				prefabCostIsDryCost = true;
+			}
 
 			// scale IVA overlay
 			if (HighLogic.LoadedSceneIsFlight && enabled && (part.internalModel != null))

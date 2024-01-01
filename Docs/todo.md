@@ -226,6 +226,7 @@
 - [x] KCT: https://github.com/ts826848/KCT/blob/5df691d8b410d6f1abd635a7e767f88557fcba0d/Kerbal_Construction_Time/KCT_Utilities.cs#L837
 	this doesn't seem to be called anywhere
 - [x] Make stack_square treat resources properly (square instead of cube)
+- [x] FSFuelSwitch doesn't handle cost scaling correctly (probably because of ignoreResourcesForCost)
 
 # Finished Verification
 
