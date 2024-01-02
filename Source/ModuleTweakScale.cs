@@ -776,6 +776,7 @@ namespace TweakScale
 			"ModuleInventoryPart",
 			"ModuleFuelTanks",
 			"FSfuelSwitch", // the exponents config handles cost scales properly
+			"InterstellarFuelSwitch", // implements IRescalable
 		}.ToHashSet();
 
 		static double GetPartResourceCapacityCosts(Part part)
