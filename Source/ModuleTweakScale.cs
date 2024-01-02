@@ -115,8 +115,6 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public float extraMass;
 
-		private bool needsCostAndMassUpdate = false;
-
 		/// <summary>
 		/// The ScaleType for this part.
 		/// </summary>
@@ -288,7 +286,25 @@ namespace TweakScale
 				extraMass = 0;
 			}
 
-			return oldExtraCost != extraCost || oldExtraMass != extraMass;
+			if (oldExtraCost != extraCost || oldExtraMass != extraMass)
+			{
+				// horrible hack to refresh the cost and mass fields in the stats...would anything else in here ever need to change maybe?  Should we just rebuild the whole thing?
+				if (IsRescaled && HighLogic.LoadedSceneIsEditor)
+				{
+					StringBuilder infoBuilder = GetInfoBuilder();
+					int cutoffIndex = guiStatsText.LastIndexOf("\nCost:");
+					if (cutoffIndex >= 0)
+					{
+						infoBuilder.Append(guiStatsText);
+						infoBuilder.Length = cutoffIndex;
+						FinalizeStats(infoBuilder);
+					}
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -471,7 +487,12 @@ namespace TweakScale
 				Fields[nameof(guiScaleValue)].OnValueModified += OnGuiScaleModified;
 				Fields[nameof(guiScaleNameIndex)].OnValueModified += OnGuiScaleModified;
 
-				needsCostAndMassUpdate = part.modules.modules.Any(module => (module is IPartCostModifier || module is IPartMassModifier) && !x_modulesToExcludeForDryStats.Contains(module.ClassName));
+				// TODO: there might be other IPartCostModifier and IPartMassModifier modules out there that we need to handle
+				foreach (var variantModule in part.modules.GetModules<ModulePartVariants>())
+				{
+					UI_VariantSelector uI_VariantSelector = variantModule.Fields["variantIndex"].uiControlEditor as UI_VariantSelector;
+					uI_VariantSelector.onFieldChanged += OnVariantChanged;
+				}
 			}
 			else if (!IsRescaled)
 			{
@@ -674,7 +695,7 @@ namespace TweakScale
 			return guiScale / guiDefaultScale;
 		}
 
-		bool UpdateLocalSetting(ref bool localSetting, bool globalSetting, BaseField field)
+		static bool UpdateLocalSetting(ref bool localSetting, bool globalSetting, BaseField field)
 		{
 			if (localSetting != globalSetting)
 			{
@@ -691,7 +712,8 @@ namespace TweakScale
 			if (HighLogic.LoadedSceneIsEditor)
 			{
 				// copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
-				// maybe have the TweakScaleEditorLogic have events we can register for, that just call UpdateItem as appropriate
+				// TODO: have the TweakScaleEditorLogic have events we can register for, that just call UpdateItem as appropriate
+				// or is there a way to only do this when the PAW is opened, to avoid a performance hit on high part count ships when changing the setting
 				UpdateLocalSetting(ref scaleChildren, TweakScaleEditorLogic.Instance.ScaleChildren, Fields[nameof(scaleChildren)]);
 				UpdateLocalSetting(ref matchNodeSize, TweakScaleEditorLogic.Instance.MatchNodeSize, Fields[nameof(matchNodeSize)]);
 				UpdateLocalSetting(ref showKeyBindings, TweakScaleEditorLogic.Instance.ShowKeyBinds, Fields[nameof(showKeyBindings)]);
@@ -699,28 +721,24 @@ namespace TweakScale
 				{
 					UpdateStatsVisibility();
 				}
-
-				if (needsCostAndMassUpdate && CalculateCostAndMass())
-				{
-					GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
-
-					// horrible hack to refresh the cost and mass fields in the stats...would anything else in here ever need to change maybe?  Should we just rebuild the whole thing?
-					if (IsRescaled)
-					{
-						StringBuilder infoBuilder = GetInfoBuilder();
-						infoBuilder.Append(guiStatsText);
-						int cutoffIndex = guiStatsText.LastIndexOf("\nCost:");
-						if (cutoffIndex >= 0)
-						{
-							infoBuilder.Length = cutoffIndex;
-						}
-						FinalizeStats(infoBuilder);
-					}
-				}
 			}
 			else
 			{
 				enabled = false; // stop calling this in flight
+			}
+		}
+
+		private void OnVariantChanged(BaseField field, object arg2)
+		{
+			bool anyChanged = CalculateCostAndMass();
+			foreach (var symmetryPart in part.symmetryCounterparts)
+			{
+				anyChanged = symmetryPart.FindModuleImplementing<TweakScale>().CalculateCostAndMass() || anyChanged;
+			}
+
+			if (anyChanged)
+			{
+				GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
 			}
 		}
 

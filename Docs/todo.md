@@ -9,12 +9,12 @@
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] FSBuoyancy doesn't work correctly
-- [ ] fuel tanks are triggering mass/cost updates because they use the stock variant module
 
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
 - [ ] stats window should show base cost/mass and final
+- [ ] maybe increase the max size for freescale type?  stack can go from 1.25m -> 20m, a factor of 16 increase, but freescale is limited to 400%
 
 # Verification (do this last, except to generate new bugs)
 
@@ -231,6 +231,7 @@
 - [x] FSFuelSwitch doesn't handle cost scaling correctly (probably because of ignoreResourcesForCost)
 - [x] surface-attached parts saved with TS/L don't seem to be at the right locations
 - [x] dry cost of stock tanks seems to be scaled wrong
+- [x] fuel tanks are triggering mass/cost updates because they use the stock variant module
 
 # Finished Verification
 

@@ -17,7 +17,8 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
   * Toggle for matching node sizes when attaching parts
   * Numeric entry (click #) is now supported
   * Option to display the effects of scaling on the part's stats
-* Scaling gizmo akin to offset and rotate
+* Scaling construction mode gizmo akin to offset and rotate (press 5 in the editor)
+* New "match node size" feature to auto-scale parts when attaching nodes to each other
 * All parts are supported with reasonable defaults unless they opt-out or match certain filters to trap known issues (AllTweak will still override this and enable *everything*)
 * Reduced dependencies to only ModuleManager and Harmony
 * Optimized for better performance
@@ -26,16 +27,15 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
   * scaling a part is more responsive
   * less performance impact in flight scene
   * better save/load performance
-* Less intrusive and more targeted validation system
+* Less intrusive and more targeted validation system (TweakScaleSafetyNet)
 
 ## Robustness
 
-* fixed part attachments when variants or B9PartSwitch are involved
-* scaling engine effects works correctly
+* fixed part attachments and mass/cost scaling when variants or B9PartSwitch are involved
+* scaling engine effects (stock, waterfall, realplume, smokescreen, etc) works correctly
 * Craft files and saved games no longer break from changes in TweakScale configs
 * More resilient to problems caused by missing dependencies, problems with other mods, and incorrect installations
 * Copying part subtrees, subassemblies, load-merging all work properly
-// TODO: more here
 * Made it easier to add or customize TweakScale support for other mods
 
 # Why not work to improve the current TweakScale?
