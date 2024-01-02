@@ -14,7 +14,6 @@
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
 - [ ] stats window should show base cost/mass and final
-- [ ] maybe increase the max size for freescale type?  stack can go from 1.25m -> 20m, a factor of 16 increase, but freescale is limited to 400%
 
 # Verification (do this last, except to generate new bugs)
 
@@ -232,6 +231,7 @@
 - [x] surface-attached parts saved with TS/L don't seem to be at the right locations
 - [x] dry cost of stock tanks seems to be scaled wrong
 - [x] fuel tanks are triggering mass/cost updates because they use the stock variant module
+- [x] maybe increase the max size for freescale type?  stack can go from 1.25m -> 20m, a factor of 16 increase, but freescale is limited to 400%
 
 # Finished Verification
 
