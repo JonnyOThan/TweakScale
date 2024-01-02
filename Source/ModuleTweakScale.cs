@@ -205,106 +205,34 @@ namespace TweakScale
 
 #endregion
 
-		// modules that understand scaling themselves (or more generally: apply modifiers that shouldn't be scaled) should be excluded from cost/mass adjustments
-		// TODO: can we turn these into Type objects in order to better support inheritance?
-		static HashSet<string> x_modulesToExcludeForDryStats = new string[]
+		new void Awake()
 		{
-			"ModuleB9PartSwitch",
-			"TweakScale",
-			"ModuleInventoryPart",
-			"ModuleFuelTanks",
-			"FSfuelSwitch", // the exponents config handles cost scales properly
-		}.ToHashSet();
+			base.Awake();
 
-		static double GetPartResourceCapacityCosts(Part part)
-		{
-			double result = 0;
-			foreach (var partResource in part.Resources)
+			// This has to be really early because other modules might try to shove data in here as they're initializing
+			if (part?.partInfo?.partPrefab != null)
 			{
-				result += partResource.maxAmount * partResource.info.unitCost;
+				var prefabModule = part.partInfo.partPrefab.FindModuleImplementing<TweakScale>();
+				unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>(prefabModule.unscaledAttachNodes);
+
+				// if the prefab did not have a srfAttachNode defined, then we need to add an entry for it
+				if (part.partInfo.partPrefab.srfAttachNode == null && part.srfAttachNode != null)
+				{
+					SetUnscaledAttachNode(part.srfAttachNode);
+				}
 			}
-			return result;
 		}
 
-		internal bool CalculateCostAndMass()
+		void OnDestroy()
 		{
-			float oldExtraCost = extraCost;
-			float oldExtraMass = extraMass;
-
-			if (IsRescaled)
-			{
-				double prefabDryCost = part.partInfo.cost;
-				float mass = part.partInfo.partPrefab.mass;
-
-				foreach (var module in part.modules.modules)
-				{
-					if (x_modulesToExcludeForDryStats.Contains(module.ClassName)) continue;
-
-					if (module is IPartCostModifier costModifier)
-					{
-						prefabDryCost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
-					}
-					if (module is IPartMassModifier massModifier)
-					{
-						mass += massModifier.GetModuleMass(part.partInfo.partPrefab.mass, ModifierStagingSituation.CURRENT);
-					}
-				}
-
-				// the cost from the prefab includes the price of resources
-				double prefabResourceCosts = GetPartResourceCapacityCosts(_prefabPart);
-				double currentResourceCosts = GetPartResourceCapacityCosts(part);
-				double resourceCostAdjustment = 0;
-				
-				if (!prefabCostIsDryCost)
-				{
-					prefabDryCost -= prefabResourceCosts;
-					resourceCostAdjustment = currentResourceCosts - prefabResourceCosts;
-				}
-
-				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
-				float costScale = Mathf.Pow(currentScaleFactor, costExponent);
-				double newCost = costScale * prefabDryCost;
-
-				// the stock code calculates the cost of the part using the prefab cost, and then subtracts the *current* resource capacity and adds the *current* resource prices
-				extraCost = (float)(newCost - prefabDryCost + resourceCostAdjustment);
-
-				if (scaleMass)
-				{
-					float dryMassScale = GetDryMassScale();
-					float newMass = dryMassScale * mass;
-					extraMass = newMass - mass;
-					part.UpdateMass();
-				}
-				else
-				{
-					extraMass = 0;
-				}
-			}
-			else
-			{
-				extraCost = 0;
-				extraMass = 0;
-			}
-
-			if (oldExtraCost != extraCost || oldExtraMass != extraMass)
-			{
-				// horrible hack to refresh the cost and mass fields in the stats...would anything else in here ever need to change maybe?  Should we just rebuild the whole thing?
-				if (IsRescaled && HighLogic.LoadedSceneIsEditor)
-				{
-					StringBuilder infoBuilder = GetInfoBuilder();
-					int cutoffIndex = guiStatsText.LastIndexOf("\nCost:");
-					if (cutoffIndex >= 0)
-					{
-						infoBuilder.Append(guiStatsText);
-						infoBuilder.Length = cutoffIndex;
-						FinalizeStats(infoBuilder);
-					}
-				}
-
-				return true;
-			}
-
-			return false;
+			Fields[nameof(scaleChildren)].OnValueModified -= OnScaleChildrenModified;
+			Fields[nameof(matchNodeSize)].OnValueModified -= OnMatchNodeSizeModified;
+			Fields[nameof(showStats)].OnValueModified -= OnShowStatsModified;
+			Fields[nameof(showKeyBindings)].OnValueModified -= OnShowKeyBindingsModified;
+			Fields[nameof(guiScaleValue)].OnValueModified -= OnGuiScaleModified;
+			Fields[nameof(guiScaleNameIndex)].OnValueModified -= OnGuiScaleModified;
+			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
+			_handlers = null; // probably not necessary, but we can help the garbage collector along maybe
 		}
 
 		/// <summary>
@@ -419,24 +347,6 @@ namespace TweakScale
 					SetUnscaledAttachNode(attachNode);
 				}
 				if (part.srfAttachNode != null)
-				{
-					SetUnscaledAttachNode(part.srfAttachNode);
-				}
-			}
-		}
-
-		new void Awake()
-		{
-			base.Awake();
-
-			// This has to be really early because other modules might try to shove data in here as they're initializing
-			if (part?.partInfo?.partPrefab != null)
-			{
-				var prefabModule = part.partInfo.partPrefab.FindModuleImplementing<TweakScale>();
-				unscaledAttachNodes = new Dictionary<string, AttachNodeInfo>(prefabModule.unscaledAttachNodes);
-
-				// if the prefab did not have a srfAttachNode defined, then we need to add an entry for it
-				if (part.partInfo.partPrefab.srfAttachNode == null && part.srfAttachNode != null)
 				{
 					SetUnscaledAttachNode(part.srfAttachNode);
 				}
@@ -584,164 +494,6 @@ namespace TweakScale
 			}
 		}
 
-		void OnDestroy()
-		{
-			Fields[nameof(scaleChildren)].OnValueModified -= OnScaleChildrenModified;
-			Fields[nameof(matchNodeSize)].OnValueModified -= OnMatchNodeSizeModified;
-			Fields[nameof(showStats)].OnValueModified -= OnShowStatsModified;
-			Fields[nameof(showKeyBindings)].OnValueModified-= OnShowKeyBindingsModified;
-			Fields[nameof(guiScaleValue)].OnValueModified -= OnGuiScaleModified;
-			Fields[nameof(guiScaleNameIndex)].OnValueModified -= OnGuiScaleModified;
-			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
-			_handlers = null; // probably not necessary, but we can help the garbage collector along maybe
-		}
-
-		public override void OnWillBeCopied(bool asSymCounterpart)
-		{
-			if (!asSymCounterpart) return;
-
-			if (EditorLogic.fetch.selectedPart == part)
-			{
-				TweakScaleEditorLogic.Instance.HandleMatchNodeSize(this);
-			}
-		}
-
-		private void OnGuiScaleModified(object arg1)
-		{
-			float newScaleFactor = GetScaleFactorFromGUI();
-			if (newScaleFactor != currentScaleFactor)
-			{
-				OnTweakScaleChanged(newScaleFactor);
-
-				GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
-
-				UpdatePartActionWindow(false);
-			}
-		}
-
-		private void OnScaleChildrenModified(object arg1)
-		{
-			TweakScaleEditorLogic.Instance.ScaleChildren.State = scaleChildren;
-		}
-
-		private void OnMatchNodeSizeModified(object arg1)
-		{
-			TweakScaleEditorLogic.Instance.MatchNodeSize.State = matchNodeSize;
-		}
-
-		private void OnShowStatsModified(object arg1)
-		{
-			TweakScaleEditorLogic.Instance.ShowStats = showStats;
-			UpdateStatsVisibility();
-		}
-
-		private void OnShowKeyBindingsModified(object arg1)
-		{
-			TweakScaleEditorLogic.Instance.ShowKeyBinds = showKeyBindings;
-		}
-
-		/// <summary>
-		/// Scale has changed!
-		/// </summary>
-		private void OnTweakScaleChanged(float newScaleFactor)
-		{
-			// TODO: I really hate the concept of the relative scale factor.  It will introduce floating point errors when used repeatedly
-			// everything should be computed from the absolute scale and the prefab
-			// this might not be possible in cases where we can't access the original value from the prefab
-			// (attach nodes are a good example of this, because WHICH attachnode should be considered the "default" can change, and I had to build a whole system to solve it)
-			// resources seems like another case - other mods can change what resources are in the part, so you'd need to find some way to get the baseline amounts
-			float relativeScaleFactor = newScaleFactor / currentScaleFactor;
-			currentScaleFactor = newScaleFactor;
-
-			if (scaleChildren && relativeScaleFactor != 1)
-			{
-				ChainScale(relativeScaleFactor);
-			}
-
-			StringBuilder infoBuilder = GetInfoBuilder();
-
-			ScalePart(relativeScaleFactor);
-			CallHandlers(relativeScaleFactor, infoBuilder);
-			CalculateCostAndMass();
-			FinalizeStats(infoBuilder);
-		}
-
-		void FinalizeStats(StringBuilder infoBuilder)
-		{
-			if (IsRescaled && infoBuilder != null)
-			{
-				infoBuilder.AppendFormat("\nCost: {0:+0;-#}", extraCost);
-				infoBuilder.AppendFormat("\nMass: {0:+0.0##;-0.0##}", extraMass);
-
-				SetStatsLabel(infoBuilder.ToString());
-			}
-			else
-			{
-				SetStatsLabel("");
-			}
-		}
-
-		void OnEditorShipModified(ShipConstruct ship)
-		{
-			if (part.CrewCapacity < _prefabPart.CrewCapacity)
-			{
-				CrewManifestHandler.UpdateCrewManifest(part);
-			}
-		}
-
-		float GetScaleFactorFromGUI()
-		{
-			float guiScale = isFreeScale ? guiScaleValue : ScaleFactors[guiScaleNameIndex];
-			return guiScale / guiDefaultScale;
-		}
-
-		static bool UpdateLocalSetting(ref bool localSetting, bool globalSetting, BaseField field)
-		{
-			if (localSetting != globalSetting)
-			{
-				localSetting = globalSetting;
-				field?.uiControlEditor?.partActionItem?.UpdateItem();
-				return true;
-			}
-
-			return false;
-		}
-
-		void Update()
-		{
-			if (HighLogic.LoadedSceneIsEditor)
-			{
-				// copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
-				// TODO: have the TweakScaleEditorLogic have events we can register for, that just call UpdateItem as appropriate
-				// or is there a way to only do this when the PAW is opened, to avoid a performance hit on high part count ships when changing the setting
-				UpdateLocalSetting(ref scaleChildren, TweakScaleEditorLogic.Instance.ScaleChildren, Fields[nameof(scaleChildren)]);
-				UpdateLocalSetting(ref matchNodeSize, TweakScaleEditorLogic.Instance.MatchNodeSize, Fields[nameof(matchNodeSize)]);
-				UpdateLocalSetting(ref showKeyBindings, TweakScaleEditorLogic.Instance.ShowKeyBinds, Fields[nameof(showKeyBindings)]);
-				if (UpdateLocalSetting(ref showStats, TweakScaleEditorLogic.Instance.ShowStats, Fields[nameof(showStats)]))
-				{
-					UpdateStatsVisibility();
-				}
-			}
-			else
-			{
-				enabled = false; // stop calling this in flight
-			}
-		}
-
-		private void OnVariantChanged(BaseField field, object arg2)
-		{
-			bool anyChanged = CalculateCostAndMass();
-			foreach (var symmetryPart in part.symmetryCounterparts)
-			{
-				anyChanged = symmetryPart.FindModuleImplementing<TweakScale>().CalculateCostAndMass() || anyChanged;
-			}
-
-			if (anyChanged)
-			{
-				GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
-			}
-		}
-
 		public override void OnUpdate()
 		{
 			// note: OnUpdate is only called in flight, not the editor
@@ -762,6 +514,43 @@ namespace TweakScale
 			}
 		}
 
+#region editor event handlers
+
+		public override void OnWillBeCopied(bool asSymCounterpart)
+		{
+			if (!asSymCounterpart) return;
+
+			if (EditorLogic.fetch.selectedPart == part)
+			{
+				TweakScaleEditorLogic.Instance.HandleMatchNodeSize(this);
+			}
+		}
+
+		void OnEditorShipModified(ShipConstruct ship)
+		{
+			if (part.CrewCapacity < _prefabPart.CrewCapacity)
+			{
+				CrewManifestHandler.UpdateCrewManifest(part);
+			}
+		}
+
+		private void OnVariantChanged(BaseField field, object arg2)
+		{
+			bool anyChanged = CalculateCostAndMass();
+			foreach (var symmetryPart in part.symmetryCounterparts)
+			{
+				anyChanged = symmetryPart.FindModuleImplementing<TweakScale>().CalculateCostAndMass() || anyChanged;
+			}
+
+			if (anyChanged)
+			{
+				GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+			}
+		}
+#endregion
+
+#region Stats handling
+
 		static StringBuilder x_infoBuilder = new StringBuilder();
 		static StringBuilder GetInfoBuilder()
 		{
@@ -772,48 +561,6 @@ namespace TweakScale
 			}
 
 			return null;
-		}
-
-		void CallHandlers(float relativeScaleFactor, StringBuilder infoBuilder)
-		{
-			ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
-
-			// Recording the ordering here for posterity:
-			// TSGenericUpdater is first (applies exponents to everything)
-			// then UpdateCrewManifest
-			// then UpdateAntennaPowerDisplay
-			// then UpdateMftModule
-			// then TestFlightCore
-			// then part events
-			// then all other updaters except TSGenericUpdater
-			// it's not exactly clear which of these care about ordering other than the TSGenericUpdater goes first
-
-			// First apply the exponents
-			float oldMass = part.mass;
-			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload, infoBuilder);
-			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
-
-			// send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the handler list empty for many parts
-			var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
-			data.Set<float>("factorAbsolute", notificationPayload.absolute.linear);
-			data.Set<float>("factorRelative", notificationPayload.relative.linear);
-			part.SendEvent("OnPartScaleChanged", data, 0);
-
-			if (_handlers != null)
-			{
-				foreach (var handler in _handlers)
-				{
-					try
-					{
-						// TODO: how to get string info out of this?
-						handler.OnRescale(notificationPayload);
-					}
-					catch (Exception ex)
-					{
-						Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
-					}
-				}
-			}
 		}
 
 		private void SetStatsLabel(string text)
@@ -858,6 +605,267 @@ namespace TweakScale
 					//UnityEngine.UI.LayoutRebuilder.MarkLayoutForRebuild(tweakScaleGroup.transform as RectTransform);
 				}
 			}
+		}
+
+		void FinalizeStats(StringBuilder infoBuilder)
+		{
+			if (IsRescaled && infoBuilder != null)
+			{
+				infoBuilder.AppendFormat("\nCost: {0:+0;-#}", extraCost);
+				infoBuilder.AppendFormat("\nMass: {0:+0.0##;-0.0##}", extraMass);
+
+				SetStatsLabel(infoBuilder.ToString());
+			}
+			else
+			{
+				SetStatsLabel("");
+			}
+		}
+		#endregion
+
+#region editor options
+		private void OnScaleChildrenModified(object arg1)
+		{
+			TweakScaleEditorLogic.Instance.ScaleChildren.State = scaleChildren;
+		}
+
+		private void OnMatchNodeSizeModified(object arg1)
+		{
+			TweakScaleEditorLogic.Instance.MatchNodeSize.State = matchNodeSize;
+		}
+
+		private void OnShowStatsModified(object arg1)
+		{
+			TweakScaleEditorLogic.Instance.ShowStats = showStats;
+			UpdateStatsVisibility();
+		}
+
+		private void OnShowKeyBindingsModified(object arg1)
+		{
+			TweakScaleEditorLogic.Instance.ShowKeyBinds = showKeyBindings;
+		}
+
+		static bool UpdateLocalSetting(ref bool localSetting, bool globalSetting, BaseField field)
+		{
+			if (localSetting != globalSetting)
+			{
+				localSetting = globalSetting;
+				field?.uiControlEditor?.partActionItem?.UpdateItem();
+				return true;
+			}
+
+			return false;
+		}
+
+		void Update()
+		{
+			if (HighLogic.LoadedSceneIsEditor)
+			{
+				// copy from the global setting into our KSPField (might want to do this to all TweakScale modules when changing the setting, so we can get rid of the update function?)
+				// TODO: have the TweakScaleEditorLogic have events we can register for, that just call UpdateItem as appropriate
+				// or is there a way to only do this when the PAW is opened, to avoid a performance hit on high part count ships when changing the setting
+				UpdateLocalSetting(ref scaleChildren, TweakScaleEditorLogic.Instance.ScaleChildren, Fields[nameof(scaleChildren)]);
+				UpdateLocalSetting(ref matchNodeSize, TweakScaleEditorLogic.Instance.MatchNodeSize, Fields[nameof(matchNodeSize)]);
+				UpdateLocalSetting(ref showKeyBindings, TweakScaleEditorLogic.Instance.ShowKeyBinds, Fields[nameof(showKeyBindings)]);
+				if (UpdateLocalSetting(ref showStats, TweakScaleEditorLogic.Instance.ShowStats, Fields[nameof(showStats)]))
+				{
+					UpdateStatsVisibility();
+				}
+			}
+			else
+			{
+				enabled = false; // stop calling this in flight
+			}
+		}
+#endregion editor options
+
+#region scaling logic
+		private void OnGuiScaleModified(object arg1)
+		{
+			float newScaleFactor = GetScaleFactorFromGUI();
+			if (newScaleFactor != currentScaleFactor)
+			{
+				OnTweakScaleChanged(newScaleFactor);
+
+				GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
+
+				UpdatePartActionWindow(false);
+			}
+		}
+
+		float GetScaleFactorFromGUI()
+		{
+			float guiScale = isFreeScale ? guiScaleValue : ScaleFactors[guiScaleNameIndex];
+			return guiScale / guiDefaultScale;
+		}
+
+		/// <summary>
+		/// Scale has changed!
+		/// </summary>
+		private void OnTweakScaleChanged(float newScaleFactor)
+		{
+			// TODO: I really hate the concept of the relative scale factor.  It will introduce floating point errors when used repeatedly
+			// everything should be computed from the absolute scale and the prefab
+			// this might not be possible in cases where we can't access the original value from the prefab
+			// (attach nodes are a good example of this, because WHICH attachnode should be considered the "default" can change, and I had to build a whole system to solve it)
+			// resources seems like another case - other mods can change what resources are in the part, so you'd need to find some way to get the baseline amounts
+			float relativeScaleFactor = newScaleFactor / currentScaleFactor;
+			currentScaleFactor = newScaleFactor;
+
+			if (scaleChildren && relativeScaleFactor != 1)
+			{
+				ChainScale(relativeScaleFactor);
+			}
+
+			StringBuilder infoBuilder = GetInfoBuilder();
+
+			ScalePart(relativeScaleFactor);
+			CallHandlers(relativeScaleFactor, infoBuilder);
+			CalculateCostAndMass();
+			FinalizeStats(infoBuilder);
+		}
+
+		void CallHandlers(float relativeScaleFactor, StringBuilder infoBuilder)
+		{
+			ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
+
+			// Recording the ordering here for posterity:
+			// TSGenericUpdater is first (applies exponents to everything)
+			// then UpdateCrewManifest
+			// then UpdateAntennaPowerDisplay
+			// then UpdateMftModule
+			// then TestFlightCore
+			// then part events
+			// then all other updaters except TSGenericUpdater
+			// it's not exactly clear which of these care about ordering other than the TSGenericUpdater goes first
+
+			// First apply the exponents
+			float oldMass = part.mass;
+			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload, infoBuilder);
+			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
+
+			// send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the handler list empty for many parts
+			var data = new BaseEventDetails(BaseEventDetails.Sender.USER);
+			data.Set<float>("factorAbsolute", notificationPayload.absolute.linear);
+			data.Set<float>("factorRelative", notificationPayload.relative.linear);
+			part.SendEvent("OnPartScaleChanged", data, 0);
+
+			if (_handlers != null)
+			{
+				foreach (var handler in _handlers)
+				{
+					try
+					{
+						// TODO: how to get string info out of this?
+						handler.OnRescale(notificationPayload);
+					}
+					catch (Exception ex)
+					{
+						Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
+					}
+				}
+			}
+		}
+
+		// modules that understand scaling themselves (or more generally: apply modifiers that shouldn't be scaled) should be excluded from cost/mass adjustments
+		// TODO: can we turn these into Type objects in order to better support inheritance?
+		static HashSet<string> x_modulesToExcludeForDryStats = new string[]
+		{
+			"ModuleB9PartSwitch",
+			"TweakScale",
+			"ModuleInventoryPart",
+			"ModuleFuelTanks",
+			"FSfuelSwitch", // the exponents config handles cost scales properly
+		}.ToHashSet();
+
+		static double GetPartResourceCapacityCosts(Part part)
+		{
+			double result = 0;
+			foreach (var partResource in part.Resources)
+			{
+				result += partResource.maxAmount * partResource.info.unitCost;
+			}
+			return result;
+		}
+
+		internal bool CalculateCostAndMass()
+		{
+			float oldExtraCost = extraCost;
+			float oldExtraMass = extraMass;
+
+			if (IsRescaled)
+			{
+				double prefabDryCost = part.partInfo.cost;
+				float mass = part.partInfo.partPrefab.mass;
+
+				foreach (var module in part.modules.modules)
+				{
+					if (x_modulesToExcludeForDryStats.Contains(module.ClassName)) continue;
+
+					if (module is IPartCostModifier costModifier)
+					{
+						prefabDryCost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
+					}
+					if (module is IPartMassModifier massModifier)
+					{
+						mass += massModifier.GetModuleMass(part.partInfo.partPrefab.mass, ModifierStagingSituation.CURRENT);
+					}
+				}
+
+				// the cost from the prefab includes the price of resources
+				double prefabResourceCosts = GetPartResourceCapacityCosts(_prefabPart);
+				double currentResourceCosts = GetPartResourceCapacityCosts(part);
+				double resourceCostAdjustment = 0;
+
+				if (!prefabCostIsDryCost)
+				{
+					prefabDryCost -= prefabResourceCosts;
+					resourceCostAdjustment = currentResourceCosts - prefabResourceCosts;
+				}
+
+				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
+				float costScale = Mathf.Pow(currentScaleFactor, costExponent);
+				double newCost = costScale * prefabDryCost;
+
+				// the stock code calculates the cost of the part using the prefab cost, and then subtracts the *current* resource capacity and adds the *current* resource prices
+				extraCost = (float)(newCost - prefabDryCost + resourceCostAdjustment);
+
+				if (scaleMass)
+				{
+					float dryMassScale = GetDryMassScale();
+					float newMass = dryMassScale * mass;
+					extraMass = newMass - mass;
+					part.UpdateMass();
+				}
+				else
+				{
+					extraMass = 0;
+				}
+			}
+			else
+			{
+				extraCost = 0;
+				extraMass = 0;
+			}
+
+			if (oldExtraCost != extraCost || oldExtraMass != extraMass)
+			{
+				// horrible hack to refresh the cost and mass fields in the stats...would anything else in here ever need to change maybe?  Should we just rebuild the whole thing?
+				if (IsRescaled && HighLogic.LoadedSceneIsEditor)
+				{
+					StringBuilder infoBuilder = GetInfoBuilder();
+					int cutoffIndex = guiStatsText.LastIndexOf("\nCost:");
+					if (cutoffIndex >= 0)
+					{
+						infoBuilder.Append(guiStatsText);
+						infoBuilder.Length = cutoffIndex;
+					}
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 
 		private void ScalePart(float relativeScaleFactor)
@@ -1010,6 +1018,8 @@ namespace TweakScale
 				b.SetScaleFactor(b.currentScaleFactor * relativeScaleFactor);
 			}
 		}
+
+#endregion scaling logic
 
 		private bool CheckIntegrity()
 		{
