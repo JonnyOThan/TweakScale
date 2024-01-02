@@ -37,6 +37,8 @@
 - [ ] test with existing companion
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
 - [ ] do we need to respect min/max mass and cost?
+- [ ] check interstellarfuelswitch
+- [ ] check simple fuel switch
 
 # Stretch
 
@@ -228,6 +230,7 @@
 - [x] Make stack_square treat resources properly (square instead of cube)
 - [x] FSFuelSwitch doesn't handle cost scaling correctly (probably because of ignoreResourcesForCost)
 - [x] surface-attached parts saved with TS/L don't seem to be at the right locations
+- [x] dry cost of stock tanks seems to be scaled wrong
 
 # Finished Verification
 

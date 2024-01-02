@@ -218,6 +218,16 @@ namespace TweakScale
 			"FSfuelSwitch", // the exponents config handles cost scales properly
 		}.ToHashSet();
 
+		static double GetPartResourceCapacityCosts(Part part)
+		{
+			double result = 0;
+			foreach (var partResource in part.Resources)
+			{
+				result += partResource.maxAmount * partResource.info.unitCost;
+			}
+			return result;
+		}
+
 		internal bool CalculateCostAndMass()
 		{
 			float oldExtraCost = extraCost;
@@ -225,7 +235,7 @@ namespace TweakScale
 
 			if (IsRescaled)
 			{
-				float cost = part.partInfo.cost;
+				double prefabDryCost = part.partInfo.cost;
 				float mass = part.partInfo.partPrefab.mass;
 
 				foreach (var module in part.modules.modules)
@@ -234,7 +244,7 @@ namespace TweakScale
 
 					if (module is IPartCostModifier costModifier)
 					{
-						cost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
+						prefabDryCost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
 					}
 					if (module is IPartMassModifier massModifier)
 					{
@@ -243,19 +253,22 @@ namespace TweakScale
 				}
 
 				// the cost from the prefab includes the price of resources
+				double prefabResourceCosts = GetPartResourceCapacityCosts(_prefabPart);
+				double currentResourceCosts = GetPartResourceCapacityCosts(part);
+				double resourceCostAdjustment = 0;
+				
 				if (!prefabCostIsDryCost)
 				{
-					foreach (var partResource in _prefabPart.Resources)
-					{
-						cost -= (float)partResource.maxAmount * partResource.info.unitCost;
-					}
+					prefabDryCost -= prefabResourceCosts;
+					resourceCostAdjustment = currentResourceCosts - prefabResourceCosts;
 				}
 
 				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
 				float costScale = Mathf.Pow(currentScaleFactor, costExponent);
-				float newCost = costScale * cost;
+				double newCost = costScale * prefabDryCost;
 
-				extraCost = newCost - cost;
+				// the stock code calculates the cost of the part using the prefab cost, and then subtracts the *current* resource capacity and adds the *current* resource prices
+				extraCost = (float)(newCost - prefabDryCost + resourceCostAdjustment);
 
 				if (scaleMass)
 				{
