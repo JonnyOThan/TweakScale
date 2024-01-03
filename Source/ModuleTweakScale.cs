@@ -870,7 +870,7 @@ namespace TweakScale
 				double resourceCapacityCost = GetPartResourceCapacityCost(part);
 				double resourceCostAdjustment = 0;
 
-				var simpleFuelSwitch = part.modules["ModuleSimpleFuelSwitch"];
+				var simpleFuelSwitch = part.modules.GetModule("ModuleSimpleFuelSwitch");
 				if (simpleFuelSwitch != null)
 				{
 					// SimpleFuelSwitch provides a cost adjustment to keep the dry cost of the tank the same regardless of which fuel is selected

@@ -37,6 +37,12 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
 * More resilient to problems caused by missing dependencies, problems with other mods, and incorrect installations
 * Copying part subtrees, subassemblies, load-merging all work properly
 * Made it easier to add or customize TweakScale support for other mods
+* Compatible with many fuel-switching mods:
+  * B9PartSwitch
+  * ModularFuelTanks
+  * InterstellarFuelSwitch
+  * SimpleFuelSwitch
+  * Firespitter
 
 # Why not work to improve the current TweakScale?
 
