@@ -50,6 +50,15 @@ namespace TweakScale
 
 		private const string ExponentConfigName = "TWEAKSCALEEXPONENTS";
 
+		public ScaleExponents GetChild(string name)
+		{
+			if (_children.TryGetValue(name, out var child))
+			{
+				return child;
+			}
+			return null;
+		}
+
 		private static bool IsExponentBlock(ConfigNode node)
 		{
 			return node.name == ExponentConfigName || node.name == "MODULE";

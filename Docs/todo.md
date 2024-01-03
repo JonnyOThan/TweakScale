@@ -9,8 +9,9 @@
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] FSBuoyancy doesn't work correctly
-- [ ] SimpleFuelSwitch: changing tank type when scaled doesn't adjust resources properly
 - [ ] added cost is misleading because of accounting for resource differences
+- [ ] simplefuelswitch resource capacity is too high on launch
+- [ ] simplefuelswitch doesn't update stats when changing tank type on rescaled part
 
 # New Candy
 
@@ -232,7 +233,8 @@
 - [x] dry cost of stock tanks seems to be scaled wrong
 - [x] fuel tanks are triggering mass/cost updates because they use the stock variant module
 - [x] maybe increase the max size for freescale type?  stack can go from 1.25m -> 20m, a factor of 16 increase, but freescale is limited to 400%
-- [ ] SimpleFuelSwitch cost scales are wrong
+- [x] SimpleFuelSwitch cost scales are wrong
+- [x] SimpleFuelSwitch: changing tank type when scaled doesn't adjust resources properly
 
 # Finished Verification
 
@@ -254,3 +256,12 @@
 - [x] check simple fuel switch
 - [x] check interstellarfuelswitch
 		weird behavior, but at least it matches TS/L...
+
+
+# Fuel Switch mods
+
+- CryoTanks (B9PS)
+- Firespitter
+- InterstellarFuelSwitch
+- SimpleFuelSwitch
+- ModularFuelTanks

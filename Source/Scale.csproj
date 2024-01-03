@@ -68,6 +68,7 @@
     <Compile Include="HarmonyPatching\BDArmory.cs" />
     <Compile Include="HarmonyPatching\FerramAerospaceResearch.cs" />
     <Compile Include="HarmonyPatching\HarmonyPatching.cs" />
+    <Compile Include="HarmonyPatching\SimpleFuelSwitch.cs" />
     <Compile Include="HarmonyPatching\SmokeScreen.cs" />
     <Compile Include="Hotkeys\Hotkey.cs" />
     <Compile Include="Hotkeys\HotkeyAble.cs" />
