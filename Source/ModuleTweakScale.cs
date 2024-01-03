@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TweakScale
 {
-	public class TweakScale : PartModule, IPartCostModifier, IPartMassModifier
+	public class TweakScale : PartModule, IPartCostModifier, IPartMassModifier, IModuleInfo
 	{
 		const string guiGroupName = "TweakScale";
 		const string guiGroupDisplayName = "TweakScale";
@@ -79,11 +79,6 @@ namespace TweakScale
 		/// </summary>
 		[KSPField(isPersistant = true)]
 		public Vector3 defaultTransformScale = new Vector3(0f, 0f, 0f);
-
-		// The FSFuelSwitch module doesn't really handle the normal convention that a part prefab's cost *includes* the cost of any RESOURCEs in the part
-		// Some of the default Firespitter parts have RESOURCEs which effectively get ignored *except* that the stock game and everyone else assumes the prefab's cost includes their cost
-		// this terrible hack tells our dry cost scaling code to NOT subtract the prefab's RESOURCE costs, because FSFuelSwitch treats the prefab cost as the dry cost
-		public bool prefabCostIsDryCost = false;
 		
 		// This is used by ModuleFuelTanks (RealFuels / ModularFuelTanks).  That module will subtract the prefab's mass in their GetModuleMass function:
 		// https://github.com/KSP-RO/RealFuels/blob/920e4a6986534a51f06789d9bacc2556b23e8b6c/Source/Tanks/ModuleFuelTanks.cs#L828C119-L828C130
@@ -114,6 +109,9 @@ namespace TweakScale
 		/// </summary>
 		[KSPField(isPersistant = true)]
 		public float extraMass;
+
+		[SerializeField] double prefabDryCost;
+		[SerializeField] double prefabResourceCost;
 
 		/// <summary>
 		/// The ScaleType for this part.
@@ -335,12 +333,9 @@ namespace TweakScale
 			node.AddValue("currentScale", guiScaleValue);
 		}
 
-		// This is a hacky way to do some "final" loading - the part compiler will deactivate the part when it's nearly finished
-		// and that will end up here.  Note there are still a few fields that haven't been set yet
-		void OnDisable()
+		void OnFinalizeLoad()
 		{
-			// part is null for the version of this that gets called when rendering the part icon.  Just skip.
-			if (HighLogic.LoadedScene == GameScenes.LOADING && part != null)
+			// grab the unscaled state of attach nodes
 			{
 				foreach (var attachNode in part.attachNodes)
 				{
@@ -349,6 +344,55 @@ namespace TweakScale
 				if (part.srfAttachNode != null)
 				{
 					SetUnscaledAttachNode(part.srfAttachNode);
+				}
+			}
+
+			// Determine what the prefab dry cost is.  The cost from the prefab includes the price of resources, but other mods can mess with this....
+			{
+				prefabResourceCost = GetPartResourceCurrentCost(part);
+
+				// if SimpleFuelSwitch is managing the resources, we need to figure out the right dry cost
+				// SimpleFuelSwitch will leave the prefab cost as it would be with full resources, but also removes the RESOURCE blocks
+				var simpleFuelSwitch = part.modules.GetModule("ModuleSimpleFuelSwitch");
+				if (simpleFuelSwitch != null)
+				{
+					bool isDefault = false;
+					var switchableResourceNode = _prefabPart.partInfo.partConfig.nodes.nodes.Where(
+						n => n.name == "MODULE" &&
+						n.GetValue("name") == "ModuleSwitchableResources" &&
+						n.TryGetValue("isDefault", ref isDefault) && isDefault)
+						.FirstOrDefault();
+
+					if (switchableResourceNode != null)
+					{
+						foreach (var node in switchableResourceNode.nodes.nodes)
+						{
+							if (node.name != "RESOURCE") continue;
+
+							string resourceName = null;
+							double amount = 0;
+
+							if (node.TryGetValue("name", ref resourceName) && node.TryGetValue("amount", ref amount))
+							{
+								var resourceDefinition = PartResourceLibrary.Instance.GetDefinition(resourceName);
+								if (resourceDefinition != null)
+								{
+									prefabResourceCost += amount * resourceDefinition.unitCost;
+								}
+							}
+						}
+					}
+				}
+
+				// The FSFuelSwitch module doesn't really handle the normal convention that a part prefab's cost *includes* the cost of any RESOURCEs in the part
+				// Some of the default Firespitter parts have RESOURCE blocks which effectively get ignored *except* that the stock game and everyone else assumes the prefab's cost includes their cost
+				if (part.Modules.Contains("FSfuelSwitch"))
+				{
+					prefabDryCost = part.partInfo.cost;
+				}
+				else
+				{
+					prefabDryCost = part.partInfo.cost - prefabResourceCost;
 				}
 			}
 		}
@@ -423,7 +467,7 @@ namespace TweakScale
 				ScaleAttachNodeSize(part.srfAttachNode); // does the size of the srfAttachNode even matter?
 				ScaleDragCubes(currentScaleFactor);
 				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
-				// this may not be the right place to do this, because other modules might not be fully set up yet.
+				// TODO: this may not be the right place to do this, because other modules might not be fully set up yet...should this move to OnStartFinished?
 				CalculateCostAndMass();
 				FinalizeStats(infoBuilder);
 			}
@@ -432,11 +476,6 @@ namespace TweakScale
 				extraCost = 0;
 				extraMass = 0;
 				SetStatsLabel("");
-			}
-
-			if (part.Modules.Contains("FSfuelSwitch"))
-			{
-				prefabCostIsDryCost = true;
 			}
 
 			// scale IVA overlay
@@ -780,12 +819,24 @@ namespace TweakScale
 			"ModuleSimpleFuelSwitch",
 		}.ToHashSet();
 
-		static double GetPartResourceCapacityCosts(Part part)
+		// what would the resources cost when completely full? (uses PartResource.maxAmount)
+		static double GetPartResourceCapacityCost(Part part)
 		{
 			double result = 0;
 			foreach (var partResource in part.Resources)
 			{
 				result += partResource.maxAmount * partResource.info.unitCost;
+			}
+			return result;
+		}
+
+		// what does the *current* amount of resources cost? (uses PartResource.amount)
+		static double GetPartResourceCurrentCost(Part part)
+		{
+			double result = 0;
+			foreach (var partResource in part.Resources)
+			{
+				result += partResource.amount * partResource.info.unitCost;
 			}
 			return result;
 		}
@@ -797,16 +848,18 @@ namespace TweakScale
 
 			if (IsRescaled)
 			{
-				double prefabDryCost = part.partInfo.cost;
+				double adjustedPrefabDryCost = prefabDryCost;
 				float mass = part.partInfo.partPrefab.mass;
 
+				// stuff like ModulePartvariants can effectively change the dry cost and mass
 				foreach (var module in part.modules.modules)
 				{
 					if (x_modulesToExcludeForDryStats.Contains(module.ClassName)) continue;
 
 					if (module is IPartCostModifier costModifier)
 					{
-						prefabDryCost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
+						// should this use prefabDryCost or the prefrab cost (i.e. including resources)?  I don't think I've come across a module that uses it, so it might not matter
+						adjustedPrefabDryCost += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
 					}
 					if (module is IPartMassModifier massModifier)
 					{
@@ -814,63 +867,29 @@ namespace TweakScale
 					}
 				}
 
-				// the cost from the prefab includes the price of resources
-				double prefabResourceCosts = GetPartResourceCapacityCosts(_prefabPart);
-				double currentResourceCosts = GetPartResourceCapacityCosts(part);
+				double resourceCapacityCost = GetPartResourceCapacityCost(part);
 				double resourceCostAdjustment = 0;
 
-				// if SimpleFuelSwitch is managing the resources, we need to figure out the right dry cost
-				// SimpleFuelSwitch will leave the prefab cost as it would be with full resources, but also removes the RESOURCE blocks
-				// TODO: cache prefabResourceCosts once on load
 				var simpleFuelSwitch = part.modules["ModuleSimpleFuelSwitch"];
 				if (simpleFuelSwitch != null)
 				{
-					bool isDefault = false;
-					var switchableResourceNode = _prefabPart.partInfo.partConfig.nodes.nodes.Where(
-						n => n.name == "MODULE" &&
-						n.GetValue("name") == "ModuleSwitchableResources" &&
-						n.TryGetValue("isDefault", ref isDefault) && isDefault)
-						.FirstOrDefault();
-
-					if (switchableResourceNode != null)
-					{
-						foreach (var node in switchableResourceNode.nodes.nodes)
-						{
-							if (node.name != "RESOURCE") continue;
-
-							string resourceName = null;
-							double amount = 0;
-
-							if (node.TryGetValue("name", ref resourceName) && node.TryGetValue("amount", ref amount))
-							{
-								var resourceDefinition = PartResourceLibrary.Instance.GetDefinition(resourceName);
-								if (resourceDefinition != null)
-								{
-									prefabResourceCosts += amount * resourceDefinition.unitCost;
-								}
-							}
-						}
-					}
-
 					// SimpleFuelSwitch provides a cost adjustment to keep the dry cost of the tank the same regardless of which fuel is selected
 					// it does this by adding currentResourceCost - defaultResourceCost, which is the same logic we use for resourceCostAdjustment below
 					// however it uses the prefab resource capacity, not the scaled one.  So we need to offset our cost adjustment to cancel out the one from SFS.
+					// TODO: could this be avoided if we had a custom scaling handler for SFS that goes and pokes its values?  We might need that anyway for changing the fuel type on scaled tanks.
 					// https://github.com/KSPSnark/SimpleFuelSwitch/blob/6b8089bb2c12b8edb4efc29742dd6382d47f2e42/src/ModuleSimpleFuelSwitch.cs#L374
 					resourceCostAdjustment -= (simpleFuelSwitch as IPartCostModifier).GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
 				}
 
-				if (!prefabCostIsDryCost)
-				{
-					prefabDryCost -= prefabResourceCosts;
-					resourceCostAdjustment += currentResourceCosts - prefabResourceCosts;
-				}
+				// the stock code calculates the cost of the part using the prefab cost, and then subtracts the *current* resource capacity cost and adds the *current* resource amount cost
+				// TODO: do we need to avoid this when using FSFuelSwitch?
+				resourceCostAdjustment += resourceCapacityCost - prefabResourceCost;
 
 				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
 				float costScale = Mathf.Pow(currentScaleFactor, costExponent);
-				double newCost = costScale * prefabDryCost;
+				double newCost = costScale * adjustedPrefabDryCost;
 
-				// the stock code calculates the cost of the part using the prefab cost, and then subtracts the *current* resource capacity and adds the *current* resource prices
-				extraCost = (float)(newCost - prefabDryCost + resourceCostAdjustment);
+				extraCost = (float)(newCost - adjustedPrefabDryCost + resourceCostAdjustment);
 
 				if (scaleMass)
 				{
@@ -1105,7 +1124,45 @@ namespace TweakScale
 			}
 		}
 
-		public override string GetInfo()
+		public float GetDryMassScale()
+		{
+			float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
+			return Mathf.Pow(currentScaleFactor, massExponent);
+		}
+
+		float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)
+		{
+			return extraCost;
+		}
+
+		ModifierChangeWhen IPartCostModifier.GetModuleCostChangeWhen()
+		{
+			return ModifierChangeWhen.FIXED;
+		}
+
+		float IPartMassModifier.GetModuleMass(float defaultMass, ModifierStagingSituation situation)
+		{
+			return extraMass;
+		}
+
+		ModifierChangeWhen IPartMassModifier.GetModuleMassChangeWhen()
+		{
+			return ModifierChangeWhen.FIXED;
+		}
+
+		string IModuleInfo.GetModuleTitle()
+		{
+			// HACK: compiling module infos is one of the last things that happens when compiling the prefab.
+			// So we hook in here to do final loading after all the part modules, attach nodes, etc have been set up
+			if (HighLogic.LoadedScene == GameScenes.LOADING)
+			{
+				OnFinalizeLoad();
+			}
+
+			return moduleName;
+		}
+
+		string IModuleInfo.GetInfo()
 		{
 			return "Scale Type: " + ScaleType.Name;
 
@@ -1134,30 +1191,14 @@ namespace TweakScale
 #endif
 		}
 
-		public float GetDryMassScale()
+		Callback<Rect> IModuleInfo.GetDrawModulePanelCallback()
 		{
-			float massExponent = ScaleExponents.getDryMassExponent(ScaleType.Exponents);
-			return Mathf.Pow(currentScaleFactor, massExponent);
+			return null;
 		}
 
-		float IPartCostModifier.GetModuleCost(float defaultCost, ModifierStagingSituation situation)
+		string IModuleInfo.GetPrimaryField()
 		{
-			return extraCost;
-		}
-
-		ModifierChangeWhen IPartCostModifier.GetModuleCostChangeWhen()
-		{
-			return ModifierChangeWhen.FIXED;
-		}
-
-		float IPartMassModifier.GetModuleMass(float defaultMass, ModifierStagingSituation situation)
-		{
-			return extraMass;
-		}
-
-		ModifierChangeWhen IPartMassModifier.GetModuleMassChangeWhen()
-		{
-			return ModifierChangeWhen.FIXED;
+			return null;
 		}
 
 		internal string GetScaleString()
