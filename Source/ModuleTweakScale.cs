@@ -468,7 +468,7 @@ namespace TweakScale
 				ScaleDragCubes(currentScaleFactor);
 				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
 				// TODO: this may not be the right place to do this, because other modules might not be fully set up yet...should this move to OnStartFinished?
-				CalculateCostAndMass();
+				CalculateCostAndMass(false);
 				FinalizeStats(infoBuilder);
 			}
 			else
@@ -760,7 +760,7 @@ namespace TweakScale
 
 			ScalePart(relativeScaleFactor);
 			CallHandlers(relativeScaleFactor, infoBuilder);
-			CalculateCostAndMass();
+			CalculateCostAndMass(false);
 			FinalizeStats(infoBuilder);
 		}
 
@@ -841,7 +841,7 @@ namespace TweakScale
 			return result;
 		}
 
-		internal bool CalculateCostAndMass()
+		internal bool CalculateCostAndMass(bool refreshStats = true)
 		{
 			float oldExtraCost = extraCost;
 			float oldExtraMass = extraMass;
@@ -912,7 +912,7 @@ namespace TweakScale
 			if (oldExtraCost != extraCost || oldExtraMass != extraMass)
 			{
 				// horrible hack to refresh the cost and mass fields in the stats...would anything else in here ever need to change maybe?  Should we just rebuild the whole thing?
-				if (IsRescaled && HighLogic.LoadedSceneIsEditor)
+				if (refreshStats && IsRescaled && HighLogic.LoadedSceneIsEditor)
 				{
 					StringBuilder infoBuilder = GetInfoBuilder();
 					int cutoffIndex = guiStatsText.LastIndexOf("\nCost:");
