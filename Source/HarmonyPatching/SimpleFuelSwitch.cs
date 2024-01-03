@@ -10,7 +10,7 @@ namespace TweakScale.HarmonyPatching
 	// Unfortunately, SimpleFuelSwitch shares the set of available resources between all parts of the same type, so we can't just reach in there and scale the amounts
 	// The regular scale handlers work fine for altering the resources in the part when it's scaled, but we still need to handle the case of changing the fuel type
 	// on a part that is already scaled (or else it'll just apply the unscaled resource amount)
-	[HarmonyPatch("SimpleFuelSwitch.SwitchableResourceSet", "UpdatePartResourceList")]
+	[HarmonyPatch("SimpleFuelSwitch.ModuleSimpleFuelSwitch", "UpdateSelectedResources")]
 	static class SimpleFuelSwitch
 	{
 		static bool Prepare()
@@ -18,9 +18,9 @@ namespace TweakScale.HarmonyPatching
 			return AssemblyLoader.loadedAssemblies.Contains("SimpleFuelSwitch");
 		}
 
-		public static void Postfix(Part part, bool resetAmounts)
+		public static void Postfix(PartModule __instance)
 		{
-			var tweakScaleModule = part.FindModuleImplementing<TweakScale>();
+			var tweakScaleModule = __instance.part.FindModuleImplementing<TweakScale>();
 			if (tweakScaleModule == null || !tweakScaleModule.IsRescaled) return;
 
 			ScaleExponents resourceExponents = tweakScaleModule.ScaleType.Exponents["Part"]?.GetChild("Resources");
@@ -33,14 +33,10 @@ namespace TweakScale.HarmonyPatching
 			var scalingMode = resourceExponents._exponents["maxAmount"];
 			double resourcesScale = Math.Pow(tweakScaleModule.currentScaleFactor, scalingMode.ExponentValue);
 
-			foreach (var partResource in part.Resources)
+			foreach (var partResource in __instance.part.Resources)
 			{
 				partResource.maxAmount *= resourcesScale;
-
-				if (resetAmounts)
-				{
-					partResource.amount *= resourcesScale;
-				}
+				partResource.amount *= resourcesScale;
 			}
 
 			// TODO: somehow update the stats text in the PAW?

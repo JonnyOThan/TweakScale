@@ -4,14 +4,11 @@
 	- InnerLock https://github.com/whale2/InnerLock/blob/a50f3ad65f7e0231dc8098fb9144cd1eabb56649/InnerLock/LockMechanism.cs#L410
 	- IR surface sampler: (never seems to be released?) https://github.com/DMagic1/IR-Surface-Sampler/blob/1565748adfe424b6a24d989550757326fa590550/ModuleIRSurfaceSampler.cs#L276
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
-- [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
 - [ ] scaling parts with struts attached between them doesn't work (but offset mode does)
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] FSBuoyancy doesn't work correctly
 - [ ] added cost is misleading because of accounting for resource differences
-- [ ] simplefuelswitch resource capacity is too high on launch
-- [ ] simplefuelswitch doesn't update stats when changing tank type on rescaled part
 
 # New Candy
 
@@ -51,6 +48,8 @@
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
 - [ ] Mastodon engine changes node sizes based on variant....
 - [ ] move waterfall support into main mod?
+- [ ] simplefuelswitch doesn't update stats when changing tank type on rescaled part
+- [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
 
 # won't do
 
@@ -235,6 +234,7 @@
 - [x] maybe increase the max size for freescale type?  stack can go from 1.25m -> 20m, a factor of 16 increase, but freescale is limited to 400%
 - [x] SimpleFuelSwitch cost scales are wrong
 - [x] SimpleFuelSwitch: changing tank type when scaled doesn't adjust resources properly
+- [x] simplefuelswitch resource capacity is too high on launch
 
 # Finished Verification
 
