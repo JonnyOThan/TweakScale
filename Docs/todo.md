@@ -3,7 +3,6 @@
 - [ ] scaling parts with struts attached between them doesn't work (but offset mode does)
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
-- [ ] FSBuoyancy doesn't work correctly
 - [ ] added cost is misleading because of accounting for resource differences
 
 # New Candy
@@ -236,6 +235,8 @@
 - [x] SimpleFuelSwitch: changing tank type when scaled doesn't adjust resources properly
 - [x] simplefuelswitch resource capacity is too high on launch
 - [x] stats don't seem to be updating correctly when dragging the slider
+- [x] FSBuoyancy doesn't work correctly
+		actually this isn't TOO bad...but the buoyancy slider range starts getting messed up
 
 # Finished Verification
 
