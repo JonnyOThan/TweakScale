@@ -9,6 +9,8 @@
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] FSBuoyancy doesn't work correctly
+- [ ] SimpleFuelSwitch: changing tank type when scaled doesn't adjust resources properly
+- [ ] added cost is misleading because of accounting for resource differences
 
 # New Candy
 
@@ -36,7 +38,6 @@
 - [ ] test with existing companion
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
 - [ ] do we need to respect min/max mass and cost?
-- [ ] check simple fuel switch
 
 # Stretch
 
@@ -231,8 +232,7 @@
 - [x] dry cost of stock tanks seems to be scaled wrong
 - [x] fuel tanks are triggering mass/cost updates because they use the stock variant module
 - [x] maybe increase the max size for freescale type?  stack can go from 1.25m -> 20m, a factor of 16 increase, but freescale is limited to 400%
-- [x] check interstellarfuelswitch
-		weird behavior, but at least it matches TS/L...
+- [ ] SimpleFuelSwitch cost scales are wrong
 
 # Finished Verification
 
@@ -251,3 +251,6 @@
 - [x] check cloning part subtrees
 - [x] how exactly does stack_square work with resources?  do they get squared or cubed?
 	they seem to get cubed - this is probably bad.
+- [x] check simple fuel switch
+- [x] check interstellarfuelswitch
+		weird behavior, but at least it matches TS/L...

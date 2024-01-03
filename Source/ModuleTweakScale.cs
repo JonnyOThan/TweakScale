@@ -777,6 +777,7 @@ namespace TweakScale
 			"ModuleFuelTanks",
 			"FSfuelSwitch", // the exponents config handles cost scales properly
 			"InterstellarFuelSwitch", // implements IRescalable
+			"ModuleSimpleFuelSwitch",
 		}.ToHashSet();
 
 		static double GetPartResourceCapacityCosts(Part part)
@@ -818,10 +819,50 @@ namespace TweakScale
 				double currentResourceCosts = GetPartResourceCapacityCosts(part);
 				double resourceCostAdjustment = 0;
 
+				// if SimpleFuelSwitch is managing the resources, we need to figure out the right dry cost
+				// SimpleFuelSwitch will leave the prefab cost as it would be with full resources, but also removes the RESOURCE blocks
+				// TODO: cache prefabResourceCosts once on load
+				var simpleFuelSwitch = part.modules["ModuleSimpleFuelSwitch"];
+				if (simpleFuelSwitch != null)
+				{
+					bool isDefault = false;
+					var switchableResourceNode = _prefabPart.partInfo.partConfig.nodes.nodes.Where(
+						n => n.name == "MODULE" &&
+						n.GetValue("name") == "ModuleSwitchableResources" &&
+						n.TryGetValue("isDefault", ref isDefault) && isDefault)
+						.FirstOrDefault();
+
+					if (switchableResourceNode != null)
+					{
+						foreach (var node in switchableResourceNode.nodes.nodes)
+						{
+							if (node.name != "RESOURCE") continue;
+
+							string resourceName = null;
+							double amount = 0;
+
+							if (node.TryGetValue("name", ref resourceName) && node.TryGetValue("amount", ref amount))
+							{
+								var resourceDefinition = PartResourceLibrary.Instance.GetDefinition(resourceName);
+								if (resourceDefinition != null)
+								{
+									prefabResourceCosts += amount * resourceDefinition.unitCost;
+								}
+							}
+						}
+					}
+
+					// SimpleFuelSwitch provides a cost adjustment to keep the dry cost of the tank the same regardless of which fuel is selected
+					// it does this by adding currentResourceCost - defaultResourceCost, which is the same logic we use for resourceCostAdjustment below
+					// however it uses the prefab resource capacity, not the scaled one.  So we need to offset our cost adjustment to cancel out the one from SFS.
+					// https://github.com/KSPSnark/SimpleFuelSwitch/blob/6b8089bb2c12b8edb4efc29742dd6382d47f2e42/src/ModuleSimpleFuelSwitch.cs#L374
+					resourceCostAdjustment -= (simpleFuelSwitch as IPartCostModifier).GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
+				}
+
 				if (!prefabCostIsDryCost)
 				{
 					prefabDryCost -= prefabResourceCosts;
-					resourceCostAdjustment = currentResourceCosts - prefabResourceCosts;
+					resourceCostAdjustment += currentResourceCosts - prefabResourceCosts;
 				}
 
 				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
