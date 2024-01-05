@@ -21,27 +21,10 @@ namespace TweakScale.HarmonyPatching
 		public static void Postfix(PartModule __instance)
 		{
 			var tweakScaleModule = __instance.part.FindModuleImplementing<TweakScale>();
-			if (tweakScaleModule == null || !tweakScaleModule.IsRescaled) return;
+			if (tweakScaleModule == null) return;
 
-			ScaleExponents resourceExponents = tweakScaleModule.ScaleType.Exponents["Part"]?.GetChild("Resources");
-
-			if (resourceExponents  == null) return;
-
-			// I had initially wanted to construct a full ScaleExponents containing just the resource exponents and use ScaleExponents.UpdateObject
-			// but ScaleExponents is difficult to reconstruct and poke at, so we'll just do this manually...
-
-			var scalingMode = resourceExponents._exponents["maxAmount"];
-			double resourcesScale = Math.Pow(tweakScaleModule.currentScaleFactor, scalingMode.ExponentValue);
-
-			foreach (var partResource in __instance.part.Resources)
-			{
-				partResource.maxAmount *= resourcesScale;
-				partResource.amount *= resourcesScale;
-			}
-
-			// TODO: somehow update the stats text in the PAW?
-
-			tweakScaleModule.CalculateCostAndMass();
+			tweakScaleModule.InitializePrefabCosts();
+			tweakScaleModule.ScalePartResources();
 		}
 	}
 }
