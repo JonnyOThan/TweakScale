@@ -110,7 +110,8 @@ namespace TweakScale
 		[KSPField(isPersistant = true)]
 		public float extraMass;
 
-		[SerializeField] double prefabDryCost;
+		[SerializeField] double unscaledDryCost;
+		[SerializeField] double unscaledResourceCapacityCost;
 
 		/// <summary>
 		/// The ScaleType for this part.
@@ -339,8 +340,8 @@ namespace TweakScale
 		// Determine what the prefab dry cost is.  The cost from the prefab includes the price of resources, but other mods can mess with this....
 		internal void InitializePrefabCosts()
 		{
-			double prefabResourceCost = GetPartResourceCurrentCost(part);
-			prefabDryCost = part.partInfo.cost - prefabResourceCost;
+			GetPartResourceCosts(part, out double prefabResourceCost, out unscaledResourceCapacityCost);
+			unscaledDryCost = part.partInfo.cost - prefabResourceCost;
 		}
 
 		public override void OnSave(ConfigNode node)
@@ -776,26 +777,16 @@ namespace TweakScale
 			"InterstellarFuelSwitch", // implements IRescalable
 		}.ToHashSet();
 
-		// what would the resources cost when completely full? (uses PartResource.maxAmount)
-		static double GetPartResourceCapacityCost(Part part)
+		static void GetPartResourceCosts(Part part, out double amountCost, out double capacityCost)
 		{
-			double result = 0;
-			foreach (var partResource in part.Resources)
-			{
-				result += partResource.maxAmount * partResource.info.unitCost;
-			}
-			return result;
-		}
+			amountCost = 0;
+			capacityCost = 0;
 
-		// what does the *current* amount of resources cost? (uses PartResource.amount)
-		static double GetPartResourceCurrentCost(Part part)
-		{
-			double result = 0;
 			foreach (var partResource in part.Resources)
 			{
-				result += partResource.amount * partResource.info.unitCost;
+				amountCost += partResource.amount * partResource.info.unitCost;
+				capacityCost += partResource.maxAmount * partResource.info.unitCost;
 			}
-			return result;
 		}
 
 		internal bool CalculateCostAndMass(bool refreshStats = true)
@@ -851,13 +842,11 @@ namespace TweakScale
 					}
 				}
 
-				double resourceCapacityCost = GetPartResourceCapacityCost(part);
-
 				float costExponent = ScaleExponents.getDryCostExponent(ScaleType.Exponents);
 				float costScale = Mathf.Pow(currentScaleFactor, costExponent);
-				double finalDryCost = costScale * (prefabDryCost + inherentCostModifiers);
+				double finalDryCost = costScale * (unscaledDryCost + inherentCostModifiers);
 
-				extraCost = (float)(finalDryCost - part.partInfo.cost - inherentCostModifiers + resourceCapacityCost);
+				extraCost = (float)(finalDryCost - part.partInfo.cost - inherentCostModifiers + unscaledResourceCapacityCost * costScale);
 
 				if (scaleMass)
 				{

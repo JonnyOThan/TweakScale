@@ -4,7 +4,6 @@
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] added cost is misleading because of accounting for resource differences
-- [ ] B9PS resource switching has wrong costs
 
 # New Candy
 
@@ -51,6 +50,7 @@
 	- InnerLock https://github.com/whale2/InnerLock/blob/a50f3ad65f7e0231dc8098fb9144cd1eabb56649/InnerLock/LockMechanism.cs#L410
 	- IR surface sampler: (never seems to be released?) https://github.com/DMagic1/IR-Surface-Sampler/blob/1565748adfe424b6a24d989550757326fa590550/ModuleIRSurfaceSampler.cs#L276
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
+- [ ] save current tweakscale version in module, to aid in addressing versioning issues?  this should have an enum or something rather than just the tweakscale assembly version directly
 
 # won't do
 
@@ -239,6 +239,7 @@
 - [x] stats don't seem to be updating correctly when dragging the slider
 - [x] FSBuoyancy doesn't work correctly
 		actually this isn't TOO bad...but the buoyancy slider range starts getting messed up
+- [x] B9PS resource switching has wrong costs
 
 # Finished Verification
 
