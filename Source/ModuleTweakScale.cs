@@ -334,14 +334,21 @@ namespace TweakScale
 				}
 			}
 
-			InitializePrefabCosts();
+			InitializeUnscaledCosts();
 		}
 
-		// Determine what the prefab dry cost is.  The cost from the prefab includes the price of resources, but other mods can mess with this....
-		internal void InitializePrefabCosts()
+		// Determine what the unscaled dry cost is.  The cost from the prefab includes the price of resources, but other mods can mess with this....
+		internal void InitializeUnscaledCosts()
 		{
 			GetPartResourceCosts(part, out double prefabResourceCost, out unscaledResourceCapacityCost);
 			unscaledDryCost = part.partInfo.cost - prefabResourceCost;
+		}
+
+		// ADVANCED USE ONLY - directly set the unscaled costs
+		internal void SetUnscaledCosts(double dryCost, double resourceCapacityCost)
+		{
+			unscaledDryCost = dryCost;
+			unscaledResourceCapacityCost = resourceCapacityCost;
 		}
 
 		public override void OnSave(ConfigNode node)
@@ -777,7 +784,7 @@ namespace TweakScale
 			"InterstellarFuelSwitch", // implements IRescalable
 		}.ToHashSet();
 
-		static void GetPartResourceCosts(Part part, out double amountCost, out double capacityCost)
+		static internal void GetPartResourceCosts(Part part, out double amountCost, out double capacityCost)
 		{
 			amountCost = 0;
 			capacityCost = 0;
@@ -817,8 +824,8 @@ namespace TweakScale
 			//   extraCost = final_dry_cost - (partInfo.cost + inherent_cost_modifiers - resource_capacity_cost)
 			//   extraCost = final_dry_cost - partInfo.cost - inherent_cost_modifiers + resource_capacity_cost
 			// and then we also have:
-			//   final_dry_cost = (prefabDryCost + inherent_cost_modifiers) * cost_scale
-			// note that prefabDryCost is usually the partInfo.cost minus the price of resources stored in the prefab, but could be different based on mods
+			//   final_dry_cost = (unscaledDryCost + inherent_cost_modifiers) * cost_scale
+			// note that unscaledDryCost is usually the partInfo.cost minus the price of resources stored in the prefab, but could be different based on mods
 
 			if (IsRescaled)
 			{
@@ -832,7 +839,7 @@ namespace TweakScale
 
 					if (module is IPartCostModifier costModifier)
 					{
-						// should this use prefabDryCost or the prefrab cost (i.e. including resources)?  I don't think I've come across a module that uses it, so it might not matter
+						// should this use unscaledCost or the prefrab cost (i.e. including resources)?  I don't think I've come across a module that uses it, so it might not matter
 						inherentCostModifiers += costModifier.GetModuleCost(part.partInfo.cost, ModifierStagingSituation.CURRENT);
 					}
 

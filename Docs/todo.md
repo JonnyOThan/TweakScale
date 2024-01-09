@@ -4,16 +4,18 @@
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] added cost is misleading because of accounting for resource differences
+- [ ] ConfigurableContainers mass and cost are broken
 
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
 - [ ] stats window should show base cost/mass and final
+- [ ] revisit science scaling - don't allow scaling up most experiments; provide 1.25m and 0.625m science jr
 
 # Verification (do this last, except to generate new bugs)
 
-- [ ] check stock twin boar (since it's an engine + fuel tank)
 - [ ] check part recovery costs (with kspcf)
+- [ ] check stock twin boar (since it's an engine + fuel tank)
 - [ ] check parts that modify drag cubes
 - [ ] find all TODOs and make sure there are issues tracked if necessary
 - [ ] Make sure switching a part's scale type doesn't break it
@@ -240,6 +242,7 @@
 - [x] FSBuoyancy doesn't work correctly
 		actually this isn't TOO bad...but the buoyancy slider range starts getting messed up
 - [x] B9PS resource switching has wrong costs
+- [x] IFS cost scaling doesn't work (might need harmony patch?)
 
 # Finished Verification
 
@@ -263,14 +266,18 @@
 		weird behavior, but at least it matches TS/L...
 
 
-# Fuel Switch mods
+# Fuel Switch test cases
 
-- CryoTanks (B9PS)
-- Firespitter
-- InterstellarFuelSwitch
-- SimpleFuelSwitch
-- ModularFuelTanks
-- ConfigurableContainers?
+FL-T400
+
+							  Cost	Mass
+- Stock							X    X
+- CryoTanks (B9PS)				X    X
+- Firespitter					X    X
+- InterstellarFuelSwitch		X    X
+- SimpleFuelSwitch				X    X
+- ModularFuelTanks				X    X
+- ConfigurableContainers		-    -
 
 # rescalefactor warnings
 

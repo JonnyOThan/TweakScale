@@ -23,7 +23,7 @@ namespace TweakScale.HarmonyPatching
 			var tweakScaleModule = __instance.part.FindModuleImplementing<TweakScale>();
 			if (tweakScaleModule == null) return;
 
-			tweakScaleModule.InitializePrefabCosts();
+			tweakScaleModule.InitializeUnscaledCosts();
 			tweakScaleModule.ScalePartResources();
 		}
 	}

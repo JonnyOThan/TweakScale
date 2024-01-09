@@ -69,6 +69,7 @@
     <Compile Include="HarmonyPatching\FerramAerospaceResearch.cs" />
     <Compile Include="HarmonyPatching\Firespitter.cs" />
     <Compile Include="HarmonyPatching\HarmonyPatching.cs" />
+    <Compile Include="HarmonyPatching\InterstellarFuelSwitch.cs" />
     <Compile Include="HarmonyPatching\SimpleFuelSwitch.cs" />
     <Compile Include="HarmonyPatching\SmokeScreen.cs" />
     <Compile Include="Hotkeys\Hotkey.cs" />

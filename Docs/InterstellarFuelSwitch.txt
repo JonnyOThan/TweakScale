@@ -1,0 +1,107 @@
+note: pellinor's GetModuleCost function:
+                  return (float)(DryCost - part.partInfo.cost + part.Resources.Cast<PartResource>().Aggregate(0.0, (a, b) => a + b.maxAmount * b.info.unitCost));
+	i.e. scaled DryCost - prefabCost + resource capacity cost
+	note DryCost would have already been scaled
+	
+
+IFS cost/mass testing
+
+FLT400
+
+resource costs per unit:
+LF: 0.8
+Oxidizer: 0.18
+Monoprop: 1.2
+
+part config:
+
+cost = 500
+		RESOURCE
+		{
+			name = LiquidFuel
+			amount = 180
+			maxAmount = 180
+		}
+		RESOURCE
+		{
+			name = Oxidizer
+			amount = 220
+			maxAmount = 220
+		}
+
+		MODULE
+		{
+			name = InterstellarFuelSwitch
+			tankSwitchNames = #LOC_IFS_LiquidFuel+Oxidizer_Abbreviation;#autoLOC_502032;#autoLOC_501000;#autoLOC_501002;#LOC_IFS_LqdHydrogen_Abbreviation;#LOC_IFS_Hydrolox_GUIName;#LOC_IFS_Hydrogen+Oxidizer_Abbreviation;#LOC_IFS_Methalox_GUIName;HydraNitro;DNTO;Kerolox;Kerosene
+			resourceGui = #LOC_IFS_LiquidFuel+Oxidizer_GUIName;#autoLOC_502032;#autoLOC_501000;#autoLOC_501002;#LOC_IFS_LqdHydrogen_GUIName;#LOC_IFS_Hydrolox_GUIName;#LOC_IFS_Hydrogen+Oxidizer_GUIName;#LOC_IFS_Methalox_GUIName;HydraNitro;DNTO;Kerolox;Kerosene
+			resourceNames = LiquidFuel,Oxidizer;LiquidFuel;Oxidizer;MonoPropellant;LqdHydrogen;LqdHydrogen,LqdOxygen;LqdHydrogen,Oxidizer;LqdMethane,LqdOxygen;Hydrazine,NTO;NTO;Kerosene,LqdOxygen;Kerosene
+			resourceAmounts = 180,220;400;400;400;3000;1600,400;1875,125;1114,886;1020,980;2000;912.9192,1087.0808;2000
+			tankTechReq = start;start;start;advFuelSystems;advFuelSystems;advFuelSystems;advFuelSystems;advFuelSystems;start;start;start
+			tankResourceMassDivider = 8;8;8;6.66666666666;8;15;12;18;18;18;18;18
+			adaptiveTankSelection = false
+			orderBySwitchName = true
+			displayTankCost = true
+			hasGUI = false
+		}
+
+TS/L ----------------------------------------------------------------------------------------------
+
+LFOX tank
+(note: fresh tank shows 563 funds but adjusting resources refreshes to 500)
+
+wet: 500 funds, 2.25t
+dry: 316 funds, 0.25t
+
+scale to 2.5m (while wet)
+wet: 4000 funds, 18t
+dry: 2531 funds, 2t
+
+Swap tank to monoprop (while scaled to 2.5m)
+(note: funds did not refresh, but refreshing resources fixes it)
+wet: 7371 funds, 14.72t
+dry: 3531 funds,  1.92t  **** this seems wrong? 562*8 = 4496 ****
+
+reduce scale to 1.25m:
+
+wet: 1043 funds, 1.840t
+dry:  563 funds, 0.240t (is this correct?  what is it even based on?  I think we have to assume this is correct, because that's what IFS gives us with an unscaled tank)
+
+is 562/563 maybe coming from 500 + 500 / 8 = 562.5 ?
+
+TS/R ---------------------------------------
+
+if I fudge the unscaled dry cost and resource capacity cost to 316.4 and 400*1.2 = 480, then the behavior matches TS/L
+
+how far off is 3531 from the expected value of 4496?  4496 - 3531 = 965...maybe double the resource cost?  
+No I think maybe this came from 316 * 8 (prefab dry cost times volume scale factor) + 500*2 (prefab wet cost times linear scale)
+
+
+
+
+IFS------
+
+        public virtual void OnRescale(ScalingFactor factor)
+        {
+            try
+            {
+                var factorAbsoluteLinear = (double)(decimal)factor.absolute.linear;
+                storedFactorMultiplier = factorAbsoluteLinear;
+                storedSurfaceMultiplier = factorAbsoluteLinear * factorAbsoluteLinear;
+                storedVolumeMultiplier = Math.Pow(factorAbsoluteLinear, volumeExponent);
+                baseMassMultiplier = Math.Pow(factorAbsoluteLinear, baseMassExponent == 0 ? massExponent : baseMassExponent);
+                initialMassMultiplier = Math.Pow(factorAbsoluteLinear, tweakscaleMassExponent);
+
+                initialMass = (double)(decimal)part.prefabMass * initialMassMultiplier;
+
+UpdateCost function:
+https://github.com/sswelm/KSP-Interstellar-Extended/blob/8a55a180d0f940510ffc508df90e915c05dd81b8/FuelSwitch/InterstellarFuelSwitch.cs#L883
+
+we *have* an initial tank setup (is this inferred from part resources maybe?): "LiquidFuel;Oxidizer" - but note that if the current resources don't match, preserveInitialCost is set to false
+tank costs all seem to be 0, might want to find a test case where that's not true
+initial
+
+
+            double dryCost = part.partInfo.cost * initialMassMultiplier;
+
+                totalCost = dryCost + resourceCost;
+                delta = !isSmaller && !isLarger ? dryCost * 0.125 + maxResourceCost : dryCost * storedFactorMultiplier * 0.125;
