@@ -782,6 +782,8 @@ namespace TweakScale
 			"ModuleInventoryPart",
 			"ModuleFuelTanks",
 			"InterstellarFuelSwitch", // implements IRescalable
+			"ModuleSwitchableTank", // ConfigurableContainers, understands scaling
+			// "ModuleTankManager", // ConfigurableContainers: the tank manager's cost modifier actually IS an inherent cost - it figures out what the true dry cost of the part should be assuming the tanks are CC ones
 		}.ToHashSet();
 
 		static internal void GetPartResourceCosts(Part part, out double amountCost, out double capacityCost)

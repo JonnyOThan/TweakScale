@@ -4,7 +4,6 @@
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] added cost is misleading because of accounting for resource differences
-- [ ] ConfigurableContainers mass and cost are broken
 
 # New Candy
 
@@ -243,6 +242,7 @@
 		actually this isn't TOO bad...but the buoyancy slider range starts getting messed up
 - [x] B9PS resource switching has wrong costs
 - [x] IFS cost scaling doesn't work (might need harmony patch?)
+- [x] ConfigurableContainers mass and cost are broken (but also seem to be in TS/L)
 
 # Finished Verification
 
@@ -277,7 +277,7 @@ FL-T400
 - InterstellarFuelSwitch		X    X
 - SimpleFuelSwitch				X    X
 - ModularFuelTanks				X    X
-- ConfigurableContainers		-    -
+- ConfigurableContainers		X    X
 
 # rescalefactor warnings
 
