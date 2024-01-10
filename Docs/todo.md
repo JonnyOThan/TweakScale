@@ -4,12 +4,15 @@
 	note this also happens in TS/L
 - [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
 - [ ] added cost is misleading because of accounting for resource differences
+- [ ] UniversalStorage2's "added cost" readout is wrong
+- [ ] some fuel switch mods (US2, basically anything that has to manually rescale resources) don't refresh the tweakscale stats in the PAW
 
 # New Candy
 
 - [ ] TSSafetyNet needs to actually populate the load failure reason
 - [ ] stats window should show base cost/mass and final
 - [ ] revisit science scaling - don't allow scaling up most experiments; provide 1.25m and 0.625m science jr
+- [ ] check WBI Fuel Switch (WBIResourceSwitcher, WBIModuleSwitcher) - pathfinder shuttle wings
 
 # Verification (do this last, except to generate new bugs)
 
@@ -52,6 +55,9 @@
 	- IR surface sampler: (never seems to be released?) https://github.com/DMagic1/IR-Surface-Sampler/blob/1565748adfe424b6a24d989550757326fa590550/ModuleIRSurfaceSampler.cs#L276
 	- RP-0 (KCT?): https://github.com/TheBigLee/RP-0/blob/4c92c116757363d173b9ca6b0ba07a24ee5e54dd/Source/KerbalConstructionTime/Utilities/Utilities.cs#L565
 - [ ] save current tweakscale version in module, to aid in addressing versioning issues?  this should have an enum or something rather than just the tweakscale assembly version directly
+- [ ] ConfigurableContainers doesn't get the right tank volume when swapping tanks on a scaled part
+	- but this happens in TS/L too: https://github.com/allista/ConfigurableContainers/issues/44  
+	- since CC tries to understand scaling directly, it should probably be fixed there...but this bug has been sitting open for over a year with solid repro steps and CC has not been touched in nearly 2 years
 
 # won't do
 
@@ -243,6 +249,7 @@
 - [x] B9PS resource switching has wrong costs
 - [x] IFS cost scaling doesn't work (might need harmony patch?)
 - [x] ConfigurableContainers mass and cost are broken (but also seem to be in TS/L)
+- [x] check universal storage fuel switch
 
 # Finished Verification
 
@@ -278,6 +285,7 @@ FL-T400
 - SimpleFuelSwitch				X    X
 - ModularFuelTanks				X    X
 - ConfigurableContainers		X    X
+- UniversalStorage2
 
 # rescalefactor warnings
 
