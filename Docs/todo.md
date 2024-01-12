@@ -36,6 +36,7 @@
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
 - [ ] do we need to respect min/max mass and cost?
 - [ ] Check rescalefactor warnings (see bottom)
+- [ ] smart tanks match diameter feature doesn't work when attaching to scaled parts
 
 # Stretch
 
