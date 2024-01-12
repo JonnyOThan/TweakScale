@@ -27,6 +27,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScaleSafetyNet", "Sour
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScale_Waterfall", "Source\TweakScale_Waterfall\TweakScale_Waterfall.csproj", "{B3F3175A-C048-4FB7-AC5E-44D5935D3348}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameData", "GameData", "{4197A090-B36D-4C2B-ACDD-1857FEBF0FD0}"
+	ProjectSection(SolutionItems) = preProject
+		GameData\TweakScale\TweakScale-Redist.version = GameData\TweakScale\TweakScale-Redist.version
+		GameData\TweakScale\TweakScale.version = GameData\TweakScale\TweakScale.version
+		GameData\TSSafetyNet\TweakScaleSafetyNet.version = GameData\TSSafetyNet\TweakScaleSafetyNet.version
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +62,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2E6A7FC2-286E-41AD-874B-A427B59AD3A8} = {2ED14E88-B9E3-4C39-823F-B091D42D0081}
+		{4197A090-B36D-4C2B-ACDD-1857FEBF0FD0} = {2ED14E88-B9E3-4C39-823F-B091D42D0081}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6D8B77D-2956-4865-AD3A-A6C55430E712}
