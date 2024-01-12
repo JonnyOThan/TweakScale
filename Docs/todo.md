@@ -16,7 +16,6 @@
 
 # Verification (do this last, except to generate new bugs)
 
-- [ ] check part recovery costs (with kspcf)
 - [ ] check stock twin boar (since it's an engine + fuel tank)
 - [ ] check parts that modify drag cubes
 - [ ] find all TODOs and make sure there are issues tracked if necessary
@@ -272,7 +271,7 @@
 - [x] check simple fuel switch
 - [x] check interstellarfuelswitch
 		weird behavior, but at least it matches TS/L...
-
+- [x] check part recovery costs (with kspcf)
 
 # Fuel Switch test cases
 

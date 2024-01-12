@@ -43,6 +43,8 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
   * InterstellarFuelSwitch
   * SimpleFuelSwitch
   * Firespitter
+  * Universal Storage 2
+  * Configurable Containers
 
 # Why not work to improve the current TweakScale?
 

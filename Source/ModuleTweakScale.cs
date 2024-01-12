@@ -800,6 +800,10 @@ namespace TweakScale
 
 		internal bool CalculateCostAndMass(bool refreshStats = true)
 		{
+			// we never recalculate this in flight, because everything should be stored in the persistent file
+			if (HighLogic.LoadedSceneIsFlight) return false;
+
+
 			float oldExtraCost = extraCost;
 			float oldExtraMass = extraMass;
 
