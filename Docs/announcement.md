@@ -1,12 +1,10 @@
-// ROUGH DRAFT!
-
-WARNING: DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will most likely not work
+**WARNING:** DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will most likely not work
 
 # What is this?
 
 TweakScale is a mod that allows you to rescale parts in the vessel editor.  All of their stats and properties are affected realistically - tanks contain more fuel, engines get stronger, solar panels produce more power, etc.  It's one of KSP's oldest mods and has been maintained by many different people over the years.
 
-I've forked pellinor's version of TweakScale and updated it for modern KSP to provide a simpler and streamlined version.  My plan is to eventually offer this as an alternative to the current version of TweakScale.  I've paid special attention to the following areas:
+I've forked pellinor's version of TweakScale and updated it for modern KSP to provide a simpler and streamlined version.  I've paid special attention to the following areas:
 
 ## User experience
 
@@ -81,3 +79,20 @@ TweakScaleRescaled is licensed CC-BY-NC-SA-4.0.
 2. [Biotronic took over](https://forum.kerbalspaceprogram.com/topic/72554-090-tweakscale-rescale-everything-v150-2014-12-24-1040-utc/) and [relicensed it as WTFPL](https://forum.kerbalspaceprogram.com/topic/72554-090-tweakscale-rescale-everything-v150-2014-12-24-1040-utc/?do=findComment&comment=1204240)
 3. [pellinor adopted it](https://forum.kerbalspaceprogram.com/topic/101540-14x-tweakscale-v2312apr-16/) and kept the WTFPL license.
 4. TweakScaleRescaled is based off of pellinor's version, and is once again licensed as CC-BY-NC-SA.
+
+# Download
+
+https://github.com/JonnyOThan/TweakScale/releases
+
+# Installation Instructions
+
+Remove any previous version of TweakScale.  Install the contents of the GameData folder in the zip file into your GameData folder.  Install Harmony and ModuleManger - CKAN is recommended for those.
+
+# Support
+
+You MUST include your ksp.log file with all support requests.
+
+* KSP Forum: https://forum.kerbalspaceprogram.com/topic/222953-1125-wip-tweakscale-rescaled/
+* My discord server: https://discord.gg/tTWcqrBB3t
+* Github: https://github.com/JonnyOThan/TweakScale/issues
+* Reddit: https://www.reddit.com/r/KerbalSpaceProgram/comments/1957t3x/wip_tweakscale_rescaled/

@@ -1,18 +1,9 @@
 # Bugs
 
-- [ ] scaling parts with struts attached between them doesn't work (but offset mode does)
-	note this also happens in TS/L
-- [ ] subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
-- [ ] added cost is misleading because of accounting for resource differences
 - [ ] UniversalStorage2's "added cost" readout is wrong
 - [ ] some fuel switch mods (US2, basically anything that has to manually rescale resources) don't refresh the tweakscale stats in the PAW
 
 # New Candy
-
-- [ ] TSSafetyNet needs to actually populate the load failure reason
-- [ ] stats window should show base cost/mass and final
-- [ ] revisit science scaling - don't allow scaling up most experiments; provide 1.25m and 0.625m science jr
-- [ ] check WBI Fuel Switch (WBIResourceSwitcher, WBIModuleSwitcher) - pathfinder shuttle wings
 
 # Verification (do this last, except to generate new bugs)
 
@@ -26,16 +17,21 @@
 	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
 	part support seems done, but not sure if everything is using exactly the same settings as TS/L
-- [ ] audit and fix mod support
 - [ ] verify tech unlocks are correct (fuel tanks, etc)
 		historically, was this a separate mod?
 		maybe implement it by default, and have a difficulty option to disable it?
-- [ ] Check KIS support
 - [ ] test with existing companion
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
 - [ ] do we need to respect min/max mass and cost?
 - [ ] Check rescalefactor warnings (see bottom)
+
+# Mod Compatibility
+
+- [ ] audit and fix mod support
 - [ ] smart tanks match diameter feature doesn't work when attaching to scaled parts
+- [ ] check SystemHeat
+- [ ] check WBI Fuel Switch (WBIResourceSwitcher, WBIModuleSwitcher) - pathfinder shuttle wings
+- [ ] Check KIS support
 
 # Stretch
 
@@ -58,6 +54,16 @@
 - [ ] ConfigurableContainers doesn't get the right tank volume when swapping tanks on a scaled part
 	- but this happens in TS/L too: https://github.com/allista/ConfigurableContainers/issues/44  
 	- since CC tries to understand scaling directly, it should probably be fixed there...but this bug has been sitting open for over a year with solid repro steps and CC has not been touched in nearly 2 years
+
+# Stuff moved to github issues
+
+- scaling parts with struts attached between them doesn't work (but offset mode does)
+	note this also happens in TS/L
+- subtrees don't reset scale properly after pressing ctrl to cancel a match-node-size action (but dragging the part off DOES for some reason)
+- added cost is misleading because of accounting for resource differences
+- stats window should show base cost/mass and final
+- TSSafetyNet needs to actually populate the load failure reason
+- revisit science scaling - don't allow scaling up most experiments; provide 1.25m and 0.625m science jr
 
 # won't do
 

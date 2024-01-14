@@ -341,7 +341,7 @@ namespace TweakScale
 		internal void InitializeUnscaledCosts()
 		{
 			GetPartResourceCosts(part, out double prefabResourceCost, out unscaledResourceCapacityCost);
-			unscaledDryCost = part.partInfo.cost - prefabResourceCost;
+			unscaledDryCost = part.partInfo.cost - unscaledResourceCapacityCost;
 		}
 
 		// ADVANCED USE ONLY - directly set the unscaled costs
