@@ -103,6 +103,7 @@ namespace TweakScale
 		/// </summary>
 		[KSPField(isPersistant = true)]
 		public float extraCost;
+		float guiAddedCost = 0;
 
 		/// <summary>
 		/// the amount of extra mass added by scaling (could be negative)
@@ -617,7 +618,7 @@ namespace TweakScale
 		{
 			if (IsRescaled && infoBuilder != null)
 			{
-				infoBuilder.AppendFormat("\nCost: {0:+0;-#}", extraCost);
+				infoBuilder.AppendFormat("\nCost: {0:+0;-#}", guiAddedCost);
 				infoBuilder.AppendFormat("\nMass: {0:+0.0##;-0.0##}", extraMass);
 
 				SetStatsLabel(infoBuilder.ToString());
@@ -860,6 +861,7 @@ namespace TweakScale
 				double finalDryCost = costScale * (unscaledDryCost + inherentCostModifiers);
 
 				extraCost = (float)(finalDryCost - part.partInfo.cost - inherentCostModifiers + unscaledResourceCapacityCost * costScale);
+				guiAddedCost = (float)(extraCost - unscaledResourceCapacityCost * (costScale - 1));
 
 				if (scaleMass)
 				{
