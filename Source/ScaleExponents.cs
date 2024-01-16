@@ -263,17 +263,24 @@ namespace TweakScale
 
 			if (current.ObjectType == typeof(PartResource) && current.Name != "maxAmount") return; // TODO: more general way to exclude certain fields?
 
-			if (TryGetUnscaledValue(baseValue, scalingMode, factor, out double unscaledValue))
+			try
 			{
-				if (unscaledValue > 0)
+				if (TryGetUnscaledValue(baseValue, scalingMode, factor, out double unscaledValue))
 				{
-					// Should this get moved into the MemberUpdate.Scale method?
-					info.AppendFormat("\n{1}: {2:0.##} x {3:0.##} = {4:0.##}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
+					if (unscaledValue > 0)
+					{
+						// Should this get moved into the MemberUpdate.Scale method?
+						info.AppendFormat("\n{1}: {2:0.##} x {3:0.##} = {4:0.##}", parentName, current.DisplayName, unscaledValue, absoluteScalar, unscaledValue * absoluteScalar);
+					}
+				}
+				else
+				{
+					info.AppendFormat("\n{0}: x {1:0.##}", current.DisplayName, absoluteScalar);
 				}
 			}
-			else
+			catch(Exception e)
 			{
-				info.AppendFormat("\n{0}: x {1.0##}", current.DisplayName, absoluteScalar);
+				Tools.LogException(e);
 			}
 		}
 
