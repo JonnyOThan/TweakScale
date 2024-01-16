@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -153,6 +154,53 @@ namespace TweakScale
 				{
 					var lastTech = TechRequired[TechRequired.Length - 1];
 					TechRequired = TechRequired.Concat(lastTech.Repeat()).Take(_scaleFactors.Length).ToArray();
+				}
+			}
+
+			bool allowGrow = true, allowShrink = true;
+			int resizeCount = _scaleFactors.Length;
+
+			// if we don't allow shrinking, remove all the scale factors that are smaller than the default scale
+			if (scaleConfig.TryGetValue(nameof(allowShrink), ref allowShrink) && !allowShrink)
+			{
+				int keepIndex = Array.FindLastIndex(_scaleFactors, factor => factor <= DefaultScale);
+				if (keepIndex >= 0) // this should probably always succeed...
+				{
+					resizeCount = _scaleFactors.Length - keepIndex;
+					_scaleFactors[keepIndex] = DefaultScale;
+					Array.Copy(_scaleFactors, keepIndex, _scaleFactors, 0, resizeCount);
+					Array.Copy(IncrementSlide, keepIndex, IncrementSlide, 0, resizeCount);
+					if (!IsFreeScale)
+					{
+						Array.Copy(_scaleNames, keepIndex, _scaleNames, 0, resizeCount);
+					}
+					if (numTechs > 0)
+					{
+						Array.Copy(TechRequired, keepIndex, TechRequired, 0, resizeCount);
+					}
+				}
+			}
+			else if (scaleConfig.TryGetValue(nameof(allowGrow), ref allowGrow) && !allowGrow)
+			{
+				int removeIndex = Array.FindIndex(_scaleFactors, factor => factor > DefaultScale);
+
+				if (removeIndex > 0)
+				{
+					resizeCount = removeIndex;
+				}
+			}
+
+			if (resizeCount < _scaleFactors.Length)
+			{
+				Array.Resize(ref _scaleFactors, resizeCount);
+				Array.Resize(ref IncrementSlide, resizeCount);
+				if (!IsFreeScale)
+				{
+					Array.Resize(ref _scaleNames, resizeCount);
+				}
+				if (numTechs > 0)
+				{
+					Array.Resize(ref TechRequired, resizeCount);
 				}
 			}
 		}
