@@ -44,7 +44,8 @@ namespace TweakScale.Waterfall
 			{
 				WaterfallEffect fx = _module.FX[i];
 
-				fx.ApplyTemplateOffsets(_unscaledPosition[i] * _scaleFactor, fx.TemplateRotationOffset, _unscaledMeshScale[i] * _scaleFactor);
+				// note that the position ends up driving the localPosition of the plume, so it's already been scaled by the model scale
+				fx.ApplyTemplateOffsets(_unscaledPosition[i], fx.TemplateRotationOffset, _unscaledMeshScale[i] * _scaleFactor);
 			}
 		}
 	}

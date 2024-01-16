@@ -30,7 +30,13 @@ namespace TweakScale.Waterfall
 				var tweakScaleModule = __instance.part.FindModuleImplementing<TweakScale>();
 				if (tweakScaleModule != null)
 				{
-					tweakScaleModule.FindHandlerOfType<ModuleWaterfallFXHandler>().EffectsInitialized();
+					foreach (var handler in tweakScaleModule.Handlers)
+					{
+						if (handler is ModuleWaterfallFXHandler waterfallHandler)
+						{
+							waterfallHandler.EffectsInitialized();
+						}
+					}
 				}
 			}
 		}

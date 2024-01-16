@@ -92,11 +92,7 @@ namespace TweakScale
 		/// </summary>
 		private IRescalable[] _handlers;
 
-		public HandlerType FindHandlerOfType<HandlerType>() where HandlerType : class, IRescalable
-		{
-			if (_handlers == null) return null;
-			return (HandlerType)_handlers.FirstOrDefault(h => h.GetType() == typeof(HandlerType));
-		}
+		public IRescalable[] Handlers => _handlers;
 
 		/// <summary>
 		/// the amount of extra funds caused by scaling (could be negative)
