@@ -1071,7 +1071,7 @@ namespace TweakScale
 				if (Math.Abs(relativeScaleFactor - 1) <= 1e-4f)
 					continue;
 
-				b.SetScaleFactor(b.currentScaleFactor * relativeScaleFactor);
+				b.SetScaleFactorRecursively(b.currentScaleFactor * relativeScaleFactor);
 			}
 		}
 
@@ -1242,6 +1242,13 @@ namespace TweakScale
 			}
 		}
 
+		internal void SetScaleFactorRecursively(float scaleFactor)
+		{
+			bool oldScaleChildren = scaleChildren;
+			scaleChildren = true;
+			SetScaleFactor(scaleFactor);
+			scaleChildren = oldScaleChildren;
+		}
 		internal void SetScaleFactor(float scaleFactor, ScaleFactorSnapMode snapMode = ScaleFactorSnapMode.None)
 		{
 			float newGuiScaleValue = scaleFactor * guiDefaultScale;

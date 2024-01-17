@@ -224,12 +224,13 @@ namespace TweakScale
 
 		void SetSelectedPartScale(TweakScale tweakScaleModule, float scaleFactor)
 		{
-			tweakScaleModule.SetScaleFactor(scaleFactor);
+			tweakScaleModule.SetScaleFactorRecursively(scaleFactor);
 
 			foreach (var symmetricPart in tweakScaleModule.part.symmetryCounterparts)
 			{
 				var otherModule = symmetricPart.FindModuleImplementing<TweakScale>();
-				otherModule.SetScaleFactor(scaleFactor);
+				
+				otherModule.SetScaleFactorRecursively(scaleFactor);
 			}
 		}
 	}
