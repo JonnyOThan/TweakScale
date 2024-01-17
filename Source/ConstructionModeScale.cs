@@ -284,7 +284,7 @@ namespace TweakScale
 			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
 
 			bool spaceWillResetOrientation = EditorLogic.fetch.fsm.CurrentState == EditorLogic.fetch.st_rotate_tweak || selectedPart.attRotation != Quaternion.identity;
-			bool spaceWillResetScale = tweakScaleModule != null && tweakScaleModule.currentScaleFactor != 1.0f;
+			bool spaceWillResetScale = tweakScaleModule != null && tweakScaleModule.currentScaleFactor != 1.0f && !TweakScaleEditorLogic.Instance.MatchNodeSizeInProgress;
 
 			if (InputLockManager.IsUnlocked(ControlTypes.EDITOR_GIZMO_TOOLS) && (spaceWillResetOrientation || spaceWillResetScale))
 			{

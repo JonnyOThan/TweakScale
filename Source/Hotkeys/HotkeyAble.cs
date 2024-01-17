@@ -17,7 +17,7 @@ namespace TweakScale
 		{
 			get
 			{
-				return _state ^ Input.GetKey(_tempToggle);
+				return _state ^ IsTempToggled;
 			}
 			set
 			{
@@ -36,6 +36,9 @@ namespace TweakScale
 				}
 			}
 		}
+
+		public bool BaseState => _state;
+		public bool IsTempToggled => Input.GetKey(_tempToggle);
 
 		public Hotkeyable(string name, KeyCode tempDisableDefault, ICollection<KeyCode> toggleDefault, bool state, PluginConfiguration config)
 		{

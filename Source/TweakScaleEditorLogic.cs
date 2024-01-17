@@ -137,6 +137,8 @@ namespace TweakScale
 		Vector3 selGrabOffset = Vector3.zero;
 		bool doneAttach = false;
 
+		public bool MatchNodeSizeInProgress => doneAttach;
+
 		private void OnEditorPartEvent(ConstructionEventType eventType, Part selectedPart)
 		{
 			var selectedTweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
@@ -184,10 +186,10 @@ namespace TweakScale
 
 				if (selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
 				{
+					float necessaryScale = parentAttachNodeDiameter / selectedNode.diameter;
+
 					if (!doneAttach)
 					{
-						float necessaryScale = parentAttachNodeDiameter / selectedNode.diameter;
-
 						Vector3 oldNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
 						SetSelectedPartScale(selectedTweakScaleModule, necessaryScale);
 						Vector3 newNodeWorldPosition = selectedPart.transform.rotation * attachment.callerPartNode.position;
@@ -199,7 +201,7 @@ namespace TweakScale
 
 					var message = $"Node Size: {parentAttachNodeDiameter.ToString("0.0##")}m";
 
-					if (TweakScaleEditorLogic.Instance.ShowKeyBinds)
+					if (ShowKeyBinds && !Mathf.Approximately(necessaryScale, partPreviousScale))
 					{
 						message += "\n" + MatchNodeSize.GetKeybindPrompt();
 					}
@@ -213,6 +215,19 @@ namespace TweakScale
 				EditorLogic.fetch.selPartGrabOffset -= selGrabOffset;
 				selGrabOffset = Vector3.zero;
 				doneAttach = false;
+			}
+
+			if (ShowKeyBinds && !MatchNodeSize.BaseState && !MatchNodeSize.IsTempToggled && selectedPart.potentialParent != null && attachment.mode == AttachModes.STACK)
+			{
+				float parentAttachNodeDiameter = GetAttachNodeDiameter(selectedPart.potentialParent, attachment.otherPartNode.id);
+
+				if (selectedTweakScaleModule.TryGetUnscaledAttachNode(attachment.callerPartNode.id, out var selectedNode))
+				{
+					if (!Mathf.Approximately(parentAttachNodeDiameter, selectedNode.diameter * selectedTweakScaleModule.currentScaleFactor))
+					{
+						ScreenMessages.PostScreenMessage(MatchNodeSize.GetKeybindPrompt(), 0f, ScreenMessageStyle.LOWER_CENTER);
+					}
+				}
 			}
 		}
 
