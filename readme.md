@@ -1,4 +1,17 @@
-**WARNING:** DO NOT use this on your existing saves or craft files without backing them up first.  While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will most likely not work
+**WARNING:** DO NOT use this on your existing saves or craft files without backing them up first. While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will most likely not work.
+
+# Support
+
+You MUST include your ksp.log file with all support requests.  These links are for TweakScaleRescaled.  DO NOT ask for support on other TweakScale threads.
+
+* KSP Forum: https://forum.kerbalspaceprogram.com/topic/222953-1125-wip-tweakscale-rescaled/
+* Discord: https://discord.gg/tTWcqrBB3t
+* Github: https://github.com/JonnyOThan/TweakScale/issues
+* Reddit: https://www.reddit.com/r/KerbalSpaceProgram/comments/1957t3x/wip_tweakscale_rescaled/
+
+# New Feature Demos
+
+https://youtu.be/em_CyA90Sdo?list=PLDO10NRxfG06QzFcqaEFVjB6FurUaoer8
 
 # What is this?
 
@@ -86,13 +99,6 @@ https://github.com/JonnyOThan/TweakScale/releases
 
 # Installation Instructions
 
-Remove any previous version of TweakScale.  Install the contents of the GameData folder in the zip file into your GameData folder.  Install Harmony and ModuleManger - CKAN is recommended for those.
-
-# Support
-
-You MUST include your ksp.log file with all support requests.
-
-* KSP Forum: https://forum.kerbalspaceprogram.com/topic/222953-1125-wip-tweakscale-rescaled/
-* My discord server: https://discord.gg/tTWcqrBB3t
-* Github: https://github.com/JonnyOThan/TweakScale/issues
-* Reddit: https://www.reddit.com/r/KerbalSpaceProgram/comments/1957t3x/wip_tweakscale_rescaled/
+1. Remove any previous version of TweakScale and KSP Recall.
+2. Install the contents of the GameData folder in the zip file into your GameData folder.
+3. Install Harmony and ModuleManger - CKAN is recommended for those.
