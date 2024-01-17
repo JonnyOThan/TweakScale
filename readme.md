@@ -81,10 +81,10 @@ Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not bee
 
 # License Info
 
-TweakScaleRescaled is licensed CC-BY-NC-SA-4.0.
-© 2023 JonnyOThan
-© 2015-2018 pellinor
-© 2014 Gaius Godspeed and Biotronic
+* TweakScaleRescaled is licensed CC-BY-NC-SA-4.0.
+* © 2023 JonnyOThan
+* © 2015-2018 pellinor
+* © 2014 Gaius Godspeed and Biotronic
 
 ## History
 

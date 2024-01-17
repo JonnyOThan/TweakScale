@@ -17,9 +17,6 @@
 	done some limited testing here, it's looking good
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
 	part support seems done, but not sure if everything is using exactly the same settings as TS/L
-- [ ] verify tech unlocks are correct (fuel tanks, etc)
-		historically, was this a separate mod?
-		maybe implement it by default, and have a difficulty option to disable it?
 - [ ] test with existing companion
 - [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
 - [ ] do we need to respect min/max mass and cost?
@@ -28,8 +25,6 @@
 # Mod Compatibility
 
 - [ ] audit and fix mod support
-- [ ] smart tanks match diameter feature doesn't work when attaching to scaled parts
-- [ ] check SystemHeat
 - [ ] check WBI Fuel Switch (WBIResourceSwitcher, WBIModuleSwitcher) - pathfinder shuttle wings
 - [ ] Check KIS support
 
@@ -37,15 +32,11 @@
 
 - [ ] can the "show keybinding" option be moved to the main settings or something?
 - [ ] better stats formatting - group by section?
-- [ ] docking port support (this is tricky because of node types - needs a custom handler probably)
-- [ ] support localization
 - [ ] find a way to remove tweakscale modules from saved craft files when they're not scaled
-- [ ] increase crew capacity when scaling up?
 - [ ] Better stats in GetInfo text (explain how different properties will scale)
 - [ ] Mastodon engine changes node sizes based on variant....
 - [ ] move waterfall support into main mod?
 - [ ] simplefuelswitch doesn't update stats when changing tank type on rescaled part
-- [ ] SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
 - [ ] search github for other direct usages of old tweakscale fields
 	- InnerLock https://github.com/whale2/InnerLock/blob/a50f3ad65f7e0231dc8098fb9144cd1eabb56649/InnerLock/LockMechanism.cs#L410
 	- IR surface sampler: (never seems to be released?) https://github.com/DMagic1/IR-Surface-Sampler/blob/1565748adfe424b6a24d989550757326fa590550/ModuleIRSurfaceSampler.cs#L276
@@ -64,6 +55,12 @@
 - stats window should show base cost/mass and final
 - TSSafetyNet needs to actually populate the load failure reason
 - revisit science scaling - don't allow scaling up most experiments; provide 1.25m and 0.625m science jr
+- support localization
+- docking port support (this is tricky because of node types - needs a custom handler probably)
+- SM-18 and SM-25 service modules don't work well (flickering) with match node scale - has something to do with shrouds
+- increase crew capacity when scaling up?
+- smart tanks match diameter feature doesn't work when attaching to scaled parts
+- verify tech unlocks are correct (fuel tanks, etc)
 
 # won't do
 
@@ -278,6 +275,7 @@
 - [x] check interstellarfuelswitch
 		weird behavior, but at least it matches TS/L...
 - [x] check part recovery costs (with kspcf)
+- [x] check SystemHeat
 
 # Fuel Switch test cases
 
