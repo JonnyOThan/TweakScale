@@ -35,6 +35,7 @@ using System.Security;
 
 [assembly: KSPAssemblyDependencyEqualMajor("Scale_Redist", TweakScale.VersionInfo.MAJOR, TweakScale.VersionInfo.MINOR, TweakScale.VersionInfo.REVISION)]
 [assembly: KSPAssemblyDependency("HarmonyKSP", 1, 0)]
+[assembly: KSPAssemblyDependency("ModuleManager", 2, 5)]
 
 namespace TweakScale
 {

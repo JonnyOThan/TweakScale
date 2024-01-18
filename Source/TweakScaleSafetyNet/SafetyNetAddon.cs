@@ -91,9 +91,43 @@ namespace TweakScale.SafetyNet
 			var tweakScaleLoadedAssmebly = AssemblyLoader.loadedAssemblies.FirstOrDefault(la => la.name == "Scale");
 			if (tweakScaleLoadedAssmebly == null || tweakScaleLoadedAssmebly.assembly == null)
 			{
-				// TODO: need to find a good way to diagnose this.  look at current domain maybe?
-				// could always just check directly for missing deps?
-				DiagnosticMessage = "Failed to load.  Usually this is caused by missing dependencies.";
+				DiagnosticMessage = "";
+
+				// check harmony
+				if (!AssemblyLoader.availableAssemblies.Any(assemblyInfo => assemblyInfo.name == "0Harmony"))
+				{
+					DiagnosticMessage = "Harmony is required and not installed.";
+				}
+				else if (!AssemblyLoader.loadedAssemblies.Contains("0Harmony"))
+				{
+					DiagnosticMessage = "Harmony is installed but failed to load.";
+				}
+
+				// check scale_redist
+				var scaleRedistInfo = AssemblyLoader.availableAssemblies.FirstOrDefault(assemblyInfo => assemblyInfo.name == "999_Scale_Redist");
+				if (scaleRedistInfo == null)
+				{
+					DiagnosticMessage += "\n999_Scale_Redist.dll is required and not installed.";
+				}
+				else if (scaleRedistInfo.assemblyVersion.Major != TweakScale.VersionInfo.MAJOR)
+				{
+					DiagnosticMessage += $"\n999_Scale_Redist.dll is the wrong version.  Expected {TweakScale.VersionInfo.STRING}, but {scaleRedistInfo.assemblyVersion} is installed.";
+				}
+				else if (!AssemblyLoader.loadedAssemblies.Contains("Scale_Redist"))
+				{
+					DiagnosticMessage += "\n999_Scale_Redist is installed but failed to load.";
+				}
+
+				// check ModuleManager
+				if (!AssemblyLoader.availableAssemblies.Any(assemblyInfo => assemblyInfo.name == "ModuleManager"))
+				{
+					DiagnosticMessage += "\nModuleManager is required and not installed.";
+				}
+
+				if (DiagnosticMessage == "")
+				{
+					DiagnosticMessage = "Failed to load.  Usually this is caused by missing dependencies.";
+				}
 			}
 			else
 			{
