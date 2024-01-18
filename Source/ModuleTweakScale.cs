@@ -1,3 +1,4 @@
+using CommNet.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -715,17 +716,17 @@ namespace TweakScale
 			float relativeScaleFactor = newScaleFactor / currentScaleFactor;
 			currentScaleFactor = newScaleFactor;
 
-			if (scaleChildren && relativeScaleFactor != 1)
-			{
-				ChainScale(relativeScaleFactor);
-			}
-
 			StringBuilder infoBuilder = GetInfoBuilder();
 
 			ScalePart(relativeScaleFactor);
 			CallHandlers(relativeScaleFactor, infoBuilder);
 			CalculateCostAndMass(false);
 			FinalizeStats(infoBuilder);
+
+			if (scaleChildren && relativeScaleFactor != 1)
+			{
+				ChainScale(relativeScaleFactor);
+			}
 		}
 
 		void CallHandlers(float relativeScaleFactor, StringBuilder infoBuilder)
@@ -931,20 +932,18 @@ namespace TweakScale
 			// handle nodes and node-attached parts
 			foreach (var node in part.attachNodes)
 			{
-				MoveNode(node);
+				MoveNode(node, false);
 			}
 			if (part.srfAttachNode != null)
 			{
-				MoveNode(part.srfAttachNode);
+				MoveNode(part.srfAttachNode, false);
 			}
 
-			// handle parts that are surface-attached to this one
+			// handle parts that are-attached to this one
 			foreach (var child in part.children)
 			{
-				if (child.srfAttachNode == null || child.srfAttachNode.attachedPart != part)
-					continue;
-
-				var attachedPosition = child.transform.localPosition + child.transform.localRotation * child.srfAttachNode.position;
+				var attachNode = child.FindAttachNodeByPart(part);
+				var attachedPosition = child.transform.localPosition + child.transform.localRotation * attachNode.position;
 				var targetPosition = attachedPosition * relativeScaleFactor;
 				child.transform.Translate(targetPosition - attachedPosition, part.transform);
 			}
@@ -1027,7 +1026,7 @@ namespace TweakScale
 			return null;
 		}
 
-		internal void MoveNode(AttachNode node)
+		internal void MoveNode(AttachNode node, bool moveChildren = true)
 		{
 			var oldPosition = node.position;
 
@@ -1047,7 +1046,7 @@ namespace TweakScale
 					part.transform.Translate(-deltaPos, part.transform);
 				}
 				// otherwise the child object needs to move
-				else
+				else if (moveChildren)
 				{
 					attachedPart.transform.Translate(deltaPos, part.transform);
 				}
