@@ -1,5 +1,9 @@
 ﻿using System.Reflection;
 
+[assembly: AssemblyProduct(TweakScale.VersionInfo.ASSEMBLY)]
+[assembly: AssemblyTitle(TweakScale.VersionInfo.ASSEMBLY)]
+[assembly: AssemblyCopyright("Copyright © 2023")]
+
 [assembly: AssemblyVersion(TweakScale.VersionInfo.STRING)]
 [assembly: AssemblyFileVersion(TweakScale.VersionInfo.STRING)]
 [assembly: KSPAssembly(TweakScale.VersionInfo.ASSEMBLY, TweakScale.VersionInfo.MAJOR, TweakScale.VersionInfo.MINOR, TweakScale.VersionInfo.REVISION)]
