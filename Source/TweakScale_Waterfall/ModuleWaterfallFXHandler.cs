@@ -25,14 +25,20 @@ namespace TweakScale.Waterfall
 
 		internal void EffectsInitialized()
 		{
-			_unscaledMeshScale = new List<Vector3>(_module.FX.Count);
-			_unscaledPosition = new List<Vector3>(_module.FX.Count);
-
-			for (int i = 0; i < _module.FX.Count; i++)
+			// make sure we don't do this more than once....
+			// this feels pretty hacky, may not work with the waterfall editor..
+			if (_unscaledMeshScale == null && _module.FX.Count > 0)
 			{
-				_unscaledMeshScale.Add(_module.FX[i].TemplateScaleOffset);
-				_unscaledPosition.Add(_module.FX[i].TemplatePositionOffset);
+				_unscaledMeshScale = new List<Vector3>(_module.FX.Count);
+				_unscaledPosition = new List<Vector3>(_module.FX.Count);
+
+				for (int i = 0; i < _module.FX.Count; i++)
+				{
+					_unscaledMeshScale.Add(_module.FX[i].TemplateScaleOffset);
+					_unscaledPosition.Add(_module.FX[i].TemplatePositionOffset);
+				}
 			}
+
 			UpdateScale();
 		}
 
