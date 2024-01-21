@@ -83,6 +83,10 @@ namespace TweakScale
 
 						Exponents = scaleType.Exponents;
 					}
+					else
+					{
+						Tools.LogError("Scale type {0} not found!", Name);
+					}
 				}
 				// if we're loading the global scale types
 				else if (globalScaleTypes == null)
@@ -278,7 +282,21 @@ namespace TweakScale
 			globalScaleTypes = null;
 			var scaleTypeUrlConfigs = GameDatabase.Instance.root.GetConfigs("SCALETYPE");
 			var scaleTypes = scaleTypeUrlConfigs.Select(urlConfig => new ScaleType(urlConfig.config));
-			globalScaleTypes = scaleTypes.ToDictionary(scaleType => scaleType.Name);
+			var lookup = new Dictionary<string, ScaleType>();
+
+			foreach (var scaleType in scaleTypes)
+			{
+				if (lookup.ContainsKey(scaleType.Name))
+				{
+					Tools.LogError("Duplicated scale type {0}!", scaleType.Name);
+				}
+				else
+				{
+					lookup[scaleType.Name] = scaleType;
+				}
+			}
+
+			globalScaleTypes = lookup;
 		}
 	}
 }
