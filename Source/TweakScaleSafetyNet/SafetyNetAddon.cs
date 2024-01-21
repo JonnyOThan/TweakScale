@@ -94,9 +94,15 @@ namespace TweakScale.SafetyNet
 				DiagnosticMessage = "";
 
 				// check harmony
-				if (!AssemblyLoader.availableAssemblies.Any(assemblyInfo => assemblyInfo.name == "0Harmony"))
+				var harmonyInfo = AssemblyLoader.availableAssemblies.FirstOrDefault(assemblyInfo => assemblyInfo.name == "0Harmony");
+				var requiredHarmonyVersion = new Version(2, 2);
+				if (harmonyInfo == null)
 				{
 					DiagnosticMessage = "Harmony is required and not installed.";
+				}
+				else if (harmonyInfo.assemblyVersion < requiredHarmonyVersion)
+				{
+					DiagnosticMessage = $"Harmony is the wrong version.  Expected {requiredHarmonyVersion}, but {harmonyInfo.assemblyVersion} is installed.";
 				}
 				else if (!AssemblyLoader.loadedAssemblies.Contains("0Harmony"))
 				{
@@ -119,7 +125,7 @@ namespace TweakScale.SafetyNet
 				}
 
 				// check ModuleManager
-				if (!AssemblyLoader.availableAssemblies.Any(assemblyInfo => assemblyInfo.name == "ModuleManager"))
+				if (!AssemblyLoader.availableAssemblies.Any(assemblyInfo => assemblyInfo.name.StartsWith("ModuleManager.")))
 				{
 					DiagnosticMessage += "\nModuleManager is required and not installed.";
 				}
