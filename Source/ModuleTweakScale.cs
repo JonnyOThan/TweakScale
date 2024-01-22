@@ -303,6 +303,7 @@ namespace TweakScale
 					}
 
 					// TS/L saves the unscaled node position in the originalPosition, and *sometimes* scales the current position
+					// TODO: test this on initial launch and loading a save, since they seem to be different
 					foreach (var attachNode in part.attachNodes)
 					{
 						attachNode.position = (attachNode.originalPosition *= currentScaleFactor);
@@ -425,11 +426,31 @@ namespace TweakScale
 				// this whole block is basically ScalePart except it doesn't move children - should we unify?
 				StringBuilder infoBuilder = GetInfoBuilder();
 				ScalePartTransform();
-				foreach (var attachNode in part.attachNodes)
+
+				// TODO: what do we do with modules that move nodes?  ModulePartVariant, B9PS, ..?
+				if (FlightDriver.StartupBehaviour == FlightDriver.StartupBehaviours.NEW_FROM_FILE || FlightDriver.StartupBehaviour == FlightDriver.StartupBehaviours.NEW_FROM_CRAFT_NODE)
 				{
-					ScaleAttachNodeSize(attachNode);
+					// when loading from a craft file, attachnodes have the correct scaled positions but not size
+					// and note that we don't scale the srfAttachNode size
+					foreach (var attachNode in part.attachNodes)
+					{
+						ScaleAttachNodeSize(attachNode);
+					}
 				}
-				ScaleAttachNodeSize(part.srfAttachNode); // does the size of the srfAttachNode even matter?
+				else
+				{
+					// when loading from a saved game, the positions of the attachnodes aren't stored and come from the prefab
+					// But of course the parts themselves are in the right position
+					foreach (var attachNode in part.attachNodes)
+					{
+						MoveNode(attachNode, false, false);
+					}
+					if (part.srfAttachNode != null)
+					{
+						MoveNode(part.srfAttachNode, false, false);
+					}
+				}
+
 				ScaleDragCubes(currentScaleFactor);
 				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
 				// TODO: this may not be the right place to do this, because other modules might not be fully set up yet...should this move to OnStartFinished?
@@ -983,6 +1004,10 @@ namespace TweakScale
 
 		private void ScaleAttachNodeSize(AttachNode node)
 		{
+			// we never scale surface attach node size, because it affects the stiffness of the joint
+			// primarily this should be controlled via breakingForce and breakingTorque, though the stock values are kind of all over the place and scaling them with a consistent rule is difficult
+			if (node.nodeType == AttachNode.NodeType.Surface) return;
+
 			float originalNodeSize = GetUnscaledAttachNodeSize(node.id);
 
 			float tmpNodeSize = Mathf.Max(originalNodeSize, 0.5f);
@@ -1026,7 +1051,7 @@ namespace TweakScale
 			return null;
 		}
 
-		internal void MoveNode(AttachNode node, bool moveChildren = true)
+		internal void MoveNode(AttachNode node, bool moveChildren = true, bool moveSelf = true)
 		{
 			var oldPosition = node.position;
 
@@ -1043,7 +1068,10 @@ namespace TweakScale
 				// If this node connects to our parent part, then *we* need to move (note that potentialParent == parent if the part is *actually* attached)
 				if (attachedPart == part.potentialParent)
 				{
-					part.transform.Translate(-deltaPos, part.transform);
+					if (moveSelf)
+					{
+						part.transform.Translate(-deltaPos, part.transform);
+					}
 				}
 				// otherwise the child object needs to move
 				else if (moveChildren)
