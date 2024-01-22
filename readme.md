@@ -95,7 +95,8 @@ Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not bee
 
 # Download
 
-https://github.com/JonnyOThan/TweakScale/releases
+* Github: https://github.com/JonnyOThan/TweakScale/releases
+* Spacedock: https://spacedock.info/mod/3514/TweakScale%20Rescaled
 
 # Installation Instructions
 
