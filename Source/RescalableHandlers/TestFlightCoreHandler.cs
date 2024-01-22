@@ -49,9 +49,6 @@ namespace TweakScale
 
 		public void OnRescale(ScalingFactor factor)
 		{
-			// TODO: implement a way to avoid creating this when TestFlightCore isn't installed
-			if (addInteropValue_MethodInfo == null) return;
-
 			string name = "scale";
 			string value = factor.absolute.ToString();
 			string owner = "TweakScale";

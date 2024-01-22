@@ -292,7 +292,7 @@ namespace TweakScale
 			}
 			else
 			{
-				// try to load old persisted data
+				// try to load old persisted data from TS/L
 				if (!node.HasValue(nameof(currentScaleFactor)))
 				{
 					float currentScaleFromCfgNode = -1;

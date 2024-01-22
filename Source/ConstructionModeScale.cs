@@ -437,7 +437,6 @@ namespace TweakScale
 
 		void Update()
 		{
-			// TODO: check input locks, ets
 			if (keyBinding.GetKeyDown())
 			{
 				SetMode(scaleConstructionMode, true);

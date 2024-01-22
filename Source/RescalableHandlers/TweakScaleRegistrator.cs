@@ -15,7 +15,6 @@ namespace TweakScale
 	{
 		void Start()
 		{
-			// TODO: should this use GetModulesImplementingInterface instead?
 			AssemblyLoader.loadedAssemblies.TypeOperation(type =>
 			{
 				try
