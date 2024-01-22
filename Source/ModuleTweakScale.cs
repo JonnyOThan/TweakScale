@@ -428,7 +428,7 @@ namespace TweakScale
 				ScalePartTransform();
 
 				// TODO: what do we do with modules that move nodes?  ModulePartVariant, B9PS, ..?
-				if (FlightDriver.StartupBehaviour == FlightDriver.StartupBehaviours.NEW_FROM_FILE || FlightDriver.StartupBehaviour == FlightDriver.StartupBehaviours.NEW_FROM_CRAFT_NODE)
+				if (HighLogic.LoadedSceneIsEditor || (FlightDriver.StartupBehaviour == FlightDriver.StartupBehaviours.NEW_FROM_FILE || FlightDriver.StartupBehaviour == FlightDriver.StartupBehaviours.NEW_FROM_CRAFT_NODE))
 				{
 					// when loading from a craft file, attachnodes have the correct scaled positions but not size
 					// and note that we don't scale the srfAttachNode size
