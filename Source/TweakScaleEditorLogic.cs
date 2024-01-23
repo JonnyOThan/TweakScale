@@ -150,6 +150,7 @@ namespace TweakScale
 				case ConstructionEventType.PartPicked:
 				case ConstructionEventType.PartCopied:
 				case ConstructionEventType.PartDetached:
+				case ConstructionEventType.PartAttached:
 					partPreviousScale = selectedTweakScaleModule.currentScaleFactor;
 					doneAttach = false;
 					break;
