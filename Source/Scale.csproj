@@ -79,6 +79,7 @@
     <Compile Include="Hotkeys\HotkeyManager.cs" />
     <Compile Include="MemberUpdater.cs" />
     <Compile Include="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="RescalableHandlers\ModuleDockingNodeHandler.cs" />
     <Compile Include="RescalableHandlers\ModuleInventoryPartHandler.cs" />
     <Compile Include="ScaleExponents.cs" />
     <Compile Include="SingletonBehavior.cs" />
