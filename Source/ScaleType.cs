@@ -134,7 +134,7 @@ namespace TweakScale
 
 				_scaleNames = new string[_scaleFactors.Length];
 				for (int i = 0; i < _scaleFactors.Length; i++)
-					_scaleNames[i] = _scaleFactors[i].ToString();
+					_scaleNames[i] = _scaleFactors[i].ToString() + Suffix ?? "";
 			}
 
 			if (!IsFreeScale)

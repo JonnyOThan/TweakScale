@@ -123,4 +123,27 @@ namespace TweakScale.HarmonyPatching
 			__result.radius /= tweakScaleModule.currentScaleFactor;
 		}
 	}
+
+	// ----- Stock VesselCrewManifest
+
+	// This is annoying, it gets called all the time when adding or removing parts from the vessel
+	// the upshot of it is that RefreshCrewAssignment creates a new VesselCrewManifest from the craft config node, then populates it from the existing manifest
+	// That creation uses the part prefab crew capacities, so any modification to an individual part's crew capacity will be lost
+	[HarmonyPatch(typeof(VesselCrewManifest), nameof(VesselCrewManifest.UpdatePartManifest))]
+	static class VesselCrewManifest_UpdatePartManifest
+	{
+		static void Prefix(VesselCrewManifest __instance, uint id, PartCrewManifest referencePCM)
+		{
+			if (__instance.partLookup.TryGetValue(id, out PartCrewManifest newPartCrewManifest))
+			{
+				int oldLength = newPartCrewManifest.partCrew.Length;
+				Array.Resize(ref newPartCrewManifest.partCrew, referencePCM.partCrew.Length);
+				for (int i = oldLength; i < newPartCrewManifest.partCrew.Length; ++i)
+				{
+					newPartCrewManifest.partCrew[i] = "";
+				}
+			}
+		}
+	}
+
 }
