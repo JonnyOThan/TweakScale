@@ -3,6 +3,7 @@ using KSP.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
@@ -141,6 +142,29 @@ namespace TweakScale.HarmonyPatching
 				for (int i = oldLength; i < newPartCrewManifest.partCrew.Length; ++i)
 				{
 					newPartCrewManifest.partCrew[i] = "";
+				}
+			}
+		}
+	}
+
+	// ----- Stock EVAConstructionModeEditor.PickupPart
+
+	[HarmonyPatch(typeof(EVAConstructionModeEditor), nameof(EVAConstructionModeEditor.PickupPart))]
+	static class EVAConstructionModeEditor_PickupPart
+	{
+		static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			FieldInfo partMassField = AccessTools.Field(typeof(Part), nameof(Part.mass));
+			foreach (var instruction in instructions)
+			{
+				if (instruction.StoresField(partMassField))
+				{
+					yield return new CodeInstruction(OpCodes.Pop);
+					yield return new CodeInstruction(OpCodes.Pop);
+				}
+				else
+				{
+					yield return instruction;
 				}
 			}
 		}

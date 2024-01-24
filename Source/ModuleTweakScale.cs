@@ -367,6 +367,11 @@ namespace TweakScale
 		{
 			base.OnStart(state);
 
+			OnStart_ApplyScale();
+		}
+
+		void OnStart_ApplyScale()
+		{
 			_prefabPart = part.partInfo.partPrefab;
 			// TODO: this isn't the correct way to get the prefab module.  we should look it up by index.
 			var prefabModule = _prefabPart.FindModuleImplementing<TweakScale>();
@@ -453,7 +458,7 @@ namespace TweakScale
 
 				ScaleDragCubes(currentScaleFactor);
 				CallHandlers(1.0f, infoBuilder); // TODO: is 1.0 correct here?  most likely...because everything else in the part should have already been scaled
-				// TODO: this may not be the right place to do this, because other modules might not be fully set up yet...should this move to OnStartFinished?
+												 // TODO: this may not be the right place to do this, because other modules might not be fully set up yet...should this move to OnStartFinished?
 				CalculateCostAndMass(false);
 				FinalizeStats(infoBuilder);
 			}
@@ -517,6 +522,12 @@ namespace TweakScale
 					}
 				}
 			}
+		}
+
+		public override void OnPartCreatedFomInventory(ModuleInventoryPart moduleInventoryPart)
+		{
+			OnStart_ApplyScale();
+			// TODO: call OnStartFinished?  that's mostly dealing with particle effects, does it matter?
 		}
 
 		public override void OnUpdate()
