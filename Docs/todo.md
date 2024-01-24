@@ -18,9 +18,8 @@
 - [ ] make sure we can load *saves* with vessels in flight that used TS/L
 	part support seems done, but not sure if everything is using exactly the same settings as TS/L
 - [ ] test with existing companion
-- [ ] should breakingforce, breakingtorque, explosionPotential actually be scaled? (breakingforce/torque seems correct)
+- [ ] should explosionPotential actually be scaled?
 - [ ] do we need to respect min/max mass and cost?
-- [ ] Check rescalefactor warnings (see bottom)
 
 # Mod Compatibility
 
@@ -61,6 +60,7 @@
 - increase crew capacity when scaling up?
 - smart tanks match diameter feature doesn't work when attaching to scaled parts
 - verify tech unlocks are correct (fuel tanks, etc)
+- Check rescalefactor warnings (see bottom)
 
 # won't do
 
@@ -291,30 +291,5 @@ FL-T400
 - ConfigurableContainers		X    X
 - UniversalStorage2
 
-# rescalefactor warnings
 
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-dual-1.cfg/PART[restock-rcs-block-dual-1]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-dual-mini-1.cfg/PART[restock-rcs-block-dual-mini-1]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-multi-2.cfg/PART[restock-rcs-block-multi-2]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-multi-mini-2.cfg/PART[restock-rcs-block-multi-mini-2]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-quad-angled-1.cfg/PART[restock-rcs-block-quad-angled-1]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-quad-angled-mini-1.cfg/PART[restock-rcs-block-quad-angled-mini-1]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-quad-mini-1.cfg/PART[restock-rcs-block-quad-mini-1]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-quint-1.cfg/PART[restock-rcs-block-quint-1]
-[LOG 22:49:38.397] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-quint-mini-1.cfg/PART[restock-rcs-block-qunit-mini-1]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-triple-angled-1.cfg/PART[restock-rcs-block-triple-angled-1]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-block-triple-angled-mini-1.cfg/PART[restock-rcs-block-triple-angled-mini-1]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Control/RCS/restock-rcs-single-mini-1.cfg/PART[restock-rcs-single-mini-1]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Utility/radial/restock-ladder-static-2.cfg/PART[restock-ladder-static-2]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Utility/radial/restock-ladder-static-3.cfg/PART[restock-ladder-static-3]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to Squad/Parts/Aero/wingletAV-R8/wingletAV-R8.cfg/PART[R8winglet]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to Squad/Parts/Aero/wingletAV-T1/wingletAV-T1.cfg/PART[winglet]
-[LOG 22:49:38.399] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to Squad/Parts/Engine/rapierEngine/rapierEngine.cfg/PART[RAPIER]
-[LOG 22:49:38.401] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to Squad/Parts/Utility/linearVernorRCS/linearRCS.cfg/PART[linearRcs]
-[LOG 22:49:38.401] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to Squad/Parts/Utility/parachuteMk1/parachuteMk1.cfg/PART[parachuteSingle]
-[LOG 22:49:38.401] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to Squad/Parts/Utility/rcsBlockRV-105_v2/rcsBlockRV-105.cfg/PART[RCSBlock_v2]
-[LOG 22:49:38.401] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[~rescaleFactor&@MODULE[TweakScale]]:FINAL to Squad/Parts/Wheel/roverWheelM1/roverWheelM1.cfg/PART[roverWheel1]
-[LOG 22:49:38.409] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[#rescaleFactor[>1]&@MODULE[TweakScale]]:FINAL to ReStockPlus/Parts/Ground/restock-wheel-4.cfg/PART[restock-wheel-4]
-[LOG 22:49:38.412] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[#rescaleFactor[>1]&@MODULE[TweakScale]]:FINAL to Squad/Parts/Utility/flags/flagSize1/flagSize1.cfg/PART[flagPartSize1]
-[LOG 22:49:38.412] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[#rescaleFactor[>1]&@MODULE[TweakScale]]:FINAL to Squad/Parts/Utility/landingLegLT-1/landingLegLT-1.cfg/PART[landingLeg1]
-[LOG 22:49:38.412] Applying update TweakScale/patches/800_TweakScale_ErrorChecking/@PART:HAS[#rescaleFactor[>1]&@MODULE[TweakScale]]:FINAL to Squad/Parts/Utility/landingLegLT-2/landingLegLT-2.cfg/PART[landingLeg1-2]
+

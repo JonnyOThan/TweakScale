@@ -23,19 +23,29 @@ namespace TweakScale.RescalableHandlers
 
 		public void OnRescale(ScalingFactor factor)
 		{
-			HashSet<string> newNodeTypes = new HashSet<string>();
-
-			foreach (var nodeType in m_prefabNodeTypes)
+			if (factor.absolute.linear == 1.0)
 			{
-				newNodeTypes.Add(GetScaledNodeType(nodeType, factor.absolute.linear));
+				m_module.nodeTypes = m_prefabNodeTypes;
+			}
+			else
+			{
+				HashSet<string> newNodeTypes = new HashSet<string>();
+
+				foreach (var nodeType in m_prefabNodeTypes)
+				{
+					newNodeTypes.Add(GetScaledNodeType(nodeType, factor.absolute.linear));
+				}
+
+				m_module.nodeTypes = newNodeTypes;
 			}
 
-			m_module.nodeTypes = newNodeTypes;
-			m_module.nodeType = string.Join(", ", newNodeTypes);
+			m_module.nodeType = string.Join(",", m_module.nodeTypes);
 		}
 
 		static string GetScaledNodeType(string prefabNodeType, float scaleFactor)
 		{
+			if (scaleFactor == 1.0f) return prefabNodeType;
+
 			if (x_nodeTypeToDiameter.TryGetValue(prefabNodeType, out var prefabNodeDiameter))
 			{
 				float scaledDiameter = prefabNodeDiameter * scaleFactor;
@@ -52,6 +62,7 @@ namespace TweakScale.RescalableHandlers
 			return prefabNodeType + "x" + scaleFactor;
 		}
 
+		// TODO: maybe this should be in a cfg somewhere?
 		static readonly Dictionary<string, float> x_nodeTypeToDiameter = new Dictionary<string, float>() {
 			{"size0",   0.625f },
 			{"size1",   1.25f },

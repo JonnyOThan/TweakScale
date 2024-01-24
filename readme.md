@@ -31,6 +31,7 @@ I've forked pellinor's version of TweakScale and updated it for modern KSP to pr
 * Scaling construction mode gizmo akin to offset and rotate (press 5 in the editor)
 * New "match node size" feature to auto-scale parts when attaching nodes to each other
 * All parts are supported with reasonable defaults unless they opt-out or match certain filters to trap known issues (AllTweak will still override this and enable *everything*)
+* Scaling docking ports is supported
 * Reduced dependencies to only ModuleManager and Harmony
 * Optimized for better performance
   * better loading time to main menu
