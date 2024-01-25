@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using KSP.UI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -167,6 +168,99 @@ namespace TweakScale.HarmonyPatching
 					yield return instruction;
 				}
 			}
+		}
+	}
+
+	// ----- stock ModuleInventoryPart_UpdateCapacityValues
+
+	[HarmonyPatch(typeof(ModuleInventoryPart), nameof(ModuleInventoryPart.UpdateCapacityValues))]
+	internal static class ModuleInventoryPart_UpdateCapacityValues
+	{
+		// smuggles the packed volume field from the ModuleCargoPart into the part snapshot
+		// Unfortunately the packedVolume field isn't Persistent or else this would have been a lot easier!
+		class PartVolumeSmuggler
+		{
+			internal void OnProtoPartSnapshotSave(GameEvents.FromToAction<ProtoPartSnapshot, ConfigNode> eventData)
+			{
+				Part part = eventData.from.partRef;
+				if (part != null)
+				{
+					ModuleCargoPart cargoModule = part.FindModuleImplementing<ModuleCargoPart>();
+					if (cargoModule != null)
+					{
+						eventData.from.partStateValues[nameof(ModuleCargoPart.packedVolume)] = new KSPParseable(cargoModule.packedVolume, KSPParseable.Type.FLOAT);
+					}
+				}
+			}
+		}
+
+		static ModuleInventoryPart_UpdateCapacityValues()
+		{
+			// unfortunately ksp event handlers can't be static.
+			var partVolumeSmuggler = new PartVolumeSmuggler();
+			GameEvents.onProtoPartSnapshotSave.Add(partVolumeSmuggler.OnProtoPartSnapshotSave);
+		}
+
+		// the stock version of this function uses the mass and volume values from the prefab, which are completely wrong if it's been scaled or has other mass modifiers on it
+		// or even a non-default amount of resources.
+		static bool Prefix(ModuleInventoryPart __instance)
+		{
+			__instance.volumeOccupied = 0f;
+			__instance.massOccupied = 0f;
+			foreach (StoredPart storedPart in __instance.storedParts.ValuesList)
+			{
+				if (storedPart != null && storedPart.snapshot != null)
+				{
+					__instance.massOccupied += GetPartSnapshotMass(storedPart.snapshot) * storedPart.quantity;
+					__instance.volumeOccupied += GetPartSnapshotVolume(storedPart.snapshot) * storedPart.quantity;
+				}
+			}
+			__instance.UpdateMassVolumeDisplay(true, false);
+			return false;
+		}
+
+		static float GetPartSnapshotMass(ProtoPartSnapshot partSnapshot)
+		{
+			double mass = partSnapshot.mass;
+
+			foreach (var resource in partSnapshot.resources)
+			{
+				mass += resource.amount * resource.definition.density;
+			}
+
+			return (float)mass;
+		}
+
+		static float GetPartSnapshotVolume(ProtoPartSnapshot partSnapshot)
+		{
+			// fetch the volume from the smuggled values
+			KSPParseable parseableValue;
+			if (partSnapshot.partStateValues.TryGetValue(nameof(ModuleCargoPart.packedVolume), out parseableValue))
+			{
+				return parseableValue.value_float;
+			}
+			// otherwise we have to fall back to the prefab volume
+			ModuleCargoPart moduleCargoPart = partSnapshot.partPrefab.FindModuleImplementing<ModuleCargoPart>();
+			if (moduleCargoPart != null)
+			{
+				return moduleCargoPart.packedVolume;
+			}
+			return 0f;
+		}
+	}
+
+	[HarmonyPatch(typeof(ModuleCargoPart), nameof(ModuleCargoPart.MakePartSettle))]
+	internal static class ModuleCargoPart_MakePartSettle
+	{
+		static bool Prefix(ref IEnumerator __result)
+		{
+			__result = MakePartSettle();
+			return false;
+		}
+
+		static IEnumerator MakePartSettle()
+		{
+			yield break;
 		}
 	}
 
