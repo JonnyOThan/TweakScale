@@ -131,6 +131,7 @@ namespace TweakScale.HarmonyPatching
 	// This is annoying, it gets called all the time when adding or removing parts from the vessel
 	// the upshot of it is that RefreshCrewAssignment creates a new VesselCrewManifest from the craft config node, then populates it from the existing manifest
 	// That creation uses the part prefab crew capacities, so any modification to an individual part's crew capacity will be lost
+	// https://github.com/JonnyOThan/TweakScale/issues/32
 	[HarmonyPatch(typeof(VesselCrewManifest), nameof(VesselCrewManifest.UpdatePartManifest))]
 	static class VesselCrewManifest_UpdatePartManifest
 	{

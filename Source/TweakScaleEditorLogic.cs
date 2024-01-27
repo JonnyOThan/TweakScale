@@ -144,6 +144,17 @@ namespace TweakScale
 			var selectedTweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
 			if (selectedTweakScaleModule == null) return;
 
+			// https://github.com/JonnyOThan/TweakScale/issues/32
+			if (eventType == ConstructionEventType.PartAttached && selectedPart.partInfo.partPrefab.CrewCapacity > 0 && selectedPart.CrewCapacity == 0)
+			{
+				PartCrewManifest pcm = new PartCrewManifest(ShipConstruction.ShipManifest) {
+					partInfo = selectedPart.partInfo,
+					partCrew = new string[0],
+					partID = selectedPart.craftID,
+				};
+				ShipConstruction.ShipManifest.SetPartManifest(selectedPart.craftID, pcm);
+			}
+
 			switch (eventType)
 			{
 				case ConstructionEventType.PartCreated:
