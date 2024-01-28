@@ -149,42 +149,4 @@ namespace TweakScale.HarmonyPatching
 		}
 	}
 
-	// ----- Stock EVAConstructionModeEditor.PickupPart
-
-	[HarmonyPatch(typeof(EVAConstructionModeEditor), nameof(EVAConstructionModeEditor.PickupPart))]
-	static class EVAConstructionModeEditor_PickupPart
-	{
-		static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-		{
-			FieldInfo partMassField = AccessTools.Field(typeof(Part), nameof(Part.mass));
-			foreach (var instruction in instructions)
-			{
-				if (instruction.StoresField(partMassField))
-				{
-					yield return new CodeInstruction(OpCodes.Pop);
-					yield return new CodeInstruction(OpCodes.Pop);
-				}
-				else
-				{
-					yield return instruction;
-				}
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(ModuleCargoPart), nameof(ModuleCargoPart.MakePartSettle))]
-	internal static class ModuleCargoPart_MakePartSettle
-	{
-		static bool Prefix(ref IEnumerator __result)
-		{
-			__result = MakePartSettle();
-			return false;
-		}
-
-		static IEnumerator MakePartSettle()
-		{
-			yield break;
-		}
-	}
-
 }
