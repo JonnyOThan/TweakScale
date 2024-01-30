@@ -39,7 +39,21 @@ namespace TweakScale
 			VesselCrewManifest vcm = ShipConstruction.ShipManifest;
 			if (vcm == null) { return; }
 			PartCrewManifest pcm = vcm.GetPartCrewManifest(part.craftID);
-			if (pcm == null) { return; }
+			if (pcm == null)
+			{
+				// https://github.com/JonnyOThan/TweakScale/issues/32
+				if (part.CrewCapacity == 0 && part.partInfo.partPrefab.CrewCapacity > 0)
+				{
+					pcm = new PartCrewManifest(ShipConstruction.ShipManifest) {
+						partInfo = part.partInfo,
+						partCrew = new string[0],
+						partID = part.craftID,
+					};
+					ShipConstruction.ShipManifest.SetPartManifest(part.craftID, pcm);
+				}
+
+				return;
+			}
 
 			int len = pcm.partCrew.Length;
 			int newLen = Math.Min(part.CrewCapacity, part.partInfo.partPrefab.CrewCapacity);
