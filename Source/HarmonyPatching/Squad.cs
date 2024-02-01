@@ -149,4 +149,19 @@ namespace TweakScale.HarmonyPatching
 		}
 	}
 
+
+	// Stock InternalModel.Initialize
+	// https://github.com/JonnyOThan/TweakScale/issues/45
+	[HarmonyPatch(typeof(InternalModel), nameof(InternalModel.Initialize))]
+	static class InternalModel_Initialize
+	{
+		static void Prefix(InternalModel __instance, Part p)
+		{
+			var tweakScaleModule = p.FindModuleImplementing<TweakScale>();
+			if (tweakScaleModule == null) return;
+
+			// TODO: do we need to care about saving the default local scale in case it's not identity?
+			__instance.transform.localScale = tweakScaleModule.currentScaleFactor * Vector3.one;
+		}
+	}
 }

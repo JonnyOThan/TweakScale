@@ -71,11 +71,6 @@ namespace TweakScale
 		private Part _prefabPart;
 
 		/// <summary>
-		/// Cached scale vector, we need this because the game regularly reverts the scaling of the IVA overlay
-		/// </summary>
-		private Vector3 _savedIvaScale;
-
-		/// <summary>
 		/// The exponentValue by which the part is scaled by default. When destination part uses MODEL { scale = ... }, this will be different from (1,1,1).
 		/// </summary>
 		[KSPField(isPersistant = true)]
@@ -470,13 +465,6 @@ namespace TweakScale
 				extraMass = 0;
 				SetStatsLabel("");
 			}
-
-			// scale IVA overlay
-			if (HighLogic.LoadedSceneIsFlight && enabled && (part.internalModel != null))
-			{
-				_savedIvaScale = part.internalModel.transform.localScale * currentScaleFactor;
-				part.internalModel.transform.localScale = _savedIvaScale;
-			}
 		}
 
 		public override void OnStartFinished(StartState state)
@@ -535,21 +523,8 @@ namespace TweakScale
 		public override void OnUpdate()
 		{
 			// note: OnUpdate is only called in flight, not the editor
-			// isEnabled controls whether the Part calls this function, so only keep it awake if we need it
+			// isEnabled controls whether the Part calls this function, and we don't need to do any work every frame
 			isEnabled = false;
-
-			// flight scene frequently nukes our OnStart resize some time later (probably portraits or crew transfers)
-			// TODO: we could intercept that with harmony and get rid of this update method
-			if (part.internalModel != null)
-			{
-				if (part.internalModel.transform.localScale != _savedIvaScale)
-				{
-					part.internalModel.transform.localScale = _savedIvaScale;
-				}
-
-				// TODO: the part's internal model might be spawned later (freeiva, crew transfers, moduleanimategeneric, etc) at which point we need to wake up.
-				isEnabled = true;
-			}
 		}
 
 #region editor event handlers
