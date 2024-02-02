@@ -560,6 +560,14 @@ namespace TweakScale
 				GameEvents.onEditorShipModified.Fire(EditorLogic.fetch.ship);
 			}
 		}
+
+		internal void OnB9PSModuleDataChanged(PartModule module)
+		{
+			// note: see comment in B9PartSwitch.cs
+			// TODO: this probably won't be correct if the module uses any relative scale factors.  Would be best to re-run the scaling handler for this module specifically
+			// OnTweakScaleChanged(currentScaleFactor);
+		}
+
 #endregion
 
 #region Stats handling

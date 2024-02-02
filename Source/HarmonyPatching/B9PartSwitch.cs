@@ -8,18 +8,20 @@ using UnityEngine;
 
 namespace TweakScale.HarmonyPatching
 {
-	// ----- B9PS AttachNodes
-
-	[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePosition")]
-	class B9PS_AttachNodeMover_SetAttachNodePosition
+	[HarmonyPatch]
+	static class B9PS_HarmonyPatching
 	{
 		static bool Prepare()
 		{
 			return AssemblyLoader.loadedAssemblies.Contains("B9PartSwitch");
 		}
 
+		// ----- attachnodes
+
 		// this gets called when loading a ship that has a partswitch already applied
-		public static bool Prefix(AttachNode ___attachNode, Vector3 ___position)
+		[HarmonyPrefix]
+		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePosition")]
+		public static bool AttachNodeMover_SetAttachNodePosition_Prefix(AttachNode ___attachNode, Vector3 ___position)
 		{
 			if (!HighLogic.LoadedSceneIsEditor) return true;
 			var tweakScaleModule = ___attachNode.owner.FindModuleImplementing<TweakScale>();
@@ -29,18 +31,11 @@ namespace TweakScale.HarmonyPatching
 
 			return false;
 		}
-	}
-
-	[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePositionAndMoveParts")]
-	class B9PS_AttachNodeMover_SetAttachNodePositionAndMoveParts
-	{
-		static bool Prepare()
-		{
-			return AssemblyLoader.loadedAssemblies.Contains("B9PartSwitch");
-		}
 
 		// B9PS only sets the attachnode position, not originalPosition, and this seems to be necessary to keep everything working
-		public static bool Prefix(AttachNode ___attachNode, Vector3 ___position)
+		[HarmonyPrefix]
+		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "SetAttachNodePositionAndMoveParts")]
+		public static bool AttachNodeMover_SetAttachNodePositionAndMoveParts_Prefix(AttachNode ___attachNode, Vector3 ___position)
 		{
 			var tweakScaleModule = ___attachNode.owner.FindModuleImplementing<TweakScale>();
 			if (tweakScaleModule == null) return true;
@@ -50,18 +45,11 @@ namespace TweakScale.HarmonyPatching
 
 			return false;
 		}
-	}
-
-	[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "UnsetAttachNodePositionAndMoveParts")]
-	class B9PS_AttachNodeMover_UnsetAttachNodePositionAndMoveParts
-	{
-		static bool Prepare()
-		{
-			return AssemblyLoader.loadedAssemblies.Contains("B9PartSwitch");
-		}
 
 		// the B9PS version of this function depends on originalPosition being the one from the prefab, but thanks to our patch above it's not.
-		public static bool Prefix(AttachNode ___attachNode, Vector3 ___position)
+		[HarmonyPrefix]
+		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.AttachNodeMover", "UnsetAttachNodePositionAndMoveParts")]
+		public static bool AttachNodeMover_UnsetAttachNodePositionAndMoveParts_Prefix(AttachNode ___attachNode, Vector3 ___position)
 		{
 			var tweakScaleModule = ___attachNode.owner.FindModuleImplementing<TweakScale>();
 			if (tweakScaleModule == null) return true;
@@ -75,5 +63,52 @@ namespace TweakScale.HarmonyPatching
 
 			return false;
 		}
+
+		// Don't have any evidence that this is needed, so disabling for now.  If we do need it, these patches should be cleaned up and probably use a transpiler.
+#if false
+
+		// ----- module data switching
+		// https://github.com/JonnyOThan/TweakScale/issues/53
+
+		[HarmonyPrefix]
+		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.ModuleDataHandlerBasic", "Activate")]
+		public static bool ModuleDataHandlerBasic_Activate_Prefix(PartModule ___module, ConfigNode ___dataNode, BaseEventDetails ___moduleDataChangedEventDetails)
+		{
+			var tweakScaleModule = ___module.part.FindModuleImplementing<TweakScale>();
+			if (tweakScaleModule == null) return true;
+
+			bool isEnabled = ___module.isEnabled;
+			___module.Load(___dataNode);
+			___module.isEnabled = isEnabled;
+
+			// new
+			tweakScaleModule.OnB9PSModuleDataChanged(___module);
+			// end new
+
+			___module.Events.Send("ModuleDataChanged", ___moduleDataChangedEventDetails);
+
+			return false;
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.ModuleDataHandlerBasic", "Deactivate")]
+		public static bool ModuleDataHandlerBasic_Deactivate_Prefix(PartModule ___module, ConfigNode ___originalNode, BaseEventDetails ___moduleDataChangedEventDetails)
+		{
+			var tweakScaleModule = ___module.part.FindModuleImplementing<TweakScale>();
+			if (tweakScaleModule == null) return true;
+
+			bool isEnabled = ___module.isEnabled;
+			___module.Load(___originalNode);
+			___module.isEnabled = isEnabled;
+
+			// new
+			tweakScaleModule.OnB9PSModuleDataChanged(___module);
+			// end new
+
+			___module.Events.Send("ModuleDataChanged", ___moduleDataChangedEventDetails);
+
+			return false;
+		}
+#endif
 	}
 }
