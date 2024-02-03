@@ -164,4 +164,31 @@ namespace TweakScale.HarmonyPatching
 			__instance.transform.localScale = tweakScaleModule.currentScaleFactor * Vector3.one;
 		}
 	}
+
+	[HarmonyPatch(typeof(CompoundPart), nameof(CompoundPart.UpdateWorldValues))]
+	static class CompoundPart_UpdateWorldValue
+	{
+		static void Postfix(CompoundPart __instance)
+		{
+			__instance.wTgtPos /= __instance.target.rescaleFactor;
+		}
+	}
+
+	[HarmonyPatch(typeof(CompoundPart), nameof(CompoundPart.UpdateTargetCoords))]
+	static class CompoundPart_UpdateTargetCoords
+	{
+		static void Prefix(CompoundPart __instance, ref Vector3 __state)
+		{
+			__state = __instance.wTgtPos;
+			if (__instance.target != null)
+			{
+				__instance.wTgtPos *= __instance.target.rescaleFactor;
+			}
+		}
+
+		static void Postfix(CompoundPart __instance, Vector3 __state)
+		{
+			__instance.wTgtPos = __state;
+		}
+	}
 }

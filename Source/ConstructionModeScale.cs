@@ -328,6 +328,8 @@ namespace TweakScale
 			var tweakScaleModule = selectedPart.FindModuleImplementing<TweakScale>();
 			float newScaleFactor = previousScaleFactor + amount;
 			tweakScaleModule.SetScaleFactor(newScaleFactor, GetScaleSnapMode());
+
+			GameEvents.onEditorPartEvent.Fire(ConstructionEventType.PartOffsetting, selectedPart);
 		}
 
 		private void onScaleGizmoUpdated(Vector3 arg1)
@@ -398,8 +400,7 @@ namespace TweakScale
 						fsm.RunEvent(on_scaleReset);
 					}
 
-					// TODO: do we need to emit a construction event?  What kind?  Where?
-					//GameEvents.onEditorPartEvent.Fire(ConstructionEventType.PartOffset, selectedPart);
+					GameEvents.onEditorPartEvent.Fire(ConstructionEventType.PartOffset, selectedPart);
 				}
 			}
 
