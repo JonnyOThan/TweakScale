@@ -567,11 +567,23 @@ namespace TweakScale
 
 		public static Dictionary<string, ScaleExponents> CreateExponentsForModule(ConfigNode node, Dictionary<string, ScaleExponents> parent)
 		{
-			var local = node.nodes
+			var scaleExponents = node.nodes
 				.OfType<ConfigNode>()
 				.Where(IsExponentBlock)
-				.Select(a => new ScaleExponents(a))
-				.ToDictionary(a => a._id);
+				.Select(a => new ScaleExponents(a));
+
+			var local = new Dictionary<string, ScaleExponents>();
+			foreach (var child in scaleExponents)
+			{
+				if (local.ContainsKey(child._id))
+				{
+					Tools.LogError("Duplicated exponents for key {0}", child._id);
+				}
+				else
+				{
+					local.Add(child._id, child);
+				}
+			}
 
 			ScaleExponents.treatMassAndCost(local);
 
