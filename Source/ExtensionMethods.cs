@@ -143,5 +143,15 @@ namespace TweakScale
 			return (T)Convert.ChangeType(value, typeof(T));
 		}
 	}
+
+	public static class PartExtensions
+	{
+		// MOST of the time, if parent isn't null, potentialParent will be equal to parent.
+		// But after re-rooting, parent can be non-null and potentialParent is null
+		public static Part ParentSafe(this Part part)
+		{
+			return part.potentialParent != null ? part.potentialParent : part.parent;
+		}
+	}
 }
 

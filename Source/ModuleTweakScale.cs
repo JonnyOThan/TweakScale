@@ -1061,8 +1061,8 @@ namespace TweakScale
 			{
 				var deltaPos = node.position - oldPosition;
 
-				// If this node connects to our parent part, then *we* need to move (note that potentialParent == parent if the part is *actually* attached)
-				if (attachedPart == part.potentialParent)
+				// If this node connects to our parent part, then *we* need to move
+				if (attachedPart == part.ParentSafe())
 				{
 					if (moveSelf)
 					{
