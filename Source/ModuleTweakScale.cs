@@ -1182,7 +1182,7 @@ namespace TweakScale
 
 		string IModuleInfo.GetInfo()
 		{
-			return "Scale Type: " + ScaleType.Name;
+			return ScaleType == null ? "" : "Scale Type: " + ScaleType.Name;
 
 			// TODO: the rest of this is kinda useful for debugging, but not very well polished for general users
 #if false
