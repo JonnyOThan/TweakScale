@@ -13,8 +13,8 @@ namespace TweakScale
 	static partial class VersionInfo
 	{
 		public const int MAJOR = 3;
-		public const int MINOR = 1;
-		public const int REVISION = 4;
-		public const string STRING = "3.1.4";
+		public const int MINOR = 2;
+		public const int REVISION = 0;
+		public const string STRING = "3.2.0";
 	}
 }
