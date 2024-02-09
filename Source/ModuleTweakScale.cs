@@ -960,6 +960,12 @@ namespace TweakScale
 			foreach (var child in part.children)
 			{
 				var attachNode = child.FindAttachNodeByPart(part);
+
+				// this can happen when re-rooting a surface attachment.
+				// we might have a node pointing to the child, but they might not have one pointing to us.
+				// https://github.com/JonnyOThan/TweakScale/issues/56
+				if (attachNode == null) continue;
+
 				var attachedPosition = child.transform.localPosition + child.transform.localRotation * attachNode.position;
 				var targetPosition = attachedPosition * relativeScaleFactor;
 				child.transform.Translate(targetPosition - attachedPosition, part.transform);
