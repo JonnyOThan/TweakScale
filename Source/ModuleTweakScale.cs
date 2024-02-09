@@ -42,7 +42,7 @@ namespace TweakScale
 		[KSPField(guiActiveEditor = true, guiName = "Match Node Size", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
 		public bool matchNodeSize = false;
-		[KSPField(guiActiveEditor = true, guiName = "Show KeyBindings", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
+		[KSPField(guiActiveEditor = true, guiName = "Show Key Prompts", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]
 		[UI_Toggle(enabledText = "On", disabledText = "Off", affectSymCounterparts = UI_Scene.None, suppressEditorShipModified = true)]
 		public bool showKeyBindings = false;
 		[KSPField(guiActiveEditor = true, guiName = "Show Stats", groupName = guiGroupName, groupDisplayName = guiGroupDisplayName)]

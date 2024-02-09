@@ -200,7 +200,7 @@ namespace TweakScale
 						doneAttach = true;
 					}
 
-					var message = $"Node Size: {parentAttachNodeDiameter.ToString("0.0##")}m";
+					var message = $"Match Node Size: {parentAttachNodeDiameter.ToString("0.0##")}m";
 
 					if (ShowKeyBinds && !Mathf.Approximately(necessaryScale, partPreviousScale))
 					{
