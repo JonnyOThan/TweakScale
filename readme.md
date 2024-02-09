@@ -1,5 +1,3 @@
-**WARNING:** DO NOT use this on your existing saves or craft files without backing them up first. While I'm pretty sure I can eventually address all the game-breaking issues I'm also pretty sure I haven't yet, and saving your stuff with this version and then trying to go back to other versions will most likely not work.
-
 # Support
 
 You MUST include your ksp.log file with all support requests.  These links are for TweakScaleRescaled.  DO NOT ask for support on other TweakScale threads.
@@ -67,7 +65,7 @@ However, TweakScaleRescaled (this fork) is licensed CC-BY-NC-SA.  Its code may b
 
 # Compatibilty
 
-Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled (once all the bugs are worked out and it hits final release).
+Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled.
 
 However, ongoing interoperability with other versions of TweakScale is not a goal.  I will make a reasonable effort to support it where it's easy.  In order to make the improvements necessary, data structures and assumptions have to be altered in ways that are difficult to reverse.
 
