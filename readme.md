@@ -2,14 +2,14 @@
 
 You MUST include your ksp.log file with all support requests.  These links are for TweakScaleRescaled.  DO NOT ask for support on other TweakScale threads.
 
-* KSP Forum: https://forum.kerbalspaceprogram.com/topic/222953-1125-wip-tweakscale-rescaled/
-* Discord: https://discord.gg/tTWcqrBB3t
-* Github: https://github.com/JonnyOThan/TweakScale/issues
-* Reddit: https://www.reddit.com/r/KerbalSpaceProgram/comments/1957t3x/wip_tweakscale_rescaled/
+* KSP Forum: <https://forum.kerbalspaceprogram.com/topic/222953-1125-wip-tweakscale-rescaled/>
+* Discord: <https://discord.gg/tTWcqrBB3t>
+* Github: <https://github.com/JonnyOThan/TweakScale/issues>
+* Reddit: <https://www.reddit.com/r/KerbalSpaceProgram/comments/1957t3x/wip_tweakscale_rescaled/>
 
 # New Feature Demos
 
-https://youtu.be/em_CyA90Sdo?list=PLDO10NRxfG06QzFcqaEFVjB6FurUaoer8
+<https://youtu.be/em_CyA90Sdo?list=PLDO10NRxfG06QzFcqaEFVjB6FurUaoer8>
 
 # What is this?
 
@@ -65,7 +65,7 @@ However, TweakScaleRescaled (this fork) is licensed CC-BY-NC-SA.  Its code may b
 
 # Compatibilty
 
-Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale_Redist should work seamlessly if you change to TweakScaleRescaled.
+Backwards compatibility is a core goal of TweakScaleRescaled.  Existing craft files, saved games, configs, and mods that depend on Scale\_Redist should work seamlessly if you change to TweakScaleRescaled.
 
 However, ongoing interoperability with other versions of TweakScale is not a goal.  I will make a reasonable effort to support it where it's easy.  In order to make the improvements necessary, data structures and assumptions have to be altered in ways that are difficult to reverse.
 
@@ -95,9 +95,9 @@ Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not bee
 
 # Download
 
-* CKAN (experimental): https://github.com/JonnyOThan/TweakScale/wiki/Experimental-CKAN-Support
-* Github: https://github.com/JonnyOThan/TweakScale/releases
-* Spacedock: https://spacedock.info/mod/3514/TweakScale%20Rescaled
+* CKAN (experimental): <https://github.com/JonnyOThan/TweakScale/wiki/Experimental-CKAN-Support>
+* Github: <https://github.com/JonnyOThan/TweakScale/releases>
+* Spacedock: <https://spacedock.info/mod/3514/TweakScale%20Rescaled>
 
 # Installation Instructions
 
