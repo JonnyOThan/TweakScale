@@ -14,7 +14,7 @@ body:
     id: what-happened
     attributes:
       label: What happened?
-      description: Ideally, also indicate what you *expected* to happen
+      description: Ideally, include what you *expected* to happen
     validations:
       required: true
   - type: textarea
@@ -24,4 +24,9 @@ body:
       description: This file can be found adjacent to your ksp executable
     validations:
       required: true
-      
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: A screenshot of the problem
+      description: Please include the whole KSP game window.  Video clips are great too!
+
