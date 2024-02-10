@@ -947,6 +947,10 @@ namespace TweakScale
 			ScalePartTransform();
 
 			// handle nodes and node-attached parts
+			// Note that we don't move children here, because that translates them based on how far our *attachNode* moved.
+			// But if you offset a part after node-attaching it, you (usually) also want to scale that offset.  At least that keeps the relative form overall.
+			// So instead we move the children based on where *their* attachnode is.
+			// this whole thing could probably use a big refactor.
 			foreach (var node in part.attachNodes)
 			{
 				MoveNode(node, false);
@@ -960,7 +964,7 @@ namespace TweakScale
 			foreach (var child in part.children)
 			{
 				var attachNode = child.FindAttachNodeByPart(part);
-
+				
 				// this can happen when re-rooting a surface attachment.
 				// we might have a node pointing to the child, but they might not have one pointing to us.
 				// https://github.com/JonnyOThan/TweakScale/issues/56

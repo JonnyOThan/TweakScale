@@ -191,4 +191,29 @@ namespace TweakScale.HarmonyPatching
 			__instance.wTgtPos = __state;
 		}
 	}
+
+	// get the reversed attachnode into the unscaled node list
+	[HarmonyPatch(typeof(AttachNode), nameof(AttachNode.ReverseSrfNodeDirection))]
+	static class Part_SetHierarchyRoot
+	{
+		[HarmonyAfter("KSPCommunityFixes")]
+		static void Postfix(AttachNode __instance)
+		{
+			Part part = __instance.owner;
+
+			var tweakScaleModule = part.FindModuleImplementing<TweakScale>();
+			if (tweakScaleModule == null) return;
+
+			foreach (var attachNode in part.attachNodes)
+			{
+				if (attachNode.nodeType == AttachNode.NodeType.Surface && attachNode.attachedPart == part.parent && part.parent != null)
+				{
+					tweakScaleModule.SetUnscaledAttachNode(attachNode);
+					tweakScaleModule.SetUnscaledAttachNodePosition(attachNode.id, attachNode.position / tweakScaleModule.currentScaleFactor);
+					return;
+				}
+			}
+		}
+	}
+
 }
