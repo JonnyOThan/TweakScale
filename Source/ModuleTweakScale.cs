@@ -310,6 +310,7 @@ namespace TweakScale
 				}
 
 				// Try to hook up KSPCF's cloned surface attach node
+				// maybe in general, we should be doing this for any attachnodes that are on the part but don't have an unscaled version?
 				foreach (var attachNode in part.attachNodes)
 				{
 					if (attachNode.nodeType == AttachNode.NodeType.Surface && !unscaledAttachNodes.ContainsKey(attachNode.id))

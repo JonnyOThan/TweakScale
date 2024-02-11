@@ -14,6 +14,8 @@ namespace TweakScale.HarmonyPatching
 {
 	// ----- ModulePartVariants
 
+	// This module can move attachnodes, and we need a notification to store the unscaled version of the nodes
+
 	[HarmonyPatch(typeof(ModulePartVariants), nameof(ModulePartVariants.UpdateNode))]
 	class ModulePartVariants_UpdateNode
 	{
@@ -150,7 +152,11 @@ namespace TweakScale.HarmonyPatching
 	}
 
 
-	// Stock InternalModel.Initialize
+	// ----- Stock InternalModel.Initialize
+
+	// The internal model can get created and destroyed many times throughout flight
+	// rather than having an update function where we continually set the scale, just hook into the creation to set it
+
 	// https://github.com/JonnyOThan/TweakScale/issues/45
 	[HarmonyPatch(typeof(InternalModel), nameof(InternalModel.Initialize))]
 	static class InternalModel_Initialize
@@ -165,8 +171,13 @@ namespace TweakScale.HarmonyPatching
 		}
 	}
 
+	// ----- Stock CompoundPart
+
+	// This means fuel lines and struts, which connect two parts
+	// These patches handle making sure that they stay in the correct positions relative to the part when scaling
+
 	[HarmonyPatch(typeof(CompoundPart), nameof(CompoundPart.UpdateWorldValues))]
-	static class CompoundPart_UpdateWorldValue
+	static class CompoundPart_UpdateWorldValues
 	{
 		static void Postfix(CompoundPart __instance)
 		{
@@ -189,30 +200,6 @@ namespace TweakScale.HarmonyPatching
 		static void Postfix(CompoundPart __instance, Vector3 __state)
 		{
 			__instance.wTgtPos = __state;
-		}
-	}
-
-	// get the reversed attachnode into the unscaled node list
-	[HarmonyPatch(typeof(AttachNode), nameof(AttachNode.ReverseSrfNodeDirection))]
-	static class Part_SetHierarchyRoot
-	{
-		[HarmonyAfter("KSPCommunityFixes")]
-		static void Postfix(AttachNode __instance)
-		{
-			Part part = __instance.owner;
-
-			var tweakScaleModule = part.FindModuleImplementing<TweakScale>();
-			if (tweakScaleModule == null) return;
-
-			foreach (var attachNode in part.attachNodes)
-			{
-				if (attachNode.nodeType == AttachNode.NodeType.Surface && attachNode.attachedPart == part.parent && part.parent != null)
-				{
-					tweakScaleModule.SetUnscaledAttachNode(attachNode);
-					tweakScaleModule.SetUnscaledAttachNodePosition(attachNode.id, attachNode.position / tweakScaleModule.currentScaleFactor);
-					return;
-				}
-			}
 		}
 	}
 

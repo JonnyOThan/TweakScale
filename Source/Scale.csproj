@@ -70,6 +70,7 @@
     <Compile Include="HarmonyPatching\Firespitter.cs" />
     <Compile Include="HarmonyPatching\HarmonyPatching.cs" />
     <Compile Include="HarmonyPatching\InterstellarFuelSwitch.cs" />
+    <Compile Include="HarmonyPatching\KSPCF.cs" />
     <Compile Include="HarmonyPatching\SimpleFuelSwitch.cs" />
     <Compile Include="HarmonyPatching\SmokeScreen.cs" />
     <Compile Include="HarmonyPatching\Squad.cs" />
