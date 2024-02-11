@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweakScale_Waterfall", "Sou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameData", "GameData", "{4197A090-B36D-4C2B-ACDD-1857FEBF0FD0}"
 	ProjectSection(SolutionItems) = preProject
-		GameData\TweakScale\TweakScale-Redist.version = GameData\TweakScale\TweakScale-Redist.version
+		GameData\999_Scale_Redist.version = GameData\999_Scale_Redist.version
 		GameData\TweakScale\TweakScale.version = GameData\TweakScale\TweakScale.version
 		GameData\TSSafetyNet\TweakScaleSafetyNet.version = GameData\TSSafetyNet\TweakScaleSafetyNet.version
 	EndProjectSection

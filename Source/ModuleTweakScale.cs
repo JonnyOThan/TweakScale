@@ -309,6 +309,16 @@ namespace TweakScale
 					}
 				}
 
+				// Try to hook up KSPCF's cloned surface attach node
+				foreach (var attachNode in part.attachNodes)
+				{
+					if (attachNode.nodeType == AttachNode.NodeType.Surface && !unscaledAttachNodes.ContainsKey(attachNode.id))
+					{
+						SetUnscaledAttachNode(attachNode);
+						SetUnscaledAttachNodePosition(attachNode.id, attachNode.position / currentScaleFactor);
+					}
+				}
+
 				guiScaleValue = currentScaleFactor * guiDefaultScale;
 				isEnabled = true; // isEnabled gets persisted in the cfg, and we want to always start enabled and then go to sleep
 			}
@@ -1059,10 +1069,14 @@ namespace TweakScale
 
 		internal void MoveNode(AttachNode node, bool moveChildren = true, bool moveSelf = true)
 		{
+			// TODO: we *could* handle this with relative scaling...
+			if (!unscaledAttachNodes.TryGetValue(node.id, out AttachNodeInfo unscaledNodeInfo))
+			{
+				Tools.LogError("PART {0} failed to find unscaled version of attachnode {1}", part.partInfo.name, node.id);
+				return;
+			}
+
 			var oldPosition = node.position;
-
-			AttachNodeInfo unscaledNodeInfo = unscaledAttachNodes[node.id];
-
 			node.originalPosition = node.position = unscaledNodeInfo.position * currentScaleFactor;
 
 			Part attachedPart = GetAttachedPart(node);
