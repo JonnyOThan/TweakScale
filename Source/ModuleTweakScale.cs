@@ -176,6 +176,17 @@ namespace TweakScale
 			unscaledAttachNodes[attachNodeId] = nodeInfo;
 		}
 
+		// When reversing a surface attachment, KSP will change the position of the srfAttachNode in the part
+		// We intercept that action with a harmony patch, but once the craft file has been saved and reloaded the only thing we can do is try to reconstruct where it should be
+		internal void StoreUnscaledSrfAttachNode()
+		{
+			if (part.srfAttachNode != null)
+			{
+				SetUnscaledAttachNode(part.srfAttachNode);
+				SetUnscaledAttachNodePosition(part.srfAttachNode.id, part.srfAttachNode.position / currentScaleFactor);
+			}
+		}
+
 		internal bool TryGetUnscaledAttachNode(string attachNodeId, out AttachNodeInfo attachNodeInfo)
 		{
 			return unscaledAttachNodes.TryGetValue(attachNodeId, out attachNodeInfo);
@@ -309,16 +320,8 @@ namespace TweakScale
 					}
 				}
 
-				// Try to hook up KSPCF's cloned surface attach node
 				// maybe in general, we should be doing this for any attachnodes that are on the part but don't have an unscaled version?
-				foreach (var attachNode in part.attachNodes)
-				{
-					if (attachNode.nodeType == AttachNode.NodeType.Surface && !unscaledAttachNodes.ContainsKey(attachNode.id))
-					{
-						SetUnscaledAttachNode(attachNode);
-						SetUnscaledAttachNodePosition(attachNode.id, attachNode.position / currentScaleFactor);
-					}
-				}
+				StoreUnscaledSrfAttachNode();
 
 				guiScaleValue = currentScaleFactor * guiDefaultScale;
 				isEnabled = true; // isEnabled gets persisted in the cfg, and we want to always start enabled and then go to sleep

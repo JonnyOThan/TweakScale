@@ -203,4 +203,21 @@ namespace TweakScale.HarmonyPatching
 		}
 	}
 
+	// ----- stock AttachNode
+
+	// when reversing a surface attachment during a re-root operation, the stock code will move the srfAttachNode for the part
+	// this needs to become the new unscaled version of the node.
+
+	[HarmonyPatch(typeof(AttachNode), nameof(AttachNode.ReverseSrfNodeDirection))]
+	static class AttachNode_ReverseSrfNodeDirection
+	{
+		static void Postfix(AttachNode __instance)
+		{
+			var tweakScaleModule = __instance.owner.FindModuleImplementing<TweakScale>();
+			if (tweakScaleModule == null) return;
+
+			tweakScaleModule.StoreUnscaledSrfAttachNode();
+		}
+	}
+
 }
