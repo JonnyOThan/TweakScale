@@ -95,7 +95,7 @@ Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not bee
 
 # Download
 
-* CKAN is recommended
+* CKAN is recommended (NOTE: if you previously had TweakScale-Redist installed, you may need to deselect it and select TweakScaleRescaled-Redist instead)
 * Github: <https://github.com/JonnyOThan/TweakScale/releases>
 * Spacedock: <https://spacedock.info/mod/3514/TweakScale%20Rescaled>
 
