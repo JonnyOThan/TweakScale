@@ -2,7 +2,7 @@
 
 You MUST include your ksp.log file with all support requests.  These links are for TweakScaleRescaled.  DO NOT ask for support on other TweakScale threads.
 
-* KSP Forum: <https://forum.kerbalspaceprogram.com/topic/222953-1125-wip-tweakscale-rescaled/>
+* KSP Forum: <https://forum.kerbalspaceprogram.com/topic/223692-1125-tweakscalerescaled-scale-your-parts-in-the-editor/>
 * Discord: <https://discord.gg/tTWcqrBB3t>
 * Github: <https://github.com/JonnyOThan/TweakScale/issues>
 * Reddit: <https://www.reddit.com/r/KerbalSpaceProgram/comments/1957t3x/wip_tweakscale_rescaled/>
@@ -95,7 +95,7 @@ Only KSP 1.12 is supported.  Other versions 1.8-1.11 *may* work but have not bee
 
 # Download
 
-* CKAN (experimental): <https://github.com/JonnyOThan/TweakScale/wiki/Experimental-CKAN-Support>
+* CKAN is recommended
 * Github: <https://github.com/JonnyOThan/TweakScale/releases>
 * Spacedock: <https://spacedock.info/mod/3514/TweakScale%20Rescaled>
 
