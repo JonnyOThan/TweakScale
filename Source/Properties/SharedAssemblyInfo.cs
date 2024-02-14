@@ -14,7 +14,7 @@ namespace TweakScale
 	{
 		public const int MAJOR = 3;
 		public const int MINOR = 2;
-		public const int REVISION = 1;
-		public const string STRING = "3.2.1";
+		public const int REVISION = 2;
+		public const string STRING = "3.2.2";
 	}
 }
