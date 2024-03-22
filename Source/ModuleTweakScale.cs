@@ -252,7 +252,7 @@ namespace TweakScale
 			Fields["guiScaleNameIndex"].guiActiveEditor = false;
 			ScaleFactors = scaleType.GetUnlockedScaleFactors();
 			scaleNames = scaleType.GetUnlockedScaleNames();
-			if (ScaleFactors.Length <= 0)
+			if (ScaleFactors.Length <= 1)
 				return;
 
 			if (isFreeScale)
@@ -267,7 +267,7 @@ namespace TweakScale
 			}
 			else
 			{
-				Fields["guiScaleNameIndex"].guiActiveEditor = ScaleFactors.Length > 1;
+				Fields["guiScaleNameIndex"].guiActiveEditor = true;
 				var options = (UI_ChooseOption)Fields["guiScaleNameIndex"].uiControlEditor;
 				options.options = scaleNames;
 				guiScaleNameIndex = Tools.ClosestIndex(guiScaleValue, ScaleFactors);
