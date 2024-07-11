@@ -28,6 +28,7 @@ namespace TweakScale.HarmonyPatching
 			if (tweakScaleModule == null) return true;
 
 			tweakScaleModule.SetUnscaledAttachNodePosition(___attachNode.id, ___position);
+			tweakScaleModule.MoveNode(___attachNode);
 
 			return false;
 		}
