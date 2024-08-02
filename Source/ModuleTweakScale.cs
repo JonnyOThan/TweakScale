@@ -579,6 +579,8 @@ namespace TweakScale
 		{
 			// note: see comment in B9PartSwitch.cs
 			// TODO: this probably won't be correct if the module uses any relative scale factors.  Would be best to re-run the scaling handler for this module specifically
+
+			// this doesn't work because it will use the prefab values as baseline; when we actually need to treat the *current* values as baseline
 			// OnTweakScaleChanged(currentScaleFactor);
 		}
 

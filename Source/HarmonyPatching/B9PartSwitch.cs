@@ -65,11 +65,13 @@ namespace TweakScale.HarmonyPatching
 			return false;
 		}
 
-		// Don't have any evidence that this is needed, so disabling for now.  If we do need it, these patches should be cleaned up and probably use a transpiler.
-#if false
-
 		// ----- module data switching
 		// https://github.com/JonnyOThan/TweakScale/issues/53
+		// these should probably use a transpiler to insert our notification before the event broadcast
+		// I'm assuming that we need to handle scaling before any possible event handlers here, or else we could just insert this as an event handler...
+		// There don't seem to be very many consumers of this:
+		// - https://github.com/blowfishpro/SimpleAdjustableFairings/blob/7d33d008c52033ac7ae284e54db156d2a1ad02ae/SimpleAdjustableFairings/ModuleSimpleAdjustableFairing.cs#L147
+		// - https://github.com/DarthPointer/PayToPlay/blob/90389b7161d26900da4c3a098bb00cd0f1adc93a/Source/EngineDecay/EngineDecay/EngineDecay.cs#L1682
 
 		[HarmonyPrefix]
 		[HarmonyPatch("B9PartSwitch.PartSwitch.PartModifiers.ModuleDataHandlerBasic", "Activate")]
@@ -110,6 +112,5 @@ namespace TweakScale.HarmonyPatching
 
 			return false;
 		}
-#endif
 	}
 }
