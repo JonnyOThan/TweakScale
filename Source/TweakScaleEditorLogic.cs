@@ -2,9 +2,7 @@
 using KSP.IO;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using UnityEngine;
 
 namespace TweakScale
@@ -65,16 +63,27 @@ namespace TweakScale
 			set => SetToggleOption(_showKeyBinds, value);
 		}
 
+		static string GetFilePathFor(Type T, string file)
+		{
+			string assemblyDataPath = AssemblyLoader.loadedAssemblies.GetByAssembly(T.Assembly).dataPath;
+			string text = Path.Combine(KSP.IO.IOUtils.PluginRootPath, assemblyDataPath);
+			file = Path.GetFileName(file);
+			return Path.Combine(text, file);
+		}
+
 		void Start()
 		{
-			_config = PluginConfiguration.CreateForType<TweakScale>();
 			try
 			{
+				// The stock CreateForType calls GetTypes on all loaded assemblies, which will break horribly if any of them throw exceptions
+				//_config = PluginConfiguration.CreateForType<TweakScale>();
+				_config = new PluginConfiguration(GetFilePathFor(typeof(TweakScale), "config.xml"));
 				_config.load();
 			}
 			catch (Exception ex)
 			{
 				Tools.LogException(ex);
+				_config = new PluginConfiguration(Path.Combine(Path.GetDirectoryName(typeof(TweakScale).Assembly.Location), "config.xml")); // strange, but at least it won't crash
 			}
 
 			_hotkeyManager = new HotkeyManager(_config);
