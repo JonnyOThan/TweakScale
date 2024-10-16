@@ -1,0 +1,17 @@
+name: build
+
+on:
+  push:
+    branches: [ dev, master ]
+    paths:
+      - '**/*.cs'
+  pull_request:
+    paths:
+      - '**/*.cs'
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/build.yml@main
+
