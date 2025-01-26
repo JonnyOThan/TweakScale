@@ -228,32 +228,9 @@ namespace TweakScale
 				double absoluteScalar = Math.Pow(factor.absolute.linear, scalingMode.ExponentValue);
 				double multiplyBy = scalingMode.UseRelativeScaling ? Math.Pow(factor.relative.linear, scalingMode.ExponentValue) : absoluteScalar;
 
-				// field is a list - multiply each value
-				if (current.Value is IList currentValues && baseValue.Value is IList baseValues)
-				{
-					for (int i = 0; i < currentValues.Count && i < baseValues.Count; ++i)
-					{
-						if (currentValues[i] is float)
-						{
-							currentValues[i] = (float)baseValues[i] * multiplyBy;
-						}
-						else if (currentValues[i] is double)
-						{
-							currentValues[i] = (double)baseValues[i] * multiplyBy;
-						}
-						else if (currentValues[i] is Vector3)
-						{
-							currentValues[i] = (Vector3)baseValues[i] * (float)multiplyBy;
-						}
-					}
-				}
-				// single field
-				else
-				{
-					BuildInfoLine(current, baseValue, scalingMode, factor, parentName, info, absoluteScalar);
+				BuildInfoLine(current, baseValue, scalingMode, factor, parentName, info, absoluteScalar);
 
-					current.Scale(multiplyBy, baseValue);
-				}
+				current.Scale(multiplyBy, baseValue);
 			}
 		}
 
