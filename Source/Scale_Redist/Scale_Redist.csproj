@@ -57,9 +57,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Target Name="Rename" BeforeTargets="CopyBinariesToRepo">
-    <Move SourceFiles="$(TargetDir)$(TargetName).dll" DestinationFiles="$(TargetDir)999_$(TargetName).dll"/>
-    <Move SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFiles="$(TargetDir)999_$(TargetName).pdb"/>
+  <Target Name="Rename" AfterTargets="CopyBinariesToRepo">
+    <Move SourceFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/$(TargetName).dll" DestinationFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/999_$(TargetName).dll"/>
+	<Move SourceFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/$(TargetName).pdb" DestinationFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/999_$(TargetName).pdb"/>
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
