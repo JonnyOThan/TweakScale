@@ -326,6 +326,15 @@ namespace TweakScale
 				}
 
 				var baseValue = nameExponentKV.Value.UseRelativeScaling ? value : MemberUpdater.Create(baseObj, nameExponentKV.Key);
+				if (baseValue == null)
+				{
+					Tools.LogWarning($"No base member found on {parentName} for exponent {nameExponentKV.Key}; part {part.partInfo.name}");
+					continue;
+				}
+				else if (!nameExponentKV.Value.UseRelativeScaling && object.ReferenceEquals(value, baseValue))
+				{
+					Tools.LogWarning($"Using current object as base but relative scaling is not enabled: {parentName}; exponent {nameExponentKV.Key}; part {part.partInfo.name}");
+				}
 				Rescale(value, baseValue, nameExponentKV.Value, factor, parentName, info);
 			}
 
@@ -336,6 +345,13 @@ namespace TweakScale
 				if (childObjField == null || child.Value == null)
 					continue;
 				var baseChildObjField = MemberUpdater.Create(baseObj, childName);
+
+				if (baseChildObjField == null)
+				{
+					// this may be OK if it uses relative scaling, but it also could be bad.
+					Tools.LogWarning($"No child named {childName} found in {parentName}; part {part.partInfo.name}");
+				}
+
 				child.Value.UpdateFields(childObjField.Value, (baseChildObjField ?? childObjField).Value, factor, part, childName, info);
 			}
 		}
