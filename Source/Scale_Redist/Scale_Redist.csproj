@@ -29,6 +29,13 @@
     <BinariesOutputRelativePath>GameData</BinariesOutputRelativePath>
     <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
   </PropertyGroup>
+  <ItemGroup>
+    <KSPVersionFile Include="999_Scale_Redist.version">
+      <Destination>$(RepoRootPath)/GameData/999_Scale_Redist.version</Destination>
+      <KSP_Version_Min>1.12.3</KSP_Version_Min>
+      <Name>TweakScale-Redist</Name>
+    </KSPVersionFile>
+  </ItemGroup>
   <Target Name="Rename" AfterTargets="CopyBinariesToRepo">
     <Move SourceFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/$(TargetName).dll" DestinationFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/999_$(TargetName).dll"/>
     <Move SourceFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/$(TargetName).pdb" DestinationFiles="$(RepoRootPath)/$(BinariesOutputRelativePath)/999_$(TargetName).pdb"/>

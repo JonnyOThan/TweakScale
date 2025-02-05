@@ -31,6 +31,12 @@
     <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
   </PropertyGroup>
   <ItemGroup>
+    <KSPVersionFile Include="TweakScaleSafetyNet.version">
+      <Destination>$(RepoRootPath)/GameData/TSSafetyNet/TweakScaleSafetyNet.version</Destination>
+      <KSP_Version_Min>1.12.3</KSP_Version_Min>
+    </KSPVersionFile>
+  </ItemGroup>
+  <ItemGroup>
     <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
     <!-- note the IncludeCompilerGeneratedMembers is only in krafs 2, so it has no effect here.  but leaving it just in case we upgrade later -->
     <DoNotPublicize Include="Assembly-CSharp:BaseField`1.OnValueModified" />
