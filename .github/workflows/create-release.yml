@@ -13,3 +13,4 @@ jobs:
     with:
       version-string: ${{ inputs.version-string }}
       use-ckan: true
+      changelog-output-file: GameData/TweakScale/TweakScaleChangelog.cfg
