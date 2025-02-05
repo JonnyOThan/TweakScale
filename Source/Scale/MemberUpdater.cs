@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 namespace TweakScale
 {
@@ -195,25 +196,43 @@ namespace TweakScale
 			}
 			else if (MemberType == typeof(List<ResourceRatio>))
 			{
-				var l = (newValue as List<ResourceRatio>);
-				ScaleResourceList(l, scale);
+				ScaleResourceList(Value as List<ResourceRatio>, newValue as List<ResourceRatio>, scale);
 			}
 			else if (MemberType == typeof(ConversionRecipe))
 			{
-				var l = (newValue as ConversionRecipe);
-				ScaleResourceList(l.Inputs, scale);
-				ScaleResourceList(l.Outputs, scale);
-				ScaleResourceList(l.Requirements, scale);
+				var prefabRecipe = (newValue as ConversionRecipe);
+				var thisRecipe = Value as ConversionRecipe;
+				ScaleResourceList(thisRecipe.Inputs, prefabRecipe.Inputs, scale);
+				ScaleResourceList(thisRecipe.Outputs, prefabRecipe.Outputs, scale);
+				ScaleResourceList(thisRecipe.Requirements, prefabRecipe.Requirements, scale);
+			}
+			else if (source.Value is IList currentValues && source.Value is IList baseValues)
+			{
+				for (int i = 0; i < currentValues.Count && i < baseValues.Count; ++i)
+				{
+					if (currentValues[i] is float)
+					{
+						currentValues[i] = (float)baseValues[i] * scale;
+					}
+					else if (currentValues[i] is double)
+					{
+						currentValues[i] = (double)baseValues[i] * scale;
+					}
+					else if (currentValues[i] is Vector3)
+					{
+						currentValues[i] = (Vector3)baseValues[i] * (float)scale;
+					}
+				}
 			}
 		}
 
-		public void ScaleResourceList(List<ResourceRatio> l, double scale)
+		public void ScaleResourceList(List<ResourceRatio> destValue, List<ResourceRatio> baseValue, double scale)
 		{
-			for (int i = 0; i < l.Count; i++)
+			for (int i = 0; i < baseValue.Count; i++)
 			{
-				var tmp = l[i];
+				var tmp = baseValue[i];
 				tmp.Ratio *= scale;
-				l[i] = tmp;
+				destValue[i] = tmp;
 			}
 		}
 

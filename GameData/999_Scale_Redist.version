@@ -1,32 +1,14 @@
 {
-     "NAME":"TweakScale-Redist",
-     "URL":"https://raw.githubusercontent.com/JonnyOThan/TweakScale/master/GameData/999_Scale_Redist.version",
-     "DOWNLOAD":"https://spacedock.info/mod/3514/TweakScale%20Rescaled",
-     "GITHUB":{
-         "USERNAME":"JonnyOThan",
-         "REPOSITORY":"TweakScale",
-         "ALLOW_PRE_RELEASE":false
-     },
-     "VERSION":{
-         "MAJOR":3,
-         "MINOR":2,
-         "PATCH":3
-     },
-     "KSP_VERSION":{
-         "MAJOR":1,
-         "MINOR":12,
-         "PATCH":5
-     },
-     "KSP_VERSION_MIN":
-     {
-        "MAJOR":1,
-        "MINOR":12,
-        "PATCH":3
-     },
-     "KSP_VERSION_MAX":
-     {
-        "MAJOR":1,
-        "MINOR":12,
-        "PATCH":99
-     }
+  "URL": "https://github.com/JonnyOThan/TweakScale/releases/latest/download/999_Scale_Redist.version",
+  "DOWNLOAD": "https://spacedock.info/mod/3514/TweakScale%20Rescaled",
+  "GITHUB": {
+    "USERNAME": "JonnyOThan",
+    "REPOSITORY": "TweakScale",
+    "ALLOW_PRE_RELEASE": true
+  },
+  "NAME": "TweakScale-Redist",
+  "VERSION": "3.2.4",
+  "KSP_VERSION": "1.12",
+  "KSP_VERSION_MIN": "1.12.3",
+  "KSP_VERSION_MAX": "1.12"
 }

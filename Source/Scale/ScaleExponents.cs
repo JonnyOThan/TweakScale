@@ -228,32 +228,9 @@ namespace TweakScale
 				double absoluteScalar = Math.Pow(factor.absolute.linear, scalingMode.ExponentValue);
 				double multiplyBy = scalingMode.UseRelativeScaling ? Math.Pow(factor.relative.linear, scalingMode.ExponentValue) : absoluteScalar;
 
-				// field is a list - multiply each value
-				if (current.Value is IList currentValues && baseValue.Value is IList baseValues)
-				{
-					for (int i = 0; i < currentValues.Count && i < baseValues.Count; ++i)
-					{
-						if (currentValues[i] is float)
-						{
-							currentValues[i] = (float)baseValues[i] * multiplyBy;
-						}
-						else if (currentValues[i] is double)
-						{
-							currentValues[i] = (double)baseValues[i] * multiplyBy;
-						}
-						else if (currentValues[i] is Vector3)
-						{
-							currentValues[i] = (Vector3)baseValues[i] * (float)multiplyBy;
-						}
-					}
-				}
-				// single field
-				else
-				{
-					BuildInfoLine(current, baseValue, scalingMode, factor, parentName, info, absoluteScalar);
+				BuildInfoLine(current, baseValue, scalingMode, factor, parentName, info, absoluteScalar);
 
-					current.Scale(multiplyBy, baseValue);
-				}
+				current.Scale(multiplyBy, baseValue);
 			}
 		}
 
@@ -349,6 +326,15 @@ namespace TweakScale
 				}
 
 				var baseValue = nameExponentKV.Value.UseRelativeScaling ? value : MemberUpdater.Create(baseObj, nameExponentKV.Key);
+				if (baseValue == null)
+				{
+					Tools.LogWarning($"No base member found on {parentName} for exponent {nameExponentKV.Key}; part {part.partInfo.name}");
+					continue;
+				}
+				else if (!nameExponentKV.Value.UseRelativeScaling && object.ReferenceEquals(value, baseValue))
+				{
+					Tools.LogWarning($"Using current object as base but relative scaling is not enabled: {parentName}; exponent {nameExponentKV.Key}; part {part.partInfo.name}");
+				}
 				Rescale(value, baseValue, nameExponentKV.Value, factor, parentName, info);
 			}
 
@@ -359,6 +345,13 @@ namespace TweakScale
 				if (childObjField == null || child.Value == null)
 					continue;
 				var baseChildObjField = MemberUpdater.Create(baseObj, childName);
+
+				if (baseChildObjField == null)
+				{
+					// this may be OK if it uses relative scaling, but it also could be bad.
+					Tools.LogWarning($"No child named {childName} found in {parentName}; part {part.partInfo.name}");
+				}
+
 				child.Value.UpdateFields(childObjField.Value, (baseChildObjField ?? childObjField).Value, factor, part, childName, info);
 			}
 		}

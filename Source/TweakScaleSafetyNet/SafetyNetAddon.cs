@@ -111,13 +111,23 @@ namespace TweakScale.SafetyNet
 
 				// check scale_redist
 				var scaleRedistInfo = AssemblyLoader.availableAssemblies.FirstOrDefault(assemblyInfo => assemblyInfo.name == "999_Scale_Redist");
+				var thisAssemblyVersionAttribute = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyVersionAttribute>();
+
 				if (scaleRedistInfo == null)
 				{
 					DiagnosticMessage += "\n999_Scale_Redist.dll is required and not installed.";
 				}
-				else if (scaleRedistInfo.assemblyVersion.Major != TweakScale.VersionInfo.MAJOR)
+				else if (thisAssemblyVersionAttribute == null)
 				{
-					DiagnosticMessage += $"\n999_Scale_Redist.dll is the wrong version.  Expected {TweakScale.VersionInfo.STRING}, but {scaleRedistInfo.assemblyVersion} is installed.";
+					DiagnosticMessage += "\nTSSafetyNet AssemblyVersion attribute not found.";
+				}
+				else if (!System.Version.TryParse(thisAssemblyVersionAttribute.Version, out Version thisVersion))
+				{
+					DiagnosticMessage += $"\nUnable to parse TSSafetyNet AsssemblyVersion {thisAssemblyVersionAttribute.Version}";
+				}
+				else if (scaleRedistInfo.assemblyVersion.Major != thisVersion.Major)
+				{
+					DiagnosticMessage += $"\n999_Scale_Redist.dll is the wrong version.  Expected {thisAssemblyVersionAttribute.Version}, but {scaleRedistInfo.assemblyVersion} is installed.";
 				}
 				else if (!AssemblyLoader.loadedAssemblies.Contains("Scale_Redist"))
 				{

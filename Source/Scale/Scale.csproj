@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B3F3175A-C048-4FB7-AC5E-44D5935D3348}</ProjectGuid>
+    <ProjectGuid>{70D38878-43DB-4F6E-8002-45ADA5391AF7}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>TweakScale.Waterfall</RootNamespace>
-    <AssemblyName>TweakScale_Waterfall</AssemblyName>
+    <RootNamespace>TweakScale</RootNamespace>
+    <AssemblyName>Scale</AssemblyName>
     <TargetFramework>net4.8</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <DebugSymbols>true</DebugSymbols>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
@@ -30,17 +31,28 @@
     <GenerateKSPAssemblyDependencyAttributes>true</GenerateKSPAssemblyDependencyAttributes>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="$(KSPRoot)/GameData/Waterfall/Plugins/Waterfall.dll">
-      <Private>false</Private>
-      <CKANIdentifier>Waterfall</CKANIdentifier>
-      <KSPAssemblyName>Waterfall</KSPAssemblyName>
-    </Reference>
+    <KSPVersionFile Include="TweakScale.version">
+      <Destination>$(RepoRootPath)/GameData/TweakScale/TweakScale.version</Destination>
+      <KSP_Version_Min>1.12.3</KSP_Version_Min>
+      <Name>TweakScale</Name>
+    </KSPVersionFile>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="$(KSPRoot)/GameData/000_Harmony/0Harmony.dll">
       <Private>false</Private>
       <CKANIdentifier>Harmony2</CKANIdentifier>
       <KSPAssemblyName>HarmonyKSP</KSPAssemblyName>
       <KSPAssemblyVersion>1.0.0</KSPAssemblyVersion>
     </Reference>
+    <Reference Include="$(KSPRoot)/GameData/ModuleManager*.dll">
+      <Private>false</Private>
+      <CKANIdentifier>ModuleManager</CKANIdentifier>
+      <KSPAssemblyName>ModuleManager</KSPAssemblyName>
+      <KSPAssemblyVersion>2.5.0</KSPAssemblyVersion>
+    </Reference>
+    <ProjectReference Include="..\Scale_Redist\Scale_Redist.csproj">
+      <Private>False</Private>
+    </ProjectReference>
     <!-- not sure how to do KSPAssemblyDependency on other projects in the same sln yet, but this should work for now -->
     <AssemblyAttribute Include="KSPAssemblyDependency">
       <_Parameter1>Scale_Redist</_Parameter1>
@@ -54,16 +66,20 @@
     </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Scale\Scale.csproj">
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Scale_Redist\Scale_Redist.csproj">
-      <Project>{2be63d8b-350e-4edd-959c-4b7397984364}</Project>
-      <Name>Scale_Redist</Name>
-      <Private>False</Private>
-    </ProjectReference>
+    <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
+    <!-- note the IncludeCompilerGeneratedMembers is only in krafs 2, so it has no effect here.  but leaving it just in case we upgrade later -->
+    <DoNotPublicize Include="Assembly-CSharp:BaseField`1.OnValueModified" />
+    <Publicize Include="UnityEngine.UI" />
   </ItemGroup>
+  <PropertyGroup>
+    <PublicizerClearCacheOnClean>true</PublicizerClearCacheOnClean>
+    <PublicizeAsReferenceAssemblies>false</PublicizeAsReferenceAssemblies>
+  </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="KSPBuildTools" Version="0.0.3" />
   </ItemGroup>
 </Project>

@@ -511,7 +511,7 @@ namespace TweakScale
 					{
 						if (particleEffect.emitter.main.scalingMode == ParticleSystemScalingMode.Local)
 						{
-							particleEffect.emitter.transform.localScale = particleEffect.localScale * scale;
+							particleEffect.emitter.transform.localScale *= scale * scale; // yes, really
 						}
 					}
 					else if (effect is ModelMultiParticleFX modelMultiParticleFX)
@@ -520,7 +520,7 @@ namespace TweakScale
 						{
 							if (emitter.ps.main.scalingMode == ParticleSystemScalingMode.Local)
 							{
-								emitter.ps.transform.localScale = modelMultiParticleFX.localScale * scale;
+								emitter.ps.transform.localScale *= scale;
 							}
 						}
 					}
@@ -579,6 +579,8 @@ namespace TweakScale
 		{
 			// note: see comment in B9PartSwitch.cs
 			// TODO: this probably won't be correct if the module uses any relative scale factors.  Would be best to re-run the scaling handler for this module specifically
+
+			// this doesn't work because it will use the prefab values as baseline; when we actually need to treat the *current* values as baseline
 			// OnTweakScaleChanged(currentScaleFactor);
 		}
 

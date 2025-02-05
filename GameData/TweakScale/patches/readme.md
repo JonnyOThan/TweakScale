@@ -53,7 +53,7 @@ There are two main sections:
 
 Patches that add support for specific parts should go in the 000_Support folder and have `:HAS[!MODULE[TweakScale]]:FOR[TweakScale]`.
 This should provide maximum support and flexibility - if the other mod wants to provide their own support, these patches will be disabled as long as they do it early enough (see above).
-And the naming of the folder ensures that they run before the main TweakScale patching mechanisms.
+~And the naming of the folder ensures that they run before the main TweakScale patching mechanisms.~ NOTE this doesnt actually seem to be true; files are applied before directories despite what the MM docs say.
 // TODO: maybe these should use LAST[TweakScale] ?  Move to something like 500_Support ?
 
 The rest of the patches are executed in order by filename (so long as the patches inside are in the same pass specifier).  There may be rare cases where one of these patches (or something in the 000_Support folder) needs to use a different pass specifier.  That's permissible, but it should be avoided if possible for clarity.
