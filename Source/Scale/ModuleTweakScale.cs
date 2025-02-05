@@ -511,7 +511,7 @@ namespace TweakScale
 					{
 						if (particleEffect.emitter.main.scalingMode == ParticleSystemScalingMode.Local)
 						{
-							particleEffect.emitter.transform.localScale = particleEffect.localScale * scale;
+							particleEffect.emitter.transform.localScale *= scale * scale; // yes, really
 						}
 					}
 					else if (effect is ModelMultiParticleFX modelMultiParticleFX)
@@ -520,7 +520,7 @@ namespace TweakScale
 						{
 							if (emitter.ps.main.scalingMode == ParticleSystemScalingMode.Local)
 							{
-								emitter.ps.transform.localScale = modelMultiParticleFX.localScale * scale;
+								emitter.ps.transform.localScale *= scale;
 							}
 						}
 					}
