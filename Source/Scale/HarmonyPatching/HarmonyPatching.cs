@@ -19,8 +19,23 @@ namespace TweakScale.HarmonyPatching
 			// Harmony.DEBUG = true;
 #endif
 
-			var harmony = new Harmony("TweakScale");
-			harmony.PatchAll(Assembly.GetExecutingAssembly());
+			try
+			{
+				var harmony = new Harmony("TweakScale");
+				harmony.PatchAll(Assembly.GetExecutingAssembly());
+			}
+			catch(Exception e)
+			{
+				Tools.LogException(e, "Error in Harmony patching, exception details:");
+
+				var message =
+					"TweakScale's Harmony patching failed.  Please make sure your other mods are up to date.  It may be unsafe to load your saved games.\n\n" +
+					"Include your KSP.log file in any requests for support.";
+				var dialog = new MultiOptionDialog("TweakScale", message, "TweakScale Error", HighLogic.UISkin, 300, 
+					new DialogGUIButton("Quit", Application.Quit));
+
+				PopupDialog.SpawnPopupDialog(dialog, true, HighLogic.UISkin);
+			}
 		}
 	}
 }
