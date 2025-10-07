@@ -26,7 +26,8 @@ namespace TweakScale
 				return;
 			}
 
-			addInteropValue_MethodInfo = tfInterface.GetMethod("AddInteropValue", BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static);
+			Type[] argTypes = new Type[] { typeof(Part), typeof(string), typeof(string), typeof(string) };
+			addInteropValue_MethodInfo = tfInterface.GetMethod("AddInteropValue", argTypes);
 
 			if (addInteropValue_MethodInfo == null)
 			{

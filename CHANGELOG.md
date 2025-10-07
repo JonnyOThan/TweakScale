@@ -8,6 +8,7 @@
 ## Unreleased
 
 * Fix NRE when a particle emitter transform is missing
+* Fix exception when TestFlight is installed
 
 ## 3.2.4 - 2025-02-05
 
