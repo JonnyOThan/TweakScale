@@ -5,6 +5,10 @@
 * Scaling parts after re-rooting across a surface attachment does not move them correctly
 * Scaling parts that alter their module data with B9PartSwitch (e.g. SimpleAdjustableFairings, HeatControl) does not work
 
+## Unreleased
+
+* Fix NRE when a particle emitter transform is missing
+
 ## 3.2.4 - 2025-02-05
 
 * Fix attachnode positions on parts where the B9PS subtype has a different position from the prefab

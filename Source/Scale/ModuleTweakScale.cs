@@ -509,7 +509,7 @@ namespace TweakScale
 				{
 					if (effect is PrefabParticleFX particleEffect)
 					{
-						if (particleEffect.emitter.main.scalingMode == ParticleSystemScalingMode.Local)
+						if (particleEffect.emitter != null && particleEffect.emitter.main.scalingMode == ParticleSystemScalingMode.Local)
 						{
 							particleEffect.emitter.transform.localScale *= scale * scale; // yes, really
 						}
