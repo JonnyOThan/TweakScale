@@ -13,6 +13,7 @@
 * Support changing waterfall plumes with B9PartSwitch
 * Wheel suspension spring strength exponent set to 2 in order to get consistent relative displacement at different scales
 * Added bulkhead size heuristics up to size6 (7.5m)
+* Better support for SystemHeat (thanks @arbsoup)
 
 ## 3.2.4 - 2025-02-05
 
