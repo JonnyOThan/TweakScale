@@ -10,7 +10,8 @@
 * Fix NRE when a particle emitter transform is missing
 * Fix exception when TestFlight is installed
 * Gracefully handle harmony patching failure (usually caused by out of date mods)
-* Support changing waterfall plumes
+* Support changing waterfall plumes with B9PartSwitch
+* Wheel suspension spring strength exponent set to 2 in order to get consistent relative displacement at different scales
 
 ## 3.2.4 - 2025-02-05
 
