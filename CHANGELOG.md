@@ -9,9 +9,9 @@
 
 ### Prevented scaling of several problematic parts
 
-* Prevent scaling some additional procedural parts from RO
-* Prevent scaling stock fairing since they don't work correctly
-* Prevent scaling RealChutes
+* Some additional procedural parts from RO
+* Stock fairing since they don't work correctly
+* RealChutes
 
 ### Other changes
 
@@ -27,6 +27,7 @@
 * Fix scaling for variable power engines from Near Future Propulsion
 * Optimized application of scaling to PartModules; removed duplicate application of certain scale factors in derived types
 * Specialized scale handlers can now opt to run before the exponent-based scaling
+* Add support for scaling Near Future Exploration antenna reflectors
 
 ## 3.2.4 - 2025-02-05
 
