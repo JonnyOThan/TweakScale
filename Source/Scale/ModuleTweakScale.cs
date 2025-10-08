@@ -766,7 +766,7 @@ namespace TweakScale
 		{
 			ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
 
-			// Recording the ordering here for posterity:
+			// Recording the original ordering here for posterity:
 			// TSGenericUpdater is first (applies exponents to everything)
 			// then UpdateCrewManifest
 			// then UpdateAntennaPowerDisplay
@@ -776,7 +776,38 @@ namespace TweakScale
 			// then all other updaters except TSGenericUpdater
 			// it's not exactly clear which of these care about ordering other than the TSGenericUpdater goes first
 
-			// First apply the exponents
+			Action<IRescalable> InvokeHandler = (IRescalable handler) =>
+			{
+				try
+				{
+					// TODO: how to get string info out of this?
+					handler.OnRescale(notificationPayload);
+				}
+				catch (Exception ex)
+				{
+					Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
+				}
+			};
+
+			// First process any handlers that want to go before the exponents
+			int handlerIndex = 0;
+			if (_handlers != null)
+			{
+				for (; handlerIndex < _handlers.Length; handlerIndex++)
+				{
+					var handler = _handlers[handlerIndex];
+					if (handler is IRescalablePriority rescalablePriority && rescalablePriority.Priority <= (int)IRescalablePriority.PriorityThreshold.BeforeExponentHandlers)
+					{
+						InvokeHandler(handler);
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+
+			// Then apply the exponents
 			float oldMass = part.mass;
 			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload, infoBuilder);
 			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
@@ -787,19 +818,12 @@ namespace TweakScale
 			data.Set<float>("factorRelative", notificationPayload.relative.linear);
 			part.SendEvent("OnPartScaleChanged", data, 0);
 
+			// then process the rest of the handlers
 			if (_handlers != null)
 			{
-				foreach (var handler in _handlers)
+				for (; handlerIndex < _handlers.Length; handlerIndex++)
 				{
-					try
-					{
-						// TODO: how to get string info out of this?
-						handler.OnRescale(notificationPayload);
-					}
-					catch (Exception ex)
-					{
-						Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
-					}
+					InvokeHandler(_handlers[handlerIndex]);
 				}
 			}
 		}

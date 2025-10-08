@@ -44,6 +44,12 @@ namespace TweakScale
 	/// </summary>
 	public interface IRescalablePriority
 	{
+		public enum PriorityThreshold
+		{
+			BeforeExponentHandlers = -1000, // Priorities less than or equal to this will run before the exponent-based handlers
+			Default = 0
+		}
+
 		int Priority { get; }
 	}
 
