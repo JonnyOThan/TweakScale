@@ -7,6 +7,16 @@
 
 ## Unreleased
 
+### Prevented scaling of several problematic parts
+
+* Prevent scaling some additional procedural parts from RO
+* Prevent scaling stock fairing since they don't work correctly
+* Prevent scaling RealChutes
+
+### Other changes
+
+* Fixed mass scale for RCS parts to maintain TWR
+* Make sure drills are never treated as science so that they can be scaled up
 * Fix NRE when a particle emitter transform is missing
 * Fix exception when TestFlight is installed
 * Gracefully handle harmony patching failure (usually caused by out of date mods)
@@ -15,7 +25,7 @@
 * Added bulkhead size heuristics up to size6 (7.5m)
 * Better support for SystemHeat (thanks @arbsoup)
 * Fix scaling for variable power engines from Near Future Propulsion
-* Optimized application of scaling to PartModules
+* Optimized application of scaling to PartModules; removed duplicate application of certain scale factors in derived types
 * Specialized scale handlers can now opt to run before the exponent-based scaling
 
 ## 3.2.4 - 2025-02-05
