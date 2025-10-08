@@ -365,66 +365,35 @@ namespace TweakScale
 		/// <param name="part">The part the object is on.</param>
 		private void UpdateEnumerable(IEnumerable obj, IEnumerable prefabObj, ScalingFactor factor, string parentName, StringBuilder info, Part part = null)
 		{
-			var prefabObjects = prefabObj as object[] ?? prefabObj.Cast<object>().ToArray();
-			var urrentObjects = obj as object[] ?? obj.Cast<object>().ToArray();
+			// WARNING for the next time I inevitably spend hours debugging this:
+			// this does not handle containers of structs!  Structs are immutable, so all of the edits we make to currentItem are on the boxed copy
+			// We'd need to somehow assign that object back to the container.
+			// List<ResourceRatio> is handled specially in MemberUpdater.Scale
 
-			if (prefabObj == null || urrentObjects.Length != prefabObjects.Length)
+			IList prefabObjects = prefabObj as IList ?? prefabObj.Cast<object>().ToArray();
+			IList currentObjects = obj as IList ?? obj.Cast<object>().ToArray();
+
+			if (prefabObj == null || currentObjects.Count!= prefabObjects.Count)
 			{
-				prefabObjects = ((object)null).Repeat().Take(urrentObjects.Length).ToArray();
+				prefabObjects = ((object)null).Repeat().Take(currentObjects.Count).ToArray();
 			}
 
-			foreach (var item in urrentObjects.Zip(prefabObjects, ModuleAndPrefab.Create))
+			for (int itemIndex = 0; itemIndex < currentObjects.Count; ++itemIndex)
 			{
+				var currentItem = currentObjects[itemIndex];
+
 				if (!string.IsNullOrEmpty(_name) && _name != "*") // Operate on specific elements, not all.
 				{
-					var childName = item.Current.GetType().GetField("name");
+					var childName = currentItem.GetType().GetField("name");
 					if (childName != null)
 					{
-						if (childName.FieldType != typeof(string) || (string)childName.GetValue(item.Current) != _name)
+						if (childName.FieldType != typeof(string) || (string)childName.GetValue(currentItem) != _name)
 						{
 							continue;
 						}
 					}
 				}
-				UpdateFields(item.Current, item.Prefab, factor, part, parentName, info);
-			}
-		}
-
-		struct ModuleAndPrefab
-		{
-			public object Current { get; private set; }
-			public object Prefab { get; private set; }
-
-			private ModuleAndPrefab(object current, object prefab)
-				: this()
-			{
-				Current = current;
-				Prefab = prefab;
-			}
-
-			public static ModuleAndPrefab Create(object current, object prefab)
-			{
-				return new ModuleAndPrefab(current, prefab);
-			}
-		}
-
-		struct ModulesAndExponents
-		{
-			public object Current { get; private set; }
-			public object Prefab { get; private set; }
-			public ScaleExponents Exponents { get; private set; }
-
-			private ModulesAndExponents(ModuleAndPrefab modules, ScaleExponents exponents)
-				: this()
-			{
-				Current = modules.Current;
-				Prefab = modules.Prefab;
-				Exponents = exponents;
-			}
-
-			public static ModulesAndExponents Create(ModuleAndPrefab modules, KeyValuePair<string, ScaleExponents> exponents)
-			{
-				return new ModulesAndExponents(modules, exponents.Value);
+				UpdateFields(currentItem, prefabObjects[itemIndex], factor, part, parentName, info);
 			}
 		}
 
@@ -436,56 +405,23 @@ namespace TweakScale
 			}
 
 			// TODO: this will probably break terribly if anyone messes with modules at runtime
-			var modulePairs = part.Modules.Zip(prefabObj.Modules, ModuleAndPrefab.Create);
-
-			var modulesAndExponents = modulePairs.Join(exponents,
-										modules => ((PartModule)modules.Current).moduleName,
-										exps => exps.Key,
-										ModulesAndExponents.Create).ToArray();
-
-			// include derived classes
-			foreach (var e in exponents)
+			for (int moduleIndex = 0; moduleIndex < part.modules.Count; ++moduleIndex)
 			{
-				Type type = GetType(e.Key);
-				if (type == null)
+				PartModule currentModule = part.modules[moduleIndex];
+				PartModule prefabModule = prefabObj.modules[moduleIndex];
+				Type moduleType = currentModule.GetType();
+
+				while (moduleType != typeof(PartModule))
 				{
-					continue;
-				}
-				foreach (var m in modulePairs)
-				{
-					if (m.Current.GetType().IsSubclassOf(type))
+					if (exponents.TryGetValue(moduleType.Name, out var scaleExponents))
 					{
-						var moduleName = ((PartModule)m.Current).moduleName;
-						if (e.Key != moduleName)
-						{
-							e.Value.UpdateFields(m.Current, m.Prefab, factor, part, moduleName, info);
-						}
+						scaleExponents.UpdateFields(currentModule, prefabModule, factor, part, currentModule.moduleName, info);
+						break;
 					}
+
+					moduleType = moduleType.BaseType;
 				}
 			}
-
-			foreach (var modExp in modulesAndExponents)
-			{
-				var moduleName = ((PartModule)modExp.Current).moduleName;
-				modExp.Exponents.UpdateFields(modExp.Current, modExp.Prefab, factor, part, moduleName, info);
-			}
-		}
-
-		public static Type GetType(string typeName)
-		{
-			var type = Type.GetType(typeName);
-			if (type != null) return type;
-			foreach (var a in AssemblyLoader.loadedAssemblies)
-			{
-				try
-				{
-					type = a.assembly.GetType(typeName);
-					if (type != null)
-						return type;
-				}
-				catch { }
-			}
-			return null;
 		}
 
 		public static float getDryMassExponent(Dictionary<string, ScaleExponents> exponents)

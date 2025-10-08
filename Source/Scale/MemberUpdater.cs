@@ -12,7 +12,7 @@ namespace TweakScale
 		private readonly FieldInfo _field;
 		private readonly PropertyInfo _property;
 		private readonly UI_FloatRange _floatRange;
-		private const BindingFlags LookupFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+		private const BindingFlags LookupFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
 
 		static void ConcatSafely(string name, Func<string> a, ref string result)
 		{

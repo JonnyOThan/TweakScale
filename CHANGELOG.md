@@ -15,6 +15,7 @@
 * Added bulkhead size heuristics up to size6 (7.5m)
 * Better support for SystemHeat (thanks @arbsoup)
 * Fix scaling for variable power engines from Near Future Propulsion
+* Optimized application of scaling to PartModules
 
 ## 3.2.4 - 2025-02-05
 
