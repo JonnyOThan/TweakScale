@@ -1,4 +1,5 @@
 using CommNet.Network;
+using Expansions.Missions.Adjusters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,26 +91,70 @@ namespace TweakScale
 
 		public IRescalable[] Handlers => _handlers;
 
-		// When B9PS activates a subtype, we create a fake copy of the prefab partmodule with B9PS's alterations so that we can use it as a baseline for scaling.
+		// When B9PS activates a subtype, we create a fake copy of the prefab with B9PS's alterations so that we can use it as a baseline for scaling.
+		// Note we don't actually use _fakePrefabPart directly because it's not fully set up.  It's just a container for the cloned modules.
+		// Perhaps someday it might be interesting to actually use it as the baseline for the entire part, but I'm sure other stuff would break
+		private Part _fakePrefabPart = null;
 		private PartModule[] _overrideModulePrefabs;
-		internal void SetPartModulePrefab(int moduleIndex, PartModule prefabModule)
+
+		static Part CreateFakePrefab(Part originalPrefab)
 		{
-			// In the editor, we need to keep this module around because we could later apply a new scale factor
-			if (HighLogic.LoadedSceneIsEditor)
+			var fakePrefab = GameObject.Instantiate(originalPrefab);
+
+			foreach (var module in fakePrefab.Modules)
 			{
-				if (_overrideModulePrefabs == null && prefabModule != null)
+				// body of PartModule.Awake():
 				{
-					_overrideModulePrefabs = new PartModule[part.Modules.Count];
+					module.part = fakePrefab.GetComponent<Part>();
+					module.ModuleAttributes = GetReflectedAttributes(module.GetType());
+					module.ModularSetup();
+					module.resHandler.SetPartModule(module);
+					module.resHandler.OnAwake();
+					// module.OnAwake();
+					module._currentModuleAdjusterList = new List<AdjusterPartModuleBase>();
+					module.moduleAdjusterListToAddOnLoad = new List<AdjusterPartModuleBase>();
+					module.moduleAdjusterListToRemoveOnLoad = new List<AdjusterPartModuleBase>();
 				}
 
-				if (_overrideModulePrefabs != null && _overrideModulePrefabs[moduleIndex] != null)
-				{
-					GameObject.Destroy(_overrideModulePrefabs[moduleIndex]);
-				}
-
-				_overrideModulePrefabs[moduleIndex] = prefabModule;
+				// TODO: we may need to run Awake() for certain modules here if they run logic that is necessary to get values into fields so that they can be scaled
+				// However some modules don't work on the faked part, e.g. ModuleRCSFX
+				// do we need to run more of the actual part setup on the clone?
 			}
 
+			return fakePrefab;
+		}
+
+		internal void B9PSActivateSubtype(int moduleIndex, ConfigNode dataNode)
+		{
+			if (_fakePrefabPart == null)
+			{
+				// TODO: should we first check if we have any exponents for this module?
+				_fakePrefabPart = CreateFakePrefab(_prefabPart);
+				_overrideModulePrefabs = new PartModule[_fakePrefabPart.Modules.Count];
+			}
+
+			_overrideModulePrefabs[moduleIndex] = _fakePrefabPart.Modules[moduleIndex];
+
+			var prefabModule = _fakePrefabPart.Modules[moduleIndex];
+			prefabModule.Load(dataNode);
+
+			RefreshModuleScale(moduleIndex);
+		}
+
+		internal void B9PSDeactivateSubtype(int moduleIndex, ConfigNode originalNode)
+		{
+			// TODO: should we try to destroy the fake prefab if this was the last altered module?
+
+			var prefabModule = _fakePrefabPart.Modules[moduleIndex];
+			prefabModule.Load(originalNode);
+
+			_overrideModulePrefabs[moduleIndex] = null;
+
+			RefreshModuleScale(moduleIndex);
+		}
+
+		void RefreshModuleScale(int moduleIndex)
+		{
 			// re-run the scale exponents for this module, using the provided prefab
 			// TODO: what about specialized handlers?
 
@@ -268,18 +313,13 @@ namespace TweakScale
 			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
 			_handlers = null; // probably not necessary, but we can help the garbage collector along maybe
 
-			if (_overrideModulePrefabs != null)
+			if (_fakePrefabPart != null)
 			{
-				foreach (var prefabModule in _overrideModulePrefabs)
-				{
-					if (prefabModule != null)
-					{
-						GameObject.Destroy(prefabModule);
-					}
-				}
-
-				_overrideModulePrefabs = null;
+				GameObject.Destroy(_fakePrefabPart);
+				_fakePrefabPart = null;
 			}
+
+			_overrideModulePrefabs = null;
 		}
 
 		/// <summary>
