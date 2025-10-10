@@ -28,6 +28,7 @@
 * Optimized application of scaling to PartModules; removed duplicate application of certain scale factors in derived types
 * Specialized scale handlers can now opt to run before the exponent-based scaling
 * Add support for scaling Near Future Exploration antenna reflectors
+* Better support for scaling modules that are altered with B9PartSwitch
 
 ## 3.2.4 - 2025-02-05
 
