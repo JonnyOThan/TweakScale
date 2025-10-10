@@ -85,7 +85,18 @@ namespace TweakScale.HarmonyPatching
 			___module.isEnabled = isEnabled;
 
 			// new
-			tweakScaleModule.OnB9PSModuleDataChanged(___module);
+			int moduleIndex = ___module.part.Modules.IndexOf(___module);
+			var prefabModule = ___module.part.partInfo.partPrefab.Modules[moduleIndex];
+
+			// welcome to crazy town:
+			// we need a "prefab version" of the b9ps-altered module in order to scale it properly
+			// TODO: this seems to clone the entire gameobject - which we only really want to do once per part rather than once per module
+			// further, maybe we could check whether this module type has any scaling exponents before cloning, so that we don't do unnecessary work
+			prefabModule = UnityEngine.Object.Instantiate(prefabModule);
+			prefabModule.Awake();
+			prefabModule.Load(___dataNode);
+
+			tweakScaleModule.SetPartModulePrefab(moduleIndex, prefabModule);
 			// end new
 
 			___module.Events.Send("ModuleDataChanged", ___moduleDataChangedEventDetails);
@@ -105,7 +116,9 @@ namespace TweakScale.HarmonyPatching
 			___module.isEnabled = isEnabled;
 
 			// new
-			tweakScaleModule.OnB9PSModuleDataChanged(___module);
+			int moduleIndex = ___module.part.Modules.IndexOf(___module);
+			var prefabModule = ___module.part.partInfo.partPrefab.Modules[moduleIndex];
+			tweakScaleModule.SetPartModulePrefab(moduleIndex, null);
 			// end new
 
 			___module.Events.Send("ModuleDataChanged", ___moduleDataChangedEventDetails);

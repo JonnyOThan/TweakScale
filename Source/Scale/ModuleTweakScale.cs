@@ -90,6 +90,38 @@ namespace TweakScale
 
 		public IRescalable[] Handlers => _handlers;
 
+		// When B9PS activates a subtype, we create a fake copy of the prefab partmodule with B9PS's alterations so that we can use it as a baseline for scaling.
+		private PartModule[] _overrideModulePrefabs;
+		internal void SetPartModulePrefab(int moduleIndex, PartModule prefabModule)
+		{
+			// In the editor, we need to keep this module around because we could later apply a new scale factor
+			if (HighLogic.LoadedSceneIsEditor)
+			{
+				if (_overrideModulePrefabs == null && prefabModule != null)
+				{
+					_overrideModulePrefabs = new PartModule[part.Modules.Count];
+				}
+
+				if (_overrideModulePrefabs != null && _overrideModulePrefabs[moduleIndex] != null)
+				{
+					GameObject.Destroy(_overrideModulePrefabs[moduleIndex]);
+				}
+
+				_overrideModulePrefabs[moduleIndex] = prefabModule;
+			}
+
+			// re-run the scale exponents for this module, using the provided prefab
+			// TODO: what about specialized handlers?
+
+			ScalingFactor scalingFactor = new ScalingFactor(currentScaleFactor, currentScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
+
+			StringBuilder infoBuilder = GetInfoBuilder();
+			ApplyExponentScalingToModule(moduleIndex, scalingFactor, infoBuilder);
+
+			CalculateCostAndMass(false);
+			FinalizeStats(infoBuilder);
+		}
+
 		/// <summary>
 		/// the amount of extra funds caused by scaling (could be negative)
 		/// </summary>
@@ -235,6 +267,19 @@ namespace TweakScale
 			Fields[nameof(guiScaleNameIndex)].OnValueModified -= OnGuiScaleModified;
 			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
 			_handlers = null; // probably not necessary, but we can help the garbage collector along maybe
+
+			if (_overrideModulePrefabs != null)
+			{
+				foreach (var prefabModule in _overrideModulePrefabs)
+				{
+					if (prefabModule != null)
+					{
+						GameObject.Destroy(prefabModule);
+					}
+				}
+
+				_overrideModulePrefabs = null;
+			}
 		}
 
 		/// <summary>
@@ -575,15 +620,6 @@ namespace TweakScale
 			}
 		}
 
-		internal void OnB9PSModuleDataChanged(PartModule module)
-		{
-			// note: see comment in B9PartSwitch.cs
-			// TODO: this probably won't be correct if the module uses any relative scale factors.  Would be best to re-run the scaling handler for this module specifically
-
-			// this doesn't work because it will use the prefab values as baseline; when we actually need to treat the *current* values as baseline
-			// OnTweakScaleChanged(currentScaleFactor);
-		}
-
 #endregion
 
 #region Stats handling
@@ -809,7 +845,7 @@ namespace TweakScale
 
 			// Then apply the exponents
 			float oldMass = part.mass;
-			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload, infoBuilder);
+			ApplyExponentScalingToPart(part, notificationPayload, infoBuilder);
 			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
 
 			// send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the handler list empty for many parts
@@ -825,6 +861,45 @@ namespace TweakScale
 				{
 					InvokeHandler(_handlers[handlerIndex]);
 				}
+			}
+		}
+
+		private void ApplyExponentScalingToModule(int moduleIndex, ScalingFactor factor, StringBuilder info)
+		{
+			PartModule currentModule = part.modules[moduleIndex];
+			PartModule prefabModule = _prefabPart.modules[moduleIndex];
+
+			if (_overrideModulePrefabs != null)
+			{
+				prefabModule = _overrideModulePrefabs[moduleIndex] ?? prefabModule;
+			}
+
+			Type moduleType = currentModule.GetType();
+
+			while (moduleType != typeof(PartModule))
+			{
+				if (ScaleType.Exponents.TryGetValue(moduleType.Name, out var scaleExponents))
+				{
+					scaleExponents.UpdateFields(currentModule, prefabModule, factor, part, currentModule.moduleName, info);
+					break;
+				}
+
+				// TODO: Do we want to run all of the exponents from base to derived?  Otherwise the derived types need to include all the exponents from the base ones rather than inherit them
+				moduleType = moduleType.BaseType;
+			}
+		}
+
+		private void ApplyExponentScalingToPart(Part part, ScalingFactor factor, StringBuilder info)
+		{
+			if (ScaleType.Exponents.TryGetValue("Part", out var partExponents))
+			{
+				partExponents.UpdateFields(part, _prefabPart, factor, part, "Part", info);
+			}
+
+			// TODO: this will probably break terribly if anyone messes with modules at runtime
+			for (int moduleIndex = 0; moduleIndex < part.modules.Count; ++moduleIndex)
+			{
+				ApplyExponentScalingToModule(moduleIndex, factor, info);
 			}
 		}
 

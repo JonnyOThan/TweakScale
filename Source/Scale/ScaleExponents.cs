@@ -303,7 +303,7 @@ namespace TweakScale
 		/// <param name="baseObj">The corresponding object in the prefab.</param>
 		/// <param name="factor">The new scale.</param>
 		/// <param name="part">The part the object is on.</param>
-		private void UpdateFields(object obj, object baseObj, ScalingFactor factor, Part part, string parentName, StringBuilder info)
+		internal void UpdateFields(object obj, object baseObj, ScalingFactor factor, Part part, string parentName, StringBuilder info)
 		{
 			if (obj == null)
 				return;
@@ -394,33 +394,6 @@ namespace TweakScale
 					}
 				}
 				UpdateFields(currentItem, prefabObjects[itemIndex], factor, part, parentName, info);
-			}
-		}
-
-		public static void UpdateObject(Part part, Part prefabObj, Dictionary<string, ScaleExponents> exponents, ScalingFactor factor, StringBuilder info)
-		{
-			if (exponents.ContainsKey("Part"))
-			{
-				exponents["Part"].UpdateFields(part, prefabObj, factor, part, "Part", info);
-			}
-
-			// TODO: this will probably break terribly if anyone messes with modules at runtime
-			for (int moduleIndex = 0; moduleIndex < part.modules.Count; ++moduleIndex)
-			{
-				PartModule currentModule = part.modules[moduleIndex];
-				PartModule prefabModule = prefabObj.modules[moduleIndex];
-				Type moduleType = currentModule.GetType();
-
-				while (moduleType != typeof(PartModule))
-				{
-					if (exponents.TryGetValue(moduleType.Name, out var scaleExponents))
-					{
-						scaleExponents.UpdateFields(currentModule, prefabModule, factor, part, currentModule.moduleName, info);
-						break;
-					}
-
-					moduleType = moduleType.BaseType;
-				}
 			}
 		}
 
