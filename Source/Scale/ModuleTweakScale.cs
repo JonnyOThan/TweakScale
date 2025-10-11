@@ -126,6 +126,9 @@ namespace TweakScale
 
 		internal void B9PSActivateSubtype(int moduleIndex, ConfigNode dataNode)
 		{
+			// If we don't have any scaling exponents for this module, nothing to do
+			if (!ModuleHasExponents(part.Modules[moduleIndex].GetType())) return;
+
 			if (_fakePrefabPart == null)
 			{
 				// TODO: should we first check if we have any exponents for this module?
@@ -143,6 +146,9 @@ namespace TweakScale
 
 		internal void B9PSDeactivateSubtype(int moduleIndex, ConfigNode originalNode)
 		{
+			// If we don't have any scaling exponents for this module, nothing to do
+			if (!ModuleHasExponents(part.Modules[moduleIndex].GetType())) return;
+
 			// TODO: should we try to destroy the fake prefab if this was the last altered module?
 
 			var prefabModule = _fakePrefabPart.Modules[moduleIndex];
@@ -194,6 +200,7 @@ namespace TweakScale
 		// TODO: someday should find a way to avoid this hackery.
 		// These are set to 0 so that they don't show up in the PAW stats.  but it might be useful to set them to 1 and then use these
 		// instead of ScaleExponent.getDryMassExponent and getDryCostExponent
+		// NOTE: these ARE in fact used by FAR to access the current mass scale: https://github.com/dkavolis/Ferram-Aerospace-Research/blob/c769cbd3d23ec9fd22538c1eb8b57fd2fcd025c6/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L211
 #pragma warning disable 0414
 		private float DryCost = 0;
 		private float MassScale = 0;
@@ -905,6 +912,27 @@ namespace TweakScale
 			}
 		}
 
+		bool ModuleHasExponents(Type moduleType)
+		{
+			return FindExponentsForModule(moduleType) != null;
+		}
+
+		ScaleExponents FindExponentsForModule(Type moduleType)
+		{
+			while (moduleType != typeof(PartModule))
+			{
+				if (ScaleType.Exponents.TryGetValue(moduleType.Name, out var scaleExponents))
+				{
+					return scaleExponents;
+				}
+
+				// TODO: Do we want to run all of the exponents from base to derived?  Otherwise the derived types need to include all the exponents from the base ones rather than inherit them
+				moduleType = moduleType.BaseType;
+			}
+
+			return null;
+		}
+
 		private void ApplyExponentScalingToModule(int moduleIndex, ScalingFactor factor, StringBuilder info)
 		{
 			PartModule currentModule = part.modules[moduleIndex];
@@ -915,18 +943,10 @@ namespace TweakScale
 				prefabModule = _overrideModulePrefabs[moduleIndex] ?? prefabModule;
 			}
 
-			Type moduleType = currentModule.GetType();
-
-			while (moduleType != typeof(PartModule))
+			var scaleExponents = FindExponentsForModule(currentModule.GetType());
+			if (scaleExponents != null)
 			{
-				if (ScaleType.Exponents.TryGetValue(moduleType.Name, out var scaleExponents))
-				{
-					scaleExponents.UpdateFields(currentModule, prefabModule, factor, part, currentModule.moduleName, info);
-					break;
-				}
-
-				// TODO: Do we want to run all of the exponents from base to derived?  Otherwise the derived types need to include all the exponents from the base ones rather than inherit them
-				moduleType = moduleType.BaseType;
+				scaleExponents.UpdateFields(currentModule, prefabModule, factor, part, currentModule.moduleName, info);
 			}
 		}
 
