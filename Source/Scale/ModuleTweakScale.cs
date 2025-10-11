@@ -697,14 +697,15 @@ namespace TweakScale
 
 			statsField.uiControlEditor?.partActionItem?.UpdateItem();
 
-			if (part.PartActionWindow != null && !part.PartActionWindow.isActiveAndEnabled)
+			if (part.PartActionWindow == null) return;
+
+			if (!part.PartActionWindow.isActiveAndEnabled)
 			{
 				part.PartActionWindow.displayDirty = true;
 			}
-			else
+			else if (part.PartActionWindow.parameterGroups.TryGetValue(guiGroupName, out var tweakScaleGroup))
 			{
 				// make sure the group updates size as well
-				var tweakScaleGroup = part.PartActionWindow?.parameterGroups[guiGroupName];
 				if (tweakScaleGroup != null)
 				{
 					// no idea why the commmented out stuff below doesn't work :/
