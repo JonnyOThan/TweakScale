@@ -25,18 +25,13 @@ namespace TweakScale.Waterfall
 
 		internal void EffectsInitialized()
 		{
-			// make sure we don't do this more than once....
-			// this feels pretty hacky, may not work with the waterfall editor..
-			if (_unscaledMeshScale == null && _module.FX.Count > 0)
-			{
-				_unscaledMeshScale = new List<Vector3>(_module.FX.Count);
-				_unscaledPosition = new List<Vector3>(_module.FX.Count);
+			_unscaledMeshScale = new List<Vector3>(_module.FX.Count);
+			_unscaledPosition = new List<Vector3>(_module.FX.Count);
 
-				for (int i = 0; i < _module.FX.Count; i++)
-				{
-					_unscaledMeshScale.Add(_module.FX[i].TemplateScaleOffset);
-					_unscaledPosition.Add(_module.FX[i].TemplatePositionOffset);
-				}
+			for (int i = 0; i < _module.FX.Count; i++)
+			{
+				_unscaledMeshScale.Add(_module.FX[i].TemplateScaleOffset);
+				_unscaledPosition.Add(_module.FX[i].TemplatePositionOffset);
 			}
 
 			UpdateScale();
@@ -52,6 +47,10 @@ namespace TweakScale.Waterfall
 
 				// note that the position ends up driving the localPosition of the plume, so it's already been scaled by the model scale
 				fx.ApplyTemplateOffsets(_unscaledPosition[i], fx.TemplateRotationOffset, _unscaledMeshScale[i] * _scaleFactor);
+
+				// Afterwards, set the template offsets back so that if we call EffectsInitialized again they have the correct values
+				fx.TemplatePositionOffset = _unscaledPosition[i];
+				fx.TemplateScaleOffset = _unscaledMeshScale[i];
 			}
 		}
 	}

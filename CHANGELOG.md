@@ -5,6 +5,32 @@
 * Scaling parts after re-rooting across a surface attachment does not move them correctly
 * Scaling parts that alter their module data with B9PartSwitch (e.g. SimpleAdjustableFairings, HeatControl) does not work
 
+## Unreleased
+
+### Prevented scaling of several problematic parts
+
+* Some additional procedural parts from RO
+* Stock fairing since they don't work correctly
+* RealChutes
+
+### Other changes
+
+* Fixed mass scale for RCS parts to maintain TWR
+* Make sure drills are never treated as science so that they can be scaled up
+* Fix NRE when a particle emitter transform is missing
+* Fix exception when TestFlight is installed
+* Gracefully handle harmony patching failure (usually caused by out of date mods)
+* Support changing waterfall plumes with B9PartSwitch
+* Wheel suspension spring strength exponent set to 2 in order to get consistent relative displacement at different scales
+* Added bulkhead size heuristics up to size6 (7.5m)
+* Better support for SystemHeat (thanks @arbsoup)
+* Fix scaling for variable power engines from Near Future Propulsion
+* Optimized application of scaling to PartModules; removed duplicate application of certain scale factors in derived types
+* Specialized scale handlers can now opt to run before the exponent-based scaling
+* Add support for scaling Near Future Exploration antenna reflectors
+* Better support for scaling modules that are altered with B9PartSwitch
+* Fixed scaling of FAR wings
+
 ## 3.2.4 - 2025-02-05
 
 * Fix attachnode positions on parts where the B9PS subtype has a different position from the prefab

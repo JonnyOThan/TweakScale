@@ -1,4 +1,5 @@
 using CommNet.Network;
+using Expansions.Missions.Adjusters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +91,88 @@ namespace TweakScale
 
 		public IRescalable[] Handlers => _handlers;
 
+		// When B9PS activates a subtype, we create a fake copy of the prefab with B9PS's alterations so that we can use it as a baseline for scaling.
+		// Note we don't actually use _fakePrefabPart directly because it's not fully set up.  It's just a container for the cloned modules.
+		// Perhaps someday it might be interesting to actually use it as the baseline for the entire part, but I'm sure other stuff would break
+		private Part _fakePrefabPart = null;
+		private PartModule[] _overrideModulePrefabs;
+
+		static Part CreateFakePrefab(Part originalPrefab)
+		{
+			var fakePrefab = GameObject.Instantiate(originalPrefab);
+
+			foreach (var module in fakePrefab.Modules)
+			{
+				// body of PartModule.Awake():
+				{
+					module.part = fakePrefab.GetComponent<Part>();
+					module.ModuleAttributes = GetReflectedAttributes(module.GetType());
+					module.ModularSetup();
+					module.resHandler.SetPartModule(module);
+					module.resHandler.OnAwake();
+					// module.OnAwake();
+					module._currentModuleAdjusterList = new List<AdjusterPartModuleBase>();
+					module.moduleAdjusterListToAddOnLoad = new List<AdjusterPartModuleBase>();
+					module.moduleAdjusterListToRemoveOnLoad = new List<AdjusterPartModuleBase>();
+				}
+
+				// TODO: we may need to run Awake() for certain modules here if they run logic that is necessary to get values into fields so that they can be scaled
+				// However some modules don't work on the faked part, e.g. ModuleRCSFX
+				// do we need to run more of the actual part setup on the clone?
+			}
+
+			return fakePrefab;
+		}
+
+		internal void B9PSActivateSubtype(int moduleIndex, ConfigNode dataNode)
+		{
+			// If we don't have any scaling exponents for this module, nothing to do
+			if (!ModuleHasExponents(part.Modules[moduleIndex].GetType())) return;
+
+			if (_fakePrefabPart == null)
+			{
+				// TODO: should we first check if we have any exponents for this module?
+				_fakePrefabPart = CreateFakePrefab(_prefabPart);
+				_overrideModulePrefabs = new PartModule[_fakePrefabPart.Modules.Count];
+			}
+
+			_overrideModulePrefabs[moduleIndex] = _fakePrefabPart.Modules[moduleIndex];
+
+			var prefabModule = _fakePrefabPart.Modules[moduleIndex];
+			prefabModule.Load(dataNode);
+
+			RefreshModuleScale(moduleIndex);
+		}
+
+		internal void B9PSDeactivateSubtype(int moduleIndex, ConfigNode originalNode)
+		{
+			// If we don't have any scaling exponents for this module, nothing to do
+			if (!ModuleHasExponents(part.Modules[moduleIndex].GetType())) return;
+
+			// TODO: should we try to destroy the fake prefab if this was the last altered module?
+
+			var prefabModule = _fakePrefabPart.Modules[moduleIndex];
+			prefabModule.Load(originalNode);
+
+			_overrideModulePrefabs[moduleIndex] = null;
+
+			RefreshModuleScale(moduleIndex);
+		}
+
+		void RefreshModuleScale(int moduleIndex)
+		{
+			// re-run the scale exponents for this module, using the provided prefab
+			// TODO: what about specialized handlers?
+
+			ScalingFactor scalingFactor = new ScalingFactor(currentScaleFactor, currentScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
+
+			StringBuilder infoBuilder = GetInfoBuilder();
+			ApplyExponentScalingToModule(moduleIndex, scalingFactor, infoBuilder);
+
+			CalculateCostAndMass(false);
+			FinalizeStats(infoBuilder);
+		}
+
 		/// <summary>
 		/// the amount of extra funds caused by scaling (could be negative)
 		/// </summary>
@@ -117,6 +200,7 @@ namespace TweakScale
 		// TODO: someday should find a way to avoid this hackery.
 		// These are set to 0 so that they don't show up in the PAW stats.  but it might be useful to set them to 1 and then use these
 		// instead of ScaleExponent.getDryMassExponent and getDryCostExponent
+		// NOTE: these ARE in fact used by FAR to access the current mass scale: https://github.com/dkavolis/Ferram-Aerospace-Research/blob/c769cbd3d23ec9fd22538c1eb8b57fd2fcd025c6/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L211
 #pragma warning disable 0414
 		private float DryCost = 0;
 		private float MassScale = 0;
@@ -235,6 +319,14 @@ namespace TweakScale
 			Fields[nameof(guiScaleNameIndex)].OnValueModified -= OnGuiScaleModified;
 			GameEvents.onEditorShipModified.Remove(OnEditorShipModified);
 			_handlers = null; // probably not necessary, but we can help the garbage collector along maybe
+
+			if (_fakePrefabPart != null)
+			{
+				GameObject.Destroy(_fakePrefabPart);
+				_fakePrefabPart = null;
+			}
+
+			_overrideModulePrefabs = null;
 		}
 
 		/// <summary>
@@ -509,7 +601,7 @@ namespace TweakScale
 				{
 					if (effect is PrefabParticleFX particleEffect)
 					{
-						if (particleEffect.emitter.main.scalingMode == ParticleSystemScalingMode.Local)
+						if (particleEffect.emitter != null && particleEffect.emitter.main.scalingMode == ParticleSystemScalingMode.Local)
 						{
 							particleEffect.emitter.transform.localScale *= scale * scale; // yes, really
 						}
@@ -575,15 +667,6 @@ namespace TweakScale
 			}
 		}
 
-		internal void OnB9PSModuleDataChanged(PartModule module)
-		{
-			// note: see comment in B9PartSwitch.cs
-			// TODO: this probably won't be correct if the module uses any relative scale factors.  Would be best to re-run the scaling handler for this module specifically
-
-			// this doesn't work because it will use the prefab values as baseline; when we actually need to treat the *current* values as baseline
-			// OnTweakScaleChanged(currentScaleFactor);
-		}
-
 #endregion
 
 #region Stats handling
@@ -621,14 +704,15 @@ namespace TweakScale
 
 			statsField.uiControlEditor?.partActionItem?.UpdateItem();
 
-			if (part.PartActionWindow != null && !part.PartActionWindow.isActiveAndEnabled)
+			if (part.PartActionWindow == null) return;
+
+			if (!part.PartActionWindow.isActiveAndEnabled)
 			{
 				part.PartActionWindow.displayDirty = true;
 			}
-			else
+			else if (part.PartActionWindow.parameterGroups.TryGetValue(guiGroupName, out var tweakScaleGroup))
 			{
 				// make sure the group updates size as well
-				var tweakScaleGroup = part.PartActionWindow?.parameterGroups[guiGroupName];
 				if (tweakScaleGroup != null)
 				{
 					// no idea why the commmented out stuff below doesn't work :/
@@ -766,7 +850,7 @@ namespace TweakScale
 		{
 			ScalingFactor notificationPayload = new ScalingFactor(currentScaleFactor, relativeScaleFactor, isFreeScale ? -1 : guiScaleNameIndex);
 
-			// Recording the ordering here for posterity:
+			// Recording the original ordering here for posterity:
 			// TSGenericUpdater is first (applies exponents to everything)
 			// then UpdateCrewManifest
 			// then UpdateAntennaPowerDisplay
@@ -776,9 +860,40 @@ namespace TweakScale
 			// then all other updaters except TSGenericUpdater
 			// it's not exactly clear which of these care about ordering other than the TSGenericUpdater goes first
 
-			// First apply the exponents
+			Action<IRescalable> InvokeHandler = (IRescalable handler) =>
+			{
+				try
+				{
+					// TODO: how to get string info out of this?
+					handler.OnRescale(notificationPayload);
+				}
+				catch (Exception ex)
+				{
+					Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
+				}
+			};
+
+			// First process any handlers that want to go before the exponents
+			int handlerIndex = 0;
+			if (_handlers != null)
+			{
+				for (; handlerIndex < _handlers.Length; handlerIndex++)
+				{
+					var handler = _handlers[handlerIndex];
+					if (handler is IRescalablePriority rescalablePriority && rescalablePriority.Priority <= (int)IRescalablePriority.PriorityThreshold.BeforeExponentHandlers)
+					{
+						InvokeHandler(handler);
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+
+			// Then apply the exponents
 			float oldMass = part.mass;
-			ScaleExponents.UpdateObject(part, _prefabPart, ScaleType.Exponents, notificationPayload, infoBuilder);
+			ApplyExponentScalingToPart(part, notificationPayload, infoBuilder);
 			part.mass = oldMass; // since the exponent configs are set up to modify the part mass directly, reset it here
 
 			// send scaling part message (should this be its own partUpdater type?)  I guess not, because then we can keep the handler list empty for many parts
@@ -787,20 +902,65 @@ namespace TweakScale
 			data.Set<float>("factorRelative", notificationPayload.relative.linear);
 			part.SendEvent("OnPartScaleChanged", data, 0);
 
+			// then process the rest of the handlers
 			if (_handlers != null)
 			{
-				foreach (var handler in _handlers)
+				for (; handlerIndex < _handlers.Length; handlerIndex++)
 				{
-					try
-					{
-						// TODO: how to get string info out of this?
-						handler.OnRescale(notificationPayload);
-					}
-					catch (Exception ex)
-					{
-						Tools.LogException(ex, "Handler {0} {1} on part [{2}] threw an exception:", handler.GetType(), handler, part.partInfo.name);
-					}
+					InvokeHandler(_handlers[handlerIndex]);
 				}
+			}
+		}
+
+		bool ModuleHasExponents(Type moduleType)
+		{
+			return FindExponentsForModule(moduleType) != null;
+		}
+
+		ScaleExponents FindExponentsForModule(Type moduleType)
+		{
+			while (moduleType != typeof(PartModule))
+			{
+				if (ScaleType.Exponents.TryGetValue(moduleType.Name, out var scaleExponents))
+				{
+					return scaleExponents;
+				}
+
+				// TODO: Do we want to run all of the exponents from base to derived?  Otherwise the derived types need to include all the exponents from the base ones rather than inherit them
+				moduleType = moduleType.BaseType;
+			}
+
+			return null;
+		}
+
+		private void ApplyExponentScalingToModule(int moduleIndex, ScalingFactor factor, StringBuilder info)
+		{
+			PartModule currentModule = part.modules[moduleIndex];
+			PartModule prefabModule = _prefabPart.modules[moduleIndex];
+
+			if (_overrideModulePrefabs != null)
+			{
+				prefabModule = _overrideModulePrefabs[moduleIndex] ?? prefabModule;
+			}
+
+			var scaleExponents = FindExponentsForModule(currentModule.GetType());
+			if (scaleExponents != null)
+			{
+				scaleExponents.UpdateFields(currentModule, prefabModule, factor, part, currentModule.moduleName, info);
+			}
+		}
+
+		private void ApplyExponentScalingToPart(Part part, ScalingFactor factor, StringBuilder info)
+		{
+			if (ScaleType.Exponents.TryGetValue("Part", out var partExponents))
+			{
+				partExponents.UpdateFields(part, _prefabPart, factor, part, "Part", info);
+			}
+
+			// TODO: this will probably break terribly if anyone messes with modules at runtime
+			for (int moduleIndex = 0; moduleIndex < part.modules.Count; ++moduleIndex)
+			{
+				ApplyExponentScalingToModule(moduleIndex, factor, info);
 			}
 		}
 
@@ -812,6 +972,7 @@ namespace TweakScale
 			"TweakScale",
 			"ModuleInventoryPart",
 			"ModuleFuelTanks",
+			"FARWingAerodynamicModel", // implements IRescalable
 			"InterstellarFuelSwitch", // implements IRescalable
 			"ModuleSwitchableTank", // ConfigurableContainers, understands scaling
 			// "ModuleTankManager", // ConfigurableContainers: the tank manager's cost modifier actually IS an inherent cost - it figures out what the true dry cost of the part should be assuming the tanks are CC ones
@@ -1170,6 +1331,12 @@ namespace TweakScale
 					item.UpdateItem();
 				}
 			}
+		}
+
+		internal float HandleFARScaling()
+		{
+			scaleMass = false;
+			return 1.0f;
 		}
 
 		public float GetDryMassScale()

@@ -85,7 +85,8 @@ namespace TweakScale.HarmonyPatching
 			___module.isEnabled = isEnabled;
 
 			// new
-			tweakScaleModule.OnB9PSModuleDataChanged(___module);
+			int moduleIndex = ___module.part.Modules.IndexOf(___module);
+			tweakScaleModule.B9PSActivateSubtype(moduleIndex, ___dataNode);
 			// end new
 
 			___module.Events.Send("ModuleDataChanged", ___moduleDataChangedEventDetails);
@@ -105,7 +106,8 @@ namespace TweakScale.HarmonyPatching
 			___module.isEnabled = isEnabled;
 
 			// new
-			tweakScaleModule.OnB9PSModuleDataChanged(___module);
+			int moduleIndex = ___module.part.Modules.IndexOf(___module);
+			tweakScaleModule.B9PSDeactivateSubtype(moduleIndex, ___originalNode);
 			// end new
 
 			___module.Events.Send("ModuleDataChanged", ___moduleDataChangedEventDetails);
