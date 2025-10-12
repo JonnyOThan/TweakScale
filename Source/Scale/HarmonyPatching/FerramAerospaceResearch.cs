@@ -16,6 +16,11 @@ namespace TweakScale.HarmonyPatching
 			return AssemblyLoader.loadedAssemblies.Contains("FerramAerospaceResearch");
 		}
 
+		// FAR does its own scale-dependent mass adjustments.
+		// it accomplishes this by trying to fetch the scaled mass in its OnRescale handler, then subtracting that from the desired mass in its GetModuleMass
+		// https://github.com/dkavolis/Ferram-Aerospace-Research/blob/c769cbd3d23ec9fd22538c1eb8b57fd2fcd025c6/FerramAerospaceResearch/LEGACYferram4/FARWingAerodynamicModel.cs#L190
+		// This doesn't work for us because we use a more sophisticaed mass calculation than (MassScale * prefabMass); taking other modifiers etc. into account
+		// Further, we haven't actually calculated the true mass scale until all the handlers have run
 		static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			var newInstructions = instructions.ToList();
@@ -37,8 +42,9 @@ namespace TweakScale.HarmonyPatching
 				{
 					found = true;
 
-					newInstructions[i] = CodeInstruction.Call(typeof(TweakScale), nameof(TweakScale.GetDryMassScale));
+					newInstructions[i] = CodeInstruction.Call(typeof(TweakScale), nameof(TweakScale.HandleFARScaling));
 					newInstructions.RemoveRange(i + 1, 3);
+					Tools.Log("Successfully patched ferram4.FARWingAerodynamicModel.OnRescale method");
 
 					break;
 				}

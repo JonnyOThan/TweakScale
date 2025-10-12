@@ -972,6 +972,7 @@ namespace TweakScale
 			"TweakScale",
 			"ModuleInventoryPart",
 			"ModuleFuelTanks",
+			"FARWingAerodynamicModel", // implements IRescalable
 			"InterstellarFuelSwitch", // implements IRescalable
 			"ModuleSwitchableTank", // ConfigurableContainers, understands scaling
 			// "ModuleTankManager", // ConfigurableContainers: the tank manager's cost modifier actually IS an inherent cost - it figures out what the true dry cost of the part should be assuming the tanks are CC ones
@@ -1330,6 +1331,12 @@ namespace TweakScale
 					item.UpdateItem();
 				}
 			}
+		}
+
+		internal float HandleFARScaling()
+		{
+			scaleMass = false;
+			return 1.0f;
 		}
 
 		public float GetDryMassScale()

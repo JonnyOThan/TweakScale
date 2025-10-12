@@ -29,6 +29,7 @@
 * Specialized scale handlers can now opt to run before the exponent-based scaling
 * Add support for scaling Near Future Exploration antenna reflectors
 * Better support for scaling modules that are altered with B9PartSwitch
+* Fixed scaling of FAR wings
 
 ## 3.2.4 - 2025-02-05
 
