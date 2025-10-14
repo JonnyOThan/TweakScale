@@ -5,15 +5,15 @@
 * Scaling parts after re-rooting across a surface attachment does not move them correctly
 * Scaling parts that alter their module data with B9PartSwitch (e.g. SimpleAdjustableFairings, HeatControl) does not work
 
-## Unreleased
+## 3.3.1 - 2025-10-14
 
-### Prevented scaling of several problematic parts
+### Prevented Scaling Of Several Problematic Parts
 
 * Some additional procedural parts from RO
 * Stock fairing since they don't work correctly
 * RealChutes
 
-### Other changes
+### Other Changes
 
 * Fixed mass scale for RCS parts to maintain TWR
 * Make sure drills are never treated as science so that they can be scaled up
@@ -31,6 +31,7 @@
 * Better support for scaling modules that are altered with B9PartSwitch
 * Fixed scaling of FAR wings
 * Fix incorrectly scaling control surface fraction for stock control surfaces
+
 
 ## 3.2.4 - 2025-02-05
 
