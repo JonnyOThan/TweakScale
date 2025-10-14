@@ -30,6 +30,7 @@
 * Add support for scaling Near Future Exploration antenna reflectors
 * Better support for scaling modules that are altered with B9PartSwitch
 * Fixed scaling of FAR wings
+* Fix incorrectly scaling control surface fraction for stock control surfaces
 
 ## 3.2.4 - 2025-02-05
 
