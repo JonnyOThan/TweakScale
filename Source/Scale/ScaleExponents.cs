@@ -74,6 +74,21 @@ namespace TweakScale
 				.GroupBy(a => a._id)
 				.Select(a => a.Aggregate(Merge))
 				.ToDictionary(a => a._id, a => a);
+
+			// merge base types into derived types
+			foreach (var exponentPair in _globalList)
+			{
+				var partModuleType = AssemblyLoader.GetClassByName(typeof(PartModule), exponentPair.Key);
+				if (partModuleType == null) continue;
+
+				for (Type baseType = partModuleType.BaseType; baseType != typeof(PartModule); baseType = baseType.BaseType)
+				{
+					if (_globalList.TryGetValue(baseType.Name, out var baseExponents))
+					{
+						Merge(exponentPair.Value, baseExponents);
+					}
+				}
+			}
 		}
 
 		/// <summary>

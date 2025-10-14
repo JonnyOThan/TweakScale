@@ -14,8 +14,6 @@ namespace TweakScale.RescalableHandlers
 
 	// also note that ModuleSystemHeatFissionEngine inherits from ModuleSystemHeatFissionReactor
 
-	// does the harvester have the same problem...?
-
 	[RescalablePartModuleHandler("ModuleSystemHeatFissionReactor")]
 	internal class ModuleSystemHeatFissionReactorHandler : IRescalable, IRescalablePriority
 	{
