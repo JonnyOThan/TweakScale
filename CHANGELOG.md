@@ -3,7 +3,10 @@
 ### Known Issues
 
 * Scaling parts after re-rooting across a surface attachment does not move them correctly
-* Scaling parts that alter their module data with B9PartSwitch (e.g. SimpleAdjustableFairings, HeatControl) does not work
+
+## Unreleased
+
+* Add support for propellers from KerbalPowersNaval
 
 ## 3.3.1 - 2025-10-14
 
