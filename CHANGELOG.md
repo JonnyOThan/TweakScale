@@ -3,17 +3,20 @@
 ### Known Issues
 
 * Scaling parts after re-rooting across a surface attachment does not move them correctly
-* Scaling parts that alter their module data with B9PartSwitch (e.g. SimpleAdjustableFairings, HeatControl) does not work
 
 ## Unreleased
 
-### Prevented scaling of several problematic parts
+* Add support for propellers from KerbalPowersNaval
+
+## 3.3.1 - 2025-10-14
+
+### Prevented Scaling Of Several Problematic Parts
 
 * Some additional procedural parts from RO
 * Stock fairing since they don't work correctly
 * RealChutes
 
-### Other changes
+### Other Changes
 
 * Fixed mass scale for RCS parts to maintain TWR
 * Make sure drills are never treated as science so that they can be scaled up
