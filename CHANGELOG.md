@@ -7,6 +7,7 @@
 ## Unreleased
 
 * Add support for propellers from KerbalPowersNaval
+* Fixed exception causing scaling to completely break when InfernalRobotics is installed
 
 ## 3.3.1 - 2025-10-14
 

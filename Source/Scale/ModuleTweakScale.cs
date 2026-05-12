@@ -958,7 +958,9 @@ namespace TweakScale
 			}
 
 			// TODO: this will probably break terribly if anyone messes with modules at runtime
-			for (int moduleIndex = 0; moduleIndex < part.modules.Count; ++moduleIndex)
+			// NOTE: Infernal Robotics dynamically adds an "editor helper" module in the VAB
+			// As long as no one dynamically adds anything that needs scaling, this should be ok
+			for (int moduleIndex = 0; moduleIndex < _prefabPart.modules.Count; ++moduleIndex)
 			{
 				ApplyExponentScalingToModule(moduleIndex, factor, info);
 			}
