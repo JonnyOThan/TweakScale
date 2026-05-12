@@ -7,7 +7,7 @@
     "ALLOW_PRE_RELEASE": true
   },
   "NAME": "TweakScaleSafetyNet",
-  "VERSION": "3.2.4",
+  "VERSION": "3.3.1.0",
   "KSP_VERSION": "1.12",
   "KSP_VERSION_MIN": "1.12.3",
   "KSP_VERSION_MAX": "1.12"
