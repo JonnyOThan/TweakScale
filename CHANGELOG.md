@@ -4,11 +4,12 @@
 
 * Scaling parts after re-rooting across a surface attachment does not move them correctly
 
-## Unreleased
+## 3.3.2 - 2026-05-13
 
 * Add support for propellers from KerbalPowersNaval
 * Fixed exception causing scaling to completely break when InfernalRobotics is installed
 * Moving a part that has inventory slots in EVA construction now shows the correct number of slots after re-attaching
+
 
 ## 3.3.1 - 2025-10-14
 
@@ -36,6 +37,7 @@
 * Better support for scaling modules that are altered with B9PartSwitch
 * Fixed scaling of FAR wings
 * Fix incorrectly scaling control surface fraction for stock control surfaces
+
 
 ## 3.2.4 - 2025-02-05
 
