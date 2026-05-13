@@ -8,6 +8,7 @@
 
 * Add support for propellers from KerbalPowersNaval
 * Fixed exception causing scaling to completely break when InfernalRobotics is installed
+* Moving a part that has inventory slots in EVA construction now shows the correct number of slots after re-attaching
 
 ## 3.3.1 - 2025-10-14
 

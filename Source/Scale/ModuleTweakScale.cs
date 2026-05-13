@@ -571,6 +571,17 @@ namespace TweakScale
 				extraMass = 0;
 				SetStatsLabel("");
 			}
+
+			// HACK: it's possible that this part has already had its entry in the EVA construction UI created, in which case now we may need to update it.
+			if ( EVAConstructionModeController.Instance.loadedModuleInventoryPart.TryGetValue(part.persistentId, out var inventoryModule))
+			{
+				// removing the display object should force it to recreate on the next frame with the correct values
+				if (EVAConstructionModeController.Instance.TryGetDisplayedInventory(inventoryModule, out var inventoryDisplayItem))
+				{
+					UnityEngine.Object.Destroy(inventoryDisplayItem.uiObject);
+					EVAConstructionModeController.Instance.displayedInventories.Remove(inventoryDisplayItem);
+				}
+			}
 		}
 
 		public override void OnStartFinished(StartState state)
