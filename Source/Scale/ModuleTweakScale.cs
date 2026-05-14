@@ -573,7 +573,7 @@ namespace TweakScale
 			}
 
 			// HACK: it's possible that this part has already had its entry in the EVA construction UI created, in which case now we may need to update it.
-			if ( EVAConstructionModeController.Instance.loadedModuleInventoryPart.TryGetValue(part.persistentId, out var inventoryModule))
+			if (EVAConstructionModeController.Instance?.loadedModuleInventoryPart?.TryGetValue(part.persistentId, out var inventoryModule) ?? false)
 			{
 				// removing the display object should force it to recreate on the next frame with the correct values
 				if (EVAConstructionModeController.Instance.TryGetDisplayedInventory(inventoryModule, out var inventoryDisplayItem))
