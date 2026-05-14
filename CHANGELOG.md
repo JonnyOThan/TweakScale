@@ -4,7 +4,7 @@
 
 * Scaling parts after re-rooting across a surface attachment does not move them correctly
 
-## Unreleased
+## 3.3.2.1 - 2026-05-14
 
 * Add support for propellers from KerbalPowersNaval
 * Fixed exception causing scaling to completely break when InfernalRobotics is installed
